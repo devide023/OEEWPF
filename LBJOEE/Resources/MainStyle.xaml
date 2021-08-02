@@ -1,0 +1,75 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style TargetType="{x:Type TabControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <Grid Background="Transparent">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Border BorderBrush="Transparent" BorderThickness="0,0,0,0">
+                            <TabPanel IsItemsHost="True" />
+                        </Border>
+                        <Border
+                            Grid.Row="1"
+                            Padding="0"
+                            Background="#06527E"
+                            BorderBrush="Transparent"
+                            BorderThickness="0">
+                            <ContentPresenter ContentSource="SelectedContent" />
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="TabItem">
+        <Setter Property="Height" Value="50" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="#06527E" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0,0,0,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Grid>
+                        <Border
+                            x:Name="bd"
+                            Height="50"
+                            Margin="0"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="0,0,0,0"
+                            CornerRadius="0,0,0,0" />
+                        <TextBlock
+                            x:Name="txt"
+                            Margin="30,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Header}" />
+                        <Rectangle
+                            Name="LeftSideRectangle"
+                            Height="3"
+                            VerticalAlignment="Bottom"
+                            Fill="Red"
+                            Visibility="Hidden" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter TargetName="bd" Property="Background" Value="#35000000" />
+                            <Setter TargetName="LeftSideRectangle" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="False" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

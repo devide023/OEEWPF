@@ -56,6 +56,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Resources\MainStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\scrollstyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -64,6 +72,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Convert\HeightConvert.cs" />
     <Compile Include="DAO\OracleBaseFixture.cs" />
     <Compile Include="InterfaceImp\DBImp.cs" />
     <Compile Include="Interface\IDB.cs" />
@@ -111,6 +120,9 @@
     <Resource Include="Resources\iconfont.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CalcBinding">
+      <Version>2.5.2</Version>
+    </PackageReference>
     <PackageReference Include="Dapper">
       <Version>2.0.90</Version>
     </PackageReference>

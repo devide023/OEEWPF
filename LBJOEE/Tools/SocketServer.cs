@@ -52,6 +52,7 @@ namespace LBJOEE.Tools
                         byte[] receive = new byte[4096*10];
                         if (!clientlink.Poll(-1, SelectMode.SelectRead))
                         {
+                            ConnectState?.Invoke(new sockconstate { state = "未连接", remoteip = "" });
                             continue;
                         }
                         //接收客户端数据

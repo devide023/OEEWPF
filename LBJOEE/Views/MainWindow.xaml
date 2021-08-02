@@ -3,281 +3,324 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:LBJOEE.Convert"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
     x:Name="main_window"
     Title="{Binding Title}"
     Width="700"
-    Height="800"
+    Height="770"
     prism:ViewModelLocator.AutoWireViewModel="True"
     AllowsTransparency="True"
     Background="Transparent"
+    MouseLeftButtonDown="main_window_MouseLeftButtonDown"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
-    MouseLeftButtonDown="main_window_MouseLeftButtonDown"
     mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/MainStyle.xaml" />
+                <ResourceDictionary Source="/Resources/scrollstyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <local:HeightConvert x:Key="myconvert" />
+        </ResourceDictionary>
+    </Window.Resources>
     <Border Background="#FF06527E" CornerRadius="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
                 <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <StackPanel
-                Height="auto"
-                Margin="0,0,10,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Orientation="Horizontal">
-                <StackPanel.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Width" Value="30" />
-                        <Setter Property="Height" Value="30" />
-                        <Setter Property="FontSize" Value="20" />
-                        <Setter Property="Margin" Value="5,0,0,5" />
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Foreground" Value="{StaticResource lightbrush}" />
-                        <Setter Property="FontFamily" Value="/Resources/#iconfont" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="BorderBrush" Value="{x:Null}" />
-                    </Style>
-                    <ControlTemplate x:Key="winclose" TargetType="Button">
-                        <Border
-                            x:Name="border"
-                            Width="30"
-                            Height="30"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Content="{TemplateBinding Content}" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="Red" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </StackPanel.Resources>
-                <Button
-                    Command="{Binding WinMinCMD}"
-                    CommandParameter="{Binding ElementName=main_window}"
-                    Content="&#xe65d;" />
-                <Button
-                    Command="{Binding WinMaxCMD}"
-                    CommandParameter="{Binding ElementName=main_window}"
-                    Content="&#xe623;" />
-                <Button
-                    Command="{Binding WinCloseCMD}"
-                    CommandParameter="{Binding ElementName=main_window}"
-                    Content="&#xe6c9;"
-                    Template="{StaticResource winclose}" />
-            </StackPanel>
-            <Grid Grid.Row="1" HorizontalAlignment="Left">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
+            <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="180" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Border HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource label}" Text="设备编号：" />
-                </Border>
-                <Border Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbbh}">
-                        <TextBlock.TextDecorations>
-                            <TextDecorationCollection>
-                                <TextDecoration PenOffset="3" />
-                            </TextDecorationCollection>
-                        </TextBlock.TextDecorations>
-                    </TextBlock>
-                </Border>
-                <Border
-                    Grid.Row="1"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource label}" Text="设备名称：" />
-                </Border>
-                <Border
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbmc}">
-                        <TextBlock.TextDecorations>
-                            <TextDecorationCollection>
-                                <TextDecoration PenOffset="3" />
-                            </TextDecorationCollection>
-                        </TextBlock.TextDecorations>
-                    </TextBlock>
-                </Border>
-                <Border
-                    Grid.Row="2"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource label}" Text="品牌型号：" />
-                </Border>
-                <Border
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource labelitem}">
-                        <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{0}{1}">
-                                <Binding Path="base_sbxx.sbpp" />
-                                <Binding Path="base_sbxx.sbxh" />
-                            </MultiBinding>
-                        </TextBlock.Text>
-                        <TextBlock.TextDecorations>
-                            <TextDecorationCollection>
-                                <TextDecoration PenOffset="3" />
-                            </TextDecorationCollection>
-                        </TextBlock.TextDecorations>
-                    </TextBlock>
-                </Border>
-                <Border
-                    Grid.Row="3"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource label}" Text="设备状态：" />
-                </Border>
-                <Border
-                    Grid.Row="3"
-                    Grid.Column="1"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource labelzt}" Text="{Binding base_sbxx.sbzt}" />
-                </Border>
-                <Border
-                    Grid.Row="4"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource label}" Text="所在区域：" />
-                </Border>
-                <Border
-                    Grid.Row="4"
-                    Grid.Column="1"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbqy}">
-                        <TextBlock.TextDecorations>
-                            <TextDecorationCollection>
-                                <TextDecoration PenOffset="3" />
-                            </TextDecorationCollection>
-                        </TextBlock.TextDecorations>
-                    </TextBlock>
-                </Border>
-                <Border
-                    Grid.Row="5"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource label}" Text="Ip地址：" />
-                </Border>
-                <Border
-                    Grid.Row="5"
-                    Grid.Column="1"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.ip}">
-                        <TextBlock.TextDecorations>
-                            <TextDecorationCollection>
-                                <TextDecoration PenOffset="3" />
-                            </TextDecorationCollection>
-                        </TextBlock.TextDecorations>
-                    </TextBlock>
-                </Border>
-                <Border
-                    Grid.Row="6"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource label}" Text="Socket连接状态：" />
-                </Border>
-                <Border
-                    Grid.Row="6"
-                    Grid.Column="1"
-                    VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource labelitem}" Text="{Binding socketljzt}" />
-                </Border>
-            </Grid>
-            <UniformGrid Grid.Row="2" Columns="5">
-                <Button
-                    Background="{Binding QLColor}"
-                    Command="{Binding QLTJCMD}"
-                    IsEnabled="{Binding qlenable}"
-                    Template="{StaticResource CornBtn}">
-                    <Button.Content>
-                        <StackPanel>
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding qltxt}" />
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding qltjsj}" />
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-                <Button
-                    Background="{Binding JxColor}"
-                    Command="{Binding JXTJCMD}"
-                    IsEnabled="{Binding jxenable}"
-                    Template="{StaticResource CornBtn}">
-                    <Button.Content>
-                        <StackPanel>
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding jxtxt}" />
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding jxtjsj}" />
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-                <Button
-                    Background="{Binding HmColor}"
-                    Command="{Binding HMTJCMD}"
-                    IsEnabled="{Binding hmenable}"
-                    Template="{StaticResource CornBtn}">
-                    <Button.Content>
-                        <StackPanel>
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding hmtxt}" />
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding hmtjsj}" />
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-                <Button
-                    Background="{Binding GzColor}"
-                    Command="{Binding GZTJCMD}"
-                    IsEnabled="{Binding gzenable}"
-                    Template="{StaticResource CornBtn}">
-                    <Button.Content>
-                        <StackPanel>
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding gztxt}" />
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding gztjsj}" />
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-                <Button
-                    Background="{Binding QtColor}"
-                    Command="{Binding QTTJCMD}"
-                    IsEnabled="{Binding qtenable}"
-                    Template="{StaticResource CornBtn}">
-                    <Button.Content>
-                        <StackPanel>
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding qttjtxt}" />
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding qttjsj}" />
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-            </UniformGrid>
-            <ScrollViewer
-                Grid.Row="3"
-                Width="auto"
-                Height="300"
-                VerticalScrollBarVisibility="Auto">
                 <TextBlock
-                    Margin="10,0,0,10"
+                    Margin="15,0,0,0"
                     HorizontalAlignment="Left"
-                    FontSize="30"
-                    Foreground="Red"
-                    Text="{Binding socketdata}" />
-            </ScrollViewer>
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    Foreground="{StaticResource lightbrush}"
+                    Text="" />
+                <StackPanel
+                    Grid.Column="1"
+                    Height="auto"
+                    Margin="0,0,10,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <StackPanel.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Width" Value="30" />
+                            <Setter Property="Height" Value="30" />
+                            <Setter Property="FontSize" Value="20" />
+                            <Setter Property="Margin" Value="5,0,0,5" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Foreground" Value="{StaticResource lightbrush}" />
+                            <Setter Property="FontFamily" Value="/Resources/#iconfont" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="BorderBrush" Value="{x:Null}" />
+                        </Style>
+                        <ControlTemplate x:Key="winclose" TargetType="Button">
+                            <Border
+                                x:Name="border"
+                                Width="30"
+                                Height="30"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Content="{TemplateBinding Content}" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="Red" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </StackPanel.Resources>
+                    <Button
+                        Command="{Binding WinMinCMD}"
+                        CommandParameter="{Binding ElementName=main_window}"
+                        Content="&#xe65d;" />
+                    <Button
+                        Command="{Binding WinMaxCMD}"
+                        CommandParameter="{Binding ElementName=main_window}"
+                        Content="&#xe623;" />
+                    <Button
+                        Command="{Binding WinCloseCMD}"
+                        CommandParameter="{Binding ElementName=main_window}"
+                        Content="&#xe6c9;"
+                        Template="{StaticResource winclose}" />
+                </StackPanel>
+            </Grid>
+            <TabControl
+                x:Name="main_tab"
+                Grid.Row="1"
+                Width="auto"
+                Height="auto">
+                <TabItem
+                    Name="jbxx"
+                    Header="基本信息"
+                    IsSelected="True">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid HorizontalAlignment="Left">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="180" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource label}" Text="设备编号：" />
+                            </Border>
+                            <Border Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbbh}">
+                                    <TextBlock.TextDecorations>
+                                        <TextDecorationCollection>
+                                            <TextDecoration PenOffset="3" />
+                                        </TextDecorationCollection>
+                                    </TextBlock.TextDecorations>
+                                </TextBlock>
+                            </Border>
+                            <Border
+                                Grid.Row="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource label}" Text="设备名称：" />
+                            </Border>
+                            <Border
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbmc}">
+                                    <TextBlock.TextDecorations>
+                                        <TextDecorationCollection>
+                                            <TextDecoration PenOffset="3" />
+                                        </TextDecorationCollection>
+                                    </TextBlock.TextDecorations>
+                                </TextBlock>
+                            </Border>
+                            <Border
+                                Grid.Row="2"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource label}" Text="品牌型号：" />
+                            </Border>
+                            <Border
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource labelitem}">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}{1}">
+                                            <Binding Path="base_sbxx.sbpp" />
+                                            <Binding Path="base_sbxx.sbxh" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                    <TextBlock.TextDecorations>
+                                        <TextDecorationCollection>
+                                            <TextDecoration PenOffset="3" />
+                                        </TextDecorationCollection>
+                                    </TextBlock.TextDecorations>
+                                </TextBlock>
+                            </Border>
+                            <Border
+                                Grid.Row="3"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource label}" Text="设备状态：" />
+                            </Border>
+                            <Border
+                                Grid.Row="3"
+                                Grid.Column="1"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource labelzt}" Text="{Binding base_sbxx.sbzt}" />
+                            </Border>
+                            <Border
+                                Grid.Row="4"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource label}" Text="所在区域：" />
+                            </Border>
+                            <Border
+                                Grid.Row="4"
+                                Grid.Column="1"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbqy}">
+                                    <TextBlock.TextDecorations>
+                                        <TextDecorationCollection>
+                                            <TextDecoration PenOffset="3" />
+                                        </TextDecorationCollection>
+                                    </TextBlock.TextDecorations>
+                                </TextBlock>
+                            </Border>
+                            <Border
+                                Grid.Row="5"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource label}" Text="Ip地址：" />
+                            </Border>
+                            <Border
+                                Grid.Row="5"
+                                Grid.Column="1"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.ip}">
+                                    <TextBlock.TextDecorations>
+                                        <TextDecorationCollection>
+                                            <TextDecoration PenOffset="3" />
+                                        </TextDecorationCollection>
+                                    </TextBlock.TextDecorations>
+                                </TextBlock>
+                            </Border>
+                            <Border
+                                Grid.Row="6"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource label}" Text="Socket连接状态：" />
+                            </Border>
+                            <Border
+                                Grid.Row="6"
+                                Grid.Column="1"
+                                VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding socketljzt}" />
+                            </Border>
+                        </Grid>
+                        <UniformGrid Grid.Row="1" Columns="5">
+                            <Button
+                                Background="{Binding QLColor}"
+                                Command="{Binding QLTJCMD}"
+                                IsEnabled="{Binding qlenable}"
+                                Template="{StaticResource CornBtn}">
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding qltxt}" />
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding qltjsj}" />
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Background="{Binding JxColor}"
+                                Command="{Binding JXTJCMD}"
+                                IsEnabled="{Binding jxenable}"
+                                Template="{StaticResource CornBtn}">
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding jxtxt}" />
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding jxtjsj}" />
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Background="{Binding HmColor}"
+                                Command="{Binding HMTJCMD}"
+                                IsEnabled="{Binding hmenable}"
+                                Template="{StaticResource CornBtn}">
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding hmtxt}" />
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding hmtjsj}" />
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Background="{Binding GzColor}"
+                                Command="{Binding GZTJCMD}"
+                                IsEnabled="{Binding gzenable}"
+                                Template="{StaticResource CornBtn}">
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding gztxt}" />
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding gztjsj}" />
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Background="{Binding QtColor}"
+                                Command="{Binding QTTJCMD}"
+                                IsEnabled="{Binding qtenable}"
+                                Template="{StaticResource CornBtn}">
+                                <Button.Content>
+                                    <StackPanel>
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding qttjtxt}" />
+                                        <TextBlock HorizontalAlignment="Center" Text="{Binding qttjsj}" />
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                        </UniformGrid>
+
+                    </Grid>
+                </TabItem>
+                <TabItem Name="cjxx" Header="采集信息">
+                    <ScrollViewer
+                        Width="auto"
+                        Height="{Binding Path=Height, ElementName=main_window, Converter={StaticResource myconvert}}"
+                        Margin="2,0,2,0"
+                        Template="{StaticResource MyScrollViewer}"
+                        VerticalScrollBarVisibility="Auto">
+                        <TextBlock
+                            Margin="10,0,0,10"
+                            HorizontalAlignment="Left"
+                            FontSize="18"
+                            Foreground="{StaticResource lightbrush}"
+                            Text="{Binding socketdata}" />
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
         </Grid>
     </Border>
 </Window>
