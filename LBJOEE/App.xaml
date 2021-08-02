@@ -1,0 +1,83 @@
+﻿<prism:PrismApplication
+    x:Class="LBJOEE.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:prism="http://prismlibrary.com/">
+    <Application.Resources>
+        <Color x:Key="primarycolor">#5575C8</Color>
+        <Color x:Key="successcolor">#63CE63</Color>
+        <Color x:Key="warningcolor">#FFBF2F</Color>
+        <Color x:Key="errorcolor">#E52B20</Color>
+        <Color x:Key="dangercolor">#FF00FF</Color>
+        <Color x:Key="blackcolor">#353C42</Color>
+        <Color x:Key="darkcolor">#CCCED0</Color>
+        <Color x:Key="mediumcolor">#ECECEE</Color>
+        <Color x:Key="lightcolor">#F9F9FB</Color>
+        <SolidColorBrush x:Key="primarybrush" Color="{StaticResource primarycolor}" />
+        <SolidColorBrush x:Key="successbrush" Color="{StaticResource successcolor}" />
+        <SolidColorBrush x:Key="warningbrush" Color="{StaticResource warningcolor}" />
+        <SolidColorBrush x:Key="errorbrush" Color="{StaticResource errorcolor}" />
+        <SolidColorBrush x:Key="dangerbrush" Color="{StaticResource dangercolor}" />
+        <SolidColorBrush x:Key="blackbrush" Color="{StaticResource blackcolor}" />
+        <SolidColorBrush x:Key="darkbrush" Color="{StaticResource darkcolor}" />
+        <SolidColorBrush x:Key="mediumbrush" Color="{StaticResource mediumcolor}" />
+        <SolidColorBrush x:Key="lightbrush" Color="{StaticResource lightcolor}" />
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="Width" Value="110" />
+            <Setter Property="Height" Value="80" />
+            <Setter Property="Padding" Value="5,10,5,10" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="25" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontFamily" Value="仿宋" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style x:Key="label" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{StaticResource lightbrush}" />
+            <Setter Property="Margin" Value="10,20,10,20" />
+        </Style>
+        <Style x:Key="labelitem" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="30" />
+            <Setter Property="Foreground" Value="{StaticResource lightbrush}" />
+            <Setter Property="Margin" Value="10,20,10,20" />
+        </Style>
+        <Style x:Key="labelzt" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="30" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{StaticResource lightbrush}" />
+            <Setter Property="Margin" Value="10,20,10,20" />
+        </Style>
+        <ControlTemplate x:Key="CornBtn" TargetType="Button">
+            <Grid>
+                <Border
+                    x:Name="border"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="6">
+                    <Border.Effect>
+                        <DropShadowEffect
+                            BlurRadius="10"
+                            Opacity="0.3"
+                            ShadowDepth="6" />
+                    </Border.Effect>
+                    <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        ContentTemplate="{TemplateBinding Content}" />
+                </Border>
+                <Border
+                    x:Name="borderxg"
+                    Background="#22ffffff"
+                    CornerRadius="6"
+                    Visibility="Hidden" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="borderxg" Property="Visibility" Value="Visible" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Application.Resources>
+</prism:PrismApplication>
