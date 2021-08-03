@@ -77,6 +77,7 @@
     <Compile Include="InterfaceImp\DBImp.cs" />
     <Compile Include="Interface\IDB.cs" />
     <Compile Include="Models\base_sbxx.cs" />
+    <Compile Include="Models\JsonEntity.cs" />
     <Compile Include="Models\sbsj.cs" />
     <Compile Include="Models\sbtj.cs" />
     <Compile Include="Models\sockconstate.cs" />

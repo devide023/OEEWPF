@@ -7,7 +7,7 @@ using System.Windows.Media;
 using LBJOEE.Services;
 using System.Threading.Tasks;
 using System.Threading;
-
+using Newtonsoft.Json;
 namespace LBJOEE.ViewModels
 {
     public class MainWindowViewModel : BindableBase
@@ -259,8 +259,9 @@ namespace LBJOEE.ViewModels
         #endregion
         private SBXXService _sbxxservice;
         private SBTJService _sbtjservice;
+        private SBSJService _sbsjservice;
         private Brush dkb, qlc, qtc, hmc, gzc, jxc;
-        public MainWindowViewModel(SocketServer socketserver, SBXXService sBXXService, SBTJService sbtjservice)
+        public MainWindowViewModel(SocketServer socketserver, SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService)
         {
             dkb = Application.Current.Resources["darkbrush"] as Brush;
             qlc = Application.Current.Resources["warningbrush"] as Brush;
@@ -271,6 +272,7 @@ namespace LBJOEE.ViewModels
             var pcip = Tool.GetIpAddress();
             _sbxxservice = sBXXService;
             _sbtjservice = sbtjservice;
+            _sbsjservice = sBSJService;
             socketserver.Init(pcip, 3800);
             socketserver.ConnectState = ScoketConnState;
             socketserver.ReceiveAction = ReceiveData;
@@ -398,10 +400,43 @@ namespace LBJOEE.ViewModels
                 InitQt();
             }
         }
+        /// <summary>
+        /// 接收数据采集软件数据
+        /// </summary>
+        /// <param name="data"></param>
         private void ReceiveData(string data)
         {
-            socketdata = data;
+            if (!string.IsNullOrEmpty(data))
+            {
+               var receive_data = JsonConvert.DeserializeObject<JsonEntity>(data);
+                receive_data.devicedata.sbbh = base_sbxx.sbbh;
+                switch (receive_data.status)
+                {
+                    case "故障":
+                        DeviceError(new {
+                        status = receive_data.status,
+                        message = receive_data.message,
+                        errorcode = receive_data.errorcode,
+                        });
+                        break;
+                    case "正常":
+                        {
+                            DeviceNormal(new
+                            {
+                                status = receive_data.status,
+                                message = receive_data.message,
+                                errorcode = receive_data.errorcode,
+                            });
+                            _sbsjservice.Add(receive_data.devicedata);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                socketdata = data;
+            }
         }
+
         private void ScoketConnState(sockconstate obj)
         {
             if (!string.IsNullOrEmpty(obj.remoteip))
@@ -411,6 +446,39 @@ namespace LBJOEE.ViewModels
             else
             {
                 socketljzt = obj.state;
+            }
+        }
+        private void DeviceNormal(dynamic obj)
+        {
+            if (base_sbxx.sfgz == "Y")
+            {
+                _gztimer.Change(-1, -1);
+                base_sbxx.sbzt = obj.status;
+                base_sbxx.sfgz = "N";
+                gztjsj = 0;
+                DateTime now = DateTime.Now;
+                _sbtjservice.Add(new sbtj()
+                {
+                    sbbh = base_sbxx.sbbh,
+                    tjjssj = now,
+                    tjkssj = base_sbxx.gzkssj,
+                    tjlx = "故障",
+                    tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
+                    tjms = obj.message
+                });
+                InitBtnAll();
+            }
+        }
+        private void DeviceError(dynamic obj)
+        {
+            if (base_sbxx.sfgz != "Y")
+            {
+                base_sbxx.sbzt = obj.status;
+                base_sbxx.sfgz = "Y";
+                base_sbxx.tjms = obj.message;
+                base_sbxx.gzkssj = DateTime.Now;
+                InitGz();
+                _sbxxservice.SetGZtj(base_sbxx);
             }
         }
         #region 按钮事件处理函数
