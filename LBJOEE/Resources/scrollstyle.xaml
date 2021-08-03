@@ -79,7 +79,7 @@
                     <!--  滚动条颜色和圆角设置  -->
                     <Rectangle
                         Name="thumbRect"
-                        Fill="#03ffea"
+                        Fill="#0096B8"
                         RadiusX="3"
                         RadiusY="3" />
                     <!--  鼠标拉动滚动条时的颜色  -->
@@ -122,7 +122,7 @@
                     <Grid
                         x:Name="Bg"
                         Width="8"
-                        Background="#001f55"
+                        Background="#06527E"
                         SnapsToDevicePixels="true">
                         <Grid.RowDefinitions>
                             <RowDefinition />
