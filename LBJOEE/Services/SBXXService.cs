@@ -22,9 +22,17 @@ namespace LBJOEE.Services
         }
         public base_sbxx Find_Sbxx_ByIp(string ip)
         {
-            var predicate = Predicates.Field<base_sbxx>(f => f.ip, Operator.Eq, ip);
-            base_sbxx sbxx = Db.GetList<base_sbxx>(predicate).FirstOrDefault();
-            return sbxx;
+            try
+            {
+                var predicate = Predicates.Field<base_sbxx>(f => f.ip, Operator.Eq, ip);
+                base_sbxx sbxx = Db.GetList<base_sbxx>(predicate).FirstOrDefault();
+                return sbxx;
+            }
+            catch (Exception e)
+            {
+                ErrorAction?.Invoke(e.Message);
+                return null;
+            }
         }
         public base_sbxx Find_Sbxx_ByBh(string sbbh)
         {

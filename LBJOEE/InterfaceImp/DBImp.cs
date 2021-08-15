@@ -17,6 +17,7 @@ namespace LBJOEE
         {
 
         }
+        public Action<string> ErrorAction { get; set; }
         public virtual dynamic Add(T entity)
         {
             return Db.Insert<T>(entity);

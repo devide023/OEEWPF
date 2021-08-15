@@ -72,4 +72,87 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="ListBox">
+        <Setter Property="Background" Value="#FF06527E" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="5,0,0,0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBox">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <WrapPanel
+                            IsItemsHost="True"
+                            Orientation="Horizontal"
+                            ScrollViewer.CanContentScroll="True" />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="ListBoxItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border>
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="Red" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="listboxitembtn" TargetType="Button">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <ControlTemplate.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                        </Style>
+                    </ControlTemplate.Resources>
+                    <Border
+                        x:Name="bg"
+                        Width="120"
+                        Height="90"
+                        Margin="8"
+                        Background="{StaticResource successbrush}"
+                        CornerRadius="6">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding btnenable}" Value="false">
+                            <Setter TargetName="bg" Property="Background" Value="{StaticResource darkbrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding flag}" Value="1">
+                            <Setter TargetName="bg" Property="Background" Value="{StaticResource warningbrush}" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="status_style" TargetType="Ellipse">
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Fill" Value="{DynamicResource darkbrush}" />
+        <Style.Triggers>
+            <Trigger Property="Tag" Value="0">
+                <Setter Property="Fill" Value="{DynamicResource darkbrush}" />
+            </Trigger>
+            <Trigger Property="Tag" Value="3">
+                <Setter Property="Fill" Value="{DynamicResource successbrush}" />
+            </Trigger>
+            <Trigger Property="Tag" Value="4">
+                <Setter Property="Fill" Value="{DynamicResource errorbrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

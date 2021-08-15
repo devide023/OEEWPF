@@ -8,123 +8,48 @@ using LBJOEE.Services;
 using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 namespace LBJOEE.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
         private string _title = "压铸OEE";
         private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer;
-        #region 停机时间
-        private int _qltjsj = 0;
-        public int qltjsj
-        {
-            get { return _qltjsj; }
-            set { SetProperty(ref _qltjsj, value); }
-        }
-        private int _jxtjsj = 0;
-
-        public int jxtjsj
-        {
-            get { return _jxtjsj; }
-            set { SetProperty(ref _jxtjsj, value); }
-        }
-        private int _gztjsj = 0;
-
-        public int gztjsj
-        {
-            get { return _gztjsj; }
-            set { SetProperty(ref _gztjsj, value); }
-        }
-        private int _hmtjsj = 0;
-
-        public int hmtjsj
-        {
-            get { return _hmtjsj; }
-            set { SetProperty(ref _hmtjsj, value); }
-        }
-        private int _qttjsj = 0;
-
-        public int qttjsj
-        {
-            get { return _qttjsj; }
-            set { SetProperty(ref _qttjsj, value); }
-        }
-
-        #endregion
-        #region 按钮是否可用属性
-
-        private bool _qlenable = true;
-        /// <summary>
-        /// 缺料按钮是否可用
-        /// </summary>
-        public bool qlenable
-        {
-            get { return _qlenable; }
-            set { SetProperty(ref _qlenable, value); }
-        }
-        private bool _gzenable = true;
-        /// <summary>
-        /// 故障按钮是否可用
-        /// </summary>
-        public bool gzenable
-        {
-            get { return _gzenable; }
-            set { SetProperty(ref _gzenable, value); }
-        }
-        private bool _jxenable = true;
-        /// <summary>
-        /// 检修按钮是否可用
-        /// </summary>
-        public bool jxenable
-        {
-            get { return _jxenable; }
-            set { SetProperty(ref _jxenable, value); }
-        }
-
-        private bool _hmenable = true;
-        /// <summary>
-        /// 换模按钮是否可用
-        /// </summary>
-        public bool hmenable
-        {
-            get { return _hmenable; }
-            set { SetProperty(ref _hmenable, value); }
-        }
-
-        private bool _qtenable = true;
-        /// <summary>
-        /// 其他停机按钮是否可用
-        /// </summary>
-        public bool qtenable
-        {
-            get { return _qtenable; }
-            set { SetProperty(ref _qtenable, value); }
-        }
-
-        #endregion
-
+        private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
+        public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
+        public DelegateCommand<BtnStatus> BTNCMD { get; private set; }
         public string Title
         {
             get { return _title; }
             set { SetProperty(ref _title, value); }
         }
         private string _socketdata;
-
+        private string _errormsg;
+        public string ErrorMsg
+        {
+            get { return _errormsg; }
+            set { SetProperty(ref _errormsg, value); }
+        }
         public string socketdata
         {
             get { return _socketdata; }
             set { SetProperty(ref _socketdata, value); }
         }
-        private string _socekljzt = "未连接";
+        private int _socekljzt = 0;
         /// <summary>
         /// socket连接状态
         /// </summary>
-        public string socketljzt
+        public int socketljzt
         {
             get { return _socekljzt; }
             set { SetProperty(ref _socekljzt, value); }
         }
-
+        private int _sock_linkcnt;
+        public int socket_linkcnt
+        {
+            get { return _sock_linkcnt; }
+            set { SetProperty(ref _sock_linkcnt, value); }
+        }
         private base_sbxx _base_sbxx;
         /// <summary>
         /// 设备信息
@@ -134,319 +59,209 @@ namespace LBJOEE.ViewModels
             get { return _base_sbxx; }
             set { SetProperty(ref _base_sbxx, value); }
         }
-        #region 按钮文本
-
-        private string _qltj;
-        /// <summary>
-        /// 缺料停机文本
-        /// </summary>
-        public string qltxt
-        {
-            get { return _qltj; }
-            set { SetProperty(ref _qltj, value); }
-        }
-        private string _jxtj;
-        /// <summary>
-        /// 检修停机文本
-        /// </summary>
-        public string jxtxt
-        {
-            get { return _jxtj; }
-            set { SetProperty(ref _jxtj, value); }
-        }
-        private string _gztj;
-        /// <summary>
-        /// 故障停机文本  
-        /// </summary>
-        public string gztxt
-        {
-            get { return _gztj; }
-            set { SetProperty(ref _gztj, value); }
-        }
-        private string _hmtj;
-        /// <summary>
-        /// 换模停机文本
-        /// </summary>
-        public string hmtxt
-        {
-            get { return _hmtj; }
-            set { SetProperty(ref _hmtj, value); }
-        }
-        private string _qttj;
-        /// <summary>
-        /// 其他停机文本
-        /// </summary>
-        public string qttjtxt
-        {
-            get { return _qttj; }
-            set { SetProperty(ref _qttj, value); }
-        }
-        #endregion
+        
         #region 按钮命令
-        /// <summary>
-        /// 缺料停机命令
-        /// </summary>
-        public DelegateCommand QLTJCMD { get; private set; }
-        /// <summary>
-        /// 检修停机命令
-        /// </summary>
-        public DelegateCommand JXTJCMD { get; private set; }
-        /// <summary>
-        /// 故障停机命令
-        /// </summary>
-        public DelegateCommand GZTJCMD { get; private set; }
-        /// <summary>
-        /// 换模停机命令
-        /// </summary>
-        public DelegateCommand HMTJCMD { get; private set; }
-        /// <summary>
-        /// 其他停机命令
-        /// </summary>
-        public DelegateCommand QTTJCMD { get; private set; }
-
+        
         public DelegateCommand<object> WinMinCMD { get; private set; }
         public DelegateCommand<object> WinMaxCMD { get; private set; }
         public DelegateCommand<object> WinCloseCMD { get; private set; }
 
         #endregion
-        #region 按钮背景色
-        private Brush _qlcolor;
-        /// <summary>
-        /// 缺料
-        /// </summary>
-        public Brush QLColor
-        {
-            get { return _qlcolor; }
-            set { SetProperty(ref _qlcolor, value); }
-        }
-        private Brush jxcolor;
-        /// <summary>
-        /// 检修
-        /// </summary>
-        public Brush JxColor
-        {
-            get { return jxcolor; }
-            set { SetProperty(ref jxcolor, value); }
-        }
-        private Brush hmcolor;
-        /// <summary>
-        /// 换模
-        /// </summary>
-        public Brush HmColor
-        {
-            get { return hmcolor; }
-            set { SetProperty(ref hmcolor, value); }
-        }
-        private Brush gzcolor;
-        /// <summary>
-        /// 故障
-        /// </summary>
-        public Brush GzColor
-        {
-            get { return gzcolor; }
-            set { SetProperty(ref gzcolor, value); }
-        }
-        private Brush qtcolor;
-        /// <summary>
-        /// 其他
-        /// </summary>
-        public Brush QtColor
-        {
-            get { return qtcolor; }
-            set { SetProperty(ref qtcolor, value); }
-        }
-
-        #endregion
+        
         private SBXXService _sbxxservice;
         private SBTJService _sbtjservice;
         private SBSJService _sbsjservice;
-        private Brush dkb, qlc, qtc, hmc, gzc, jxc;
         public MainWindowViewModel(SocketServer socketserver, SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService)
         {
-            dkb = Application.Current.Resources["darkbrush"] as Brush;
-            qlc = Application.Current.Resources["warningbrush"] as Brush;
-            qtc = Application.Current.Resources["primarybrush"] as Brush;
-            hmc = Application.Current.Resources["successbrush"] as Brush;
-            gzc = Application.Current.Resources["errorbrush"] as Brush;
-            jxc = Application.Current.Resources["dangerbrush"] as Brush;
+            
             var pcip = Tool.GetIpAddress();
             _sbxxservice = sBXXService;
+            _sbxxservice.ErrorAction = new Action<string>(Error_Handel);
             _sbtjservice = sbtjservice;
+            _sbtjservice.ErrorAction = new Action<string>(Error_Handel);
             _sbsjservice = sBSJService;
-            socketserver.Init(pcip, 3800);
+            _sbsjservice.ErrorAction = new Action<string>(Error_Handel);
+
+            base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
+            socketserver.Init(pcip, base_sbxx.port);
             socketserver.ConnectState = ScoketConnState;
             socketserver.ReceiveAction = ReceiveData;
-            base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
+            InitBtnStatus();
+            BTNCMD = new DelegateCommand<BtnStatus>(BtnHandel);
             InitTimer();
-            InitButton();
-            QLTJCMD = new DelegateCommand(DealQLHandle);
-            JXTJCMD = new DelegateCommand(DealJXHandle);
-            HMTJCMD = new DelegateCommand(DealHMHandle);
-            QTTJCMD = new DelegateCommand(DealQTHandle);
-            GZTJCMD = new DelegateCommand(DealGZHandle);
             WinMinCMD = new DelegateCommand<object>(WinminHandle);
             WinMaxCMD = new DelegateCommand<object>(WinmaxHandle);
             WinCloseCMD = new DelegateCommand<object>(WincloseHandle);
         }
 
+        private void Error_Handel(string errormsg)
+        {
+            ErrorMsg = errormsg;
+        }
+
+        private void BtnHandel(BtnStatus obj)
+        {
+            switch (obj.name)
+            {
+                case "ql":
+                    DealQLHandle(obj);
+                    break;
+                case "jx":
+                    DealJXHandle(obj);
+                    break;
+                case "hm":
+                    DealHMHandle(obj);
+                    break;
+                case "gz":
+                    DealGZHandle(obj);
+                    break;
+                case "qt":
+                    DealQTHandle(obj);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private void InitTimer()
         {
-            _jxtimer = new Timer(CalcJXtjsj, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-            _gztimer = new Timer(CalcGZtjsj, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-            _hmtimer = new Timer(CalcHMtjsj, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-            _qltimer = new Timer(CalcQLtjsj, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-            _qttimer = new Timer(CalcQTtjsj, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            _jxtimer = new Timer(CalcJXtjsj, _jxbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            _gztimer = new Timer(CalcGZtjsj, _gzbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            _hmtimer = new Timer(CalcHMtjsj, _hmbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            _qltimer = new Timer(CalcQLtjsj, _qlbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            _qttimer = new Timer(CalcQTtjsj, _qtbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            if (_jxbtn.sfjx)
+            {
+                _jxtimer.Change(_jxbtn.tjsj, 1000);
+            }
+            if (_gzbtn.sfgz)
+            {
+                _gztimer.Change(_gzbtn.tjsj, 1000);
+            }
+            if (_hmbtn.sfhm)
+            {
+                _hmtimer.Change(_hmbtn.tjsj, 1000);
+            }
+            if (_qlbtn.sfql)
+            {
+                _qltimer.Change(_qlbtn.tjsj, 1000);
+            }
+            if (_qtbtn.sfql)
+            {
+                _qttimer.Change(_qtbtn.tjsj, 1000);
+            }
         }
 
-        private void InitQL()
+        private void InitBtnStatus()
         {
-            QLColor = dkb;
-            qltxt = "缺料恢复";
-            _qltimer.Change(qltjsj, 1000);
-            qlenable = true;
-            gzenable = false;
-            qtenable = false;
-            hmenable = false;
-            jxenable = false;
-        }
-        private void InitJx()
-        {
+            _qlbtn = new BtnStatus()
+            {
+                name = "ql",
+                sfql = base_sbxx.sfql == "Y" ? true : false,
+                btntxt = "缺料停机",
+                normaltxt = "缺料停机",
+                tjtxt = "缺料恢复",
+                tjlx = "缺料停机",
+                tjms = "缺料"
 
-            JxColor = dkb;
-            jxtxt = "检修恢复";
-            _jxtimer.Change(jxtjsj, 1000);
-            qlenable = false;
-            gzenable = false;
-            qtenable = false;
-            hmenable = false;
-            jxenable = true;
-        }
-        private void InitGz()
-        {
+            };
+            BtnStatusList.Add(_qlbtn) ;
+            _jxbtn = new BtnStatus()
+            {
+                name = "jx",
+                sfjx = base_sbxx.sfjx == "Y" ? true : false,
+                btntxt = "检修停机",
+                normaltxt= "检修停机",
+                tjtxt = "检修恢复",
+                tjlx = "检修停机",
+                tjms = "检修"
 
-            GzColor = dkb;
-            gztxt = "故障恢复";
-            _gztimer.Change(gztjsj, 1000);
-            qlenable = false;
-            gzenable = true;
-            qtenable = false;
-            hmenable = false;
-            jxenable = false;
-        }
-        private void InitHm()
-        {
-            HmColor = dkb;
-            hmtxt = "换模恢复";
-            _hmtimer.Change(hmtjsj, 1000);
-            qlenable = false;
-            gzenable = false;
-            qtenable = false;
-            hmenable = true;
-            jxenable = false;
-        }
-        private void InitQt()
-        {
-            QtColor = dkb;
-            qttjtxt = "停机恢复";
-            _qttimer.Change(qttjsj, 1000);
-            qlenable = false;
-            gzenable = false;
-            qtenable = true;
-            hmenable = false;
-            jxenable = false;
-        }
-        private void InitBtnAll()
-        {
-            qlenable = true;
-            gzenable = true;
-            qtenable = true;
-            hmenable = true;
-            jxenable = true;
-            GzColor = gzc;
-            JxColor = jxc;
-            QLColor = qlc;
-            QtColor = qtc;
-            HmColor = hmc;
-            gztxt = "故障停机";
-            jxtxt = "检修停机";
-            hmtxt = "换模停机";
-            qltxt = "缺料停机";
-            qttjtxt = "其他停机";
-        }
-        /// <summary>
-        /// 初始化按钮状态，如背景色、文字内容
-        /// </summary>
-        private void InitButton()
-        {
-            InitBtnAll();
-            if (base_sbxx.sfql == "Y")
+            };
+            BtnStatusList.Add(_jxbtn);
+            _hmbtn = new BtnStatus()
             {
-                InitQL();
-            }
-            else if (base_sbxx.sfgz == "Y")
+                name = "hm",
+                sfhm = base_sbxx.sfhm == "Y" ? true : false,
+                btntxt = "换模停机",
+                normaltxt = "换模停机",
+                tjtxt = "换模恢复",
+                tjlx = "换模停机",
+                tjms = "换模"
+            };
+            BtnStatusList.Add(_hmbtn);
+            _gzbtn = new BtnStatus()
             {
-                InitGz();
-            }
-            else if (base_sbxx.sfhm == "Y")
+                name = "gz",
+                sfgz = base_sbxx.sfgz == "Y" ? true : false,
+                btntxt = "故障停机",
+                normaltxt = "故障停机",
+                tjtxt = "故障恢复",
+                tjlx = "故障停机",
+                tjms = ""
+            };
+            BtnStatusList.Add(_gzbtn);
+            _qtbtn = new BtnStatus()
             {
-                InitHm();
-            }
-            else if (base_sbxx.sfjx == "Y")
-            {
-                InitJx();
-            }
-            else if (base_sbxx.sfqttj == "Y")
-            {
-                InitQt();
-            }
+                name = "qt",
+                sfqt = base_sbxx.sfqttj == "Y" ? true : false,
+                btntxt = "其他停机",
+                normaltxt = "其他停机",
+                tjtxt = "停机恢复",
+                tjlx = "其他停机",
+                tjms="其他"
+            };
+            BtnStatusList.Add(_qtbtn);
         }
+        
         /// <summary>
         /// 接收数据采集软件数据
         /// </summary>
         /// <param name="data"></param>
         private void ReceiveData(string data)
         {
-            if (!string.IsNullOrEmpty(data))
+            try
             {
-               var receive_data = JsonConvert.DeserializeObject<JsonEntity>(data);
-                receive_data.devicedata.sbbh = base_sbxx.sbbh;
-                switch (receive_data.status)
+                if (!string.IsNullOrEmpty(data))
                 {
-                    case "故障":
-                        DeviceError(new {
-                        status = receive_data.status,
-                        message = receive_data.message,
-                        errorcode = receive_data.errorcode,
-                        });
-                        break;
-                    case "正常":
-                        {
-                            DeviceNormal(new
+                    var receive_data = JsonConvert.DeserializeObject<JsonEntity>(data);
+                    receive_data.devicedata.sbbh = base_sbxx.sbbh;
+                    switch (receive_data.status)
+                    {
+                        case "故障":
+                            DeviceError(new
                             {
                                 status = receive_data.status,
                                 message = receive_data.message,
                                 errorcode = receive_data.errorcode,
                             });
-                            _sbsjservice.Add(receive_data.devicedata);
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                        case "正常":
+                            {
+                                DeviceNormal(new
+                                {
+                                    status = receive_data.status,
+                                    message = receive_data.message,
+                                    errorcode = receive_data.errorcode,
+                                });
+                                _sbsjservice.Add(receive_data.devicedata);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    socketdata = JsonConvert.SerializeObject(receive_data) ;
                 }
-                socketdata = data;
+            }
+            catch (Exception e)
+            {
+                ErrorMsg = e.Message;
             }
         }
 
         private void ScoketConnState(sockconstate obj)
         {
-            if (!string.IsNullOrEmpty(obj.remoteip))
-            {
-                socketljzt = $"{obj.state}[{obj.remoteip}]";
-            }
-            else
-            {
-                socketljzt = obj.state;
-            }
+            socketljzt = obj.state;
+            socket_linkcnt = obj.ljcnt;
         }
         private void DeviceNormal(dynamic obj)
         {
@@ -455,7 +270,7 @@ namespace LBJOEE.ViewModels
                 _gztimer.Change(-1, -1);
                 base_sbxx.sbzt = obj.status;
                 base_sbxx.sfgz = "N";
-                gztjsj = 0;
+                BtnStatusList[3].tjsj = 0;
                 DateTime now = DateTime.Now;
                 _sbtjservice.Add(new sbtj()
                 {
@@ -466,7 +281,6 @@ namespace LBJOEE.ViewModels
                     tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
                     tjms = obj.message
                 });
-                InitBtnAll();
             }
         }
         private void DeviceError(dynamic obj)
@@ -477,7 +291,6 @@ namespace LBJOEE.ViewModels
                 base_sbxx.sfgz = "Y";
                 base_sbxx.tjms = obj.message;
                 base_sbxx.gzkssj = DateTime.Now;
-                InitGz();
                 _sbxxservice.SetGZtj(base_sbxx);
             }
         }
@@ -485,164 +298,207 @@ namespace LBJOEE.ViewModels
         /// <summary>
         /// 故障停机处理函数
         /// </summary>
-        private void DealGZHandle()
+        private void DealGZHandle(BtnStatus obj)
         {
             if (base_sbxx.sfgz == "Y")
             {
                 _gztimer.Change(-1, -1);
                 base_sbxx.sbzt = "运行";
                 base_sbxx.sfgz = "N";
-                gztjsj = 0;
+                obj.tjsj = 0;
+                obj.flag = 0;
+                obj.sfgz = false;
+                obj.btntxt = obj.normaltxt;
+                EnableOtherBtn(obj, true);
                 DateTime now = DateTime.Now;
                 _sbtjservice.Add(new sbtj()
                 {
                     sbbh = base_sbxx.sbbh,
                     tjjssj = now,
                     tjkssj = base_sbxx.gzkssj,
-                    tjlx = "故障",
+                    tjlx = obj.tjlx,
                     tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
-                    tjms = "故障停机"
+                    tjms = obj.tjms
                 });
-                InitBtnAll();
             }
             else
             {
+                _gztimer.Change(obj.tjsj, 1000);
                 base_sbxx.sbzt = "故障";
                 base_sbxx.sfgz = "Y";
                 base_sbxx.gzkssj = DateTime.Now;
-                InitGz();
+                obj.flag = 1;
+                obj.sfgz = true;
+                obj.btntxt = obj.tjtxt;
+                EnableOtherBtn(obj, false);
             }
             _sbxxservice.SetGZtj(base_sbxx);
         }
         /// <summary>
         /// 其他停机处理函数
         /// </summary>
-        private void DealQTHandle()
+        private void DealQTHandle(BtnStatus obj)
         {
             if (base_sbxx.sfqttj == "Y")
             {
                 _qttimer.Change(-1, -1);
                 base_sbxx.sbzt = "运行";
                 base_sbxx.sfqttj = "N";
-                qttjsj = 0;
+                obj.tjsj = 0;
+                obj.flag = 0;
+                obj.sfqt = false;
+                obj.btntxt = obj.normaltxt;
+                EnableOtherBtn(obj, true);
                 DateTime now = DateTime.Now;
                 _sbtjservice.Add(new sbtj()
                 {
                     sbbh = base_sbxx.sbbh,
                     tjjssj = now,
                     tjkssj = base_sbxx.qttjkssj,
-                    tjlx = "其他",
+                    tjlx = obj.tjlx,
                     tjsj = (int)(now - base_sbxx.qttjkssj).TotalSeconds,
-                    tjms = "其他停机"
+                    tjms = obj.tjms
                 });
-                InitBtnAll();
             }
             else
             {
+                _qttimer.Change(obj.tjsj, 1000);
                 base_sbxx.sbzt = "停机";
                 base_sbxx.sfqttj = "Y";
                 base_sbxx.qttjkssj = DateTime.Now;
-                InitQt();
+                obj.flag = 1;
+                obj.sfqt = true;
+                obj.btntxt = obj.tjtxt;
+                EnableOtherBtn(obj, false);
             }
             _sbxxservice.SetQTtj(base_sbxx);
         }
         /// <summary>
         /// 换模停机处理函数
         /// </summary>
-        private void DealHMHandle()
+        private void DealHMHandle(BtnStatus obj)
         {
             if (base_sbxx.sfhm == "Y")
             {
                 _hmtimer.Change(-1, -1);
                 base_sbxx.sbzt = "运行";
                 base_sbxx.sfhm = "N";
-                hmtjsj = 0;
+                obj.tjsj = 0;
+                obj.flag = 0;
+                obj.sfhm = false;
+                obj.btntxt = obj.normaltxt;
+                EnableOtherBtn(obj, true);
                 DateTime now = DateTime.Now;
                 _sbtjservice.Add(new sbtj()
                 {
                     sbbh = base_sbxx.sbbh,
                     tjjssj = now,
                     tjkssj = base_sbxx.hmkssj,
-                    tjlx = "换模",
+                    tjlx = obj.tjlx,
                     tjsj = (int)(now - base_sbxx.hmkssj).TotalSeconds,
-                    tjms = "换模停机"
+                    tjms = obj.tjms
                 });
-                InitBtnAll();
             }
             else
             {
+                _hmtimer.Change(obj.tjsj, 1000);
                 base_sbxx.sbzt = "换模";
                 base_sbxx.sfhm = "Y";
                 base_sbxx.hmkssj = DateTime.Now;
-                InitHm();
+                obj.sfhm = true;
+                obj.flag = 1;
+                obj.btntxt = obj.tjtxt;
+                EnableOtherBtn(obj, false);
             }
             _sbxxservice.SetHMtj(base_sbxx);
         }
         /// <summary>
         /// 检修停机处理函数
         /// </summary>
-        private void DealJXHandle()
+        private void DealJXHandle(BtnStatus obj)
         {
             if (base_sbxx.sfjx == "Y")
             {
                 _jxtimer.Change(-1, -1);
                 base_sbxx.sbzt = "运行";
                 base_sbxx.sfjx = "N";
-                jxtjsj = 0;
+                obj.tjsj = 0;
+                obj.flag = 0;
+                obj.sfjx = false;
+                obj.btntxt = obj.normaltxt;
+                EnableOtherBtn(obj, true);
                 DateTime now = DateTime.Now;
                 _sbtjservice.Add(new sbtj()
                 {
                     sbbh = base_sbxx.sbbh,
                     tjjssj = now,
                     tjkssj = base_sbxx.jxkssj,
-                    tjlx = "检修",
+                    tjlx = obj.tjlx,
                     tjsj = (int)(now - base_sbxx.jxkssj).TotalSeconds,
-                    tjms = "检修停机"
+                    tjms = obj.tjms
                 });
-                InitBtnAll();
             }
             else
             {
+                _jxtimer.Change(obj.tjsj, 1000);
                 base_sbxx.sbzt = "检修";
                 base_sbxx.sfjx = "Y";
                 base_sbxx.jxkssj = DateTime.Now;
-                InitJx();
+                obj.sfjx = true;
+                obj.flag = 1;
+                obj.btntxt = obj.tjtxt;
+                EnableOtherBtn(obj, false);
             }
             _sbxxservice.SetJXtj(base_sbxx);
         }
         /// <summary>
         /// 缺料停机处理函数
         /// </summary>
-        private void DealQLHandle()
+        private void DealQLHandle(BtnStatus obj)
         {
             if (base_sbxx.sfql == "Y")
             {
                 _qltimer.Change(-1, -1);
                 base_sbxx.sbzt = "运行";
                 base_sbxx.sfql = "N";
-                qltjsj = 0;
+                obj.tjsj = 0;
+                obj.flag = 0;
+                obj.sfql = false;
+                obj.btntxt = obj.normaltxt;
+                EnableOtherBtn(obj, true);
                 DateTime now = DateTime.Now;
                 _sbtjservice.Add(new sbtj()
                 {
                     sbbh = base_sbxx.sbbh,
                     tjjssj = now,
                     tjkssj = base_sbxx.qlkssj,
-                    tjlx = "缺料",
+                    tjlx = obj.tjlx,
                     tjsj = (int)(now - base_sbxx.qlkssj).TotalSeconds,
-                    tjms = "缺料停机"
+                    tjms = obj.tjms
                 });
-                InitBtnAll();
             }
             else
             {
+                _qltimer.Change(obj.tjsj, 1000);
                 base_sbxx.sbzt = "空闲";
                 base_sbxx.sfql = "Y";
                 base_sbxx.qlkssj = DateTime.Now;
-                InitQL();
+                obj.sfql = true;
+                obj.flag = 1;
+                obj.btntxt = obj.tjtxt;
+                EnableOtherBtn(obj, false);
             }
             _sbxxservice.SetQLtj(base_sbxx);
         }
-
+        private void EnableOtherBtn(BtnStatus obj,bool flag)
+        {
+            int index = BtnStatusList.IndexOf(obj);
+            for (int i = 0; i < BtnStatusList.Count; i++)
+            {
+                if (i == index) continue;
+                BtnStatusList[i].btnenable = flag;
+            }
+        }
         private void WinminHandle(object o)
         {
             if (o != null)
@@ -682,31 +538,38 @@ namespace LBJOEE.ViewModels
         #region Timer时间计算
         private void CalcQLtjsj(object state)
         {
+            var obj = state as BtnStatus;
             var ts = DateTime.Now - base_sbxx.qlkssj;
-            qltjsj = (int)ts.TotalSeconds;
+            obj.tjsj = (int)ts.TotalSeconds;
         }
         private void CalcQTtjsj(object state)
         {
+            var obj = state as BtnStatus;
             var ts = DateTime.Now - base_sbxx.qttjkssj;
-            qttjsj = (int)ts.TotalSeconds;
+            obj.tjsj = (int)ts.TotalSeconds;
         }
         private void CalcHMtjsj(object state)
         {
+            var obj = state as BtnStatus;
             var ts = DateTime.Now - base_sbxx.hmkssj;
-            hmtjsj = (int)ts.TotalSeconds;
+            obj.tjsj = (int)ts.TotalSeconds;
         }
 
         private void CalcGZtjsj(object state)
         {
+            var obj = state as BtnStatus;
             var ts = DateTime.Now - base_sbxx.gzkssj;
-            gztjsj = (int)ts.TotalSeconds;
+            obj.tjsj = (int)ts.TotalSeconds;
         }
 
         private void CalcJXtjsj(object state)
         {
+            var obj = state as BtnStatus;
             var ts = DateTime.Now - base_sbxx.jxkssj;
-            jxtjsj = (int)ts.TotalSeconds;
+            obj.tjsj = (int)ts.TotalSeconds;
         }
         #endregion
     }
+
+    
 }

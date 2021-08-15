@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:l="clr-namespace:LBJOEE.Views"
     xmlns:local="clr-namespace:LBJOEE.Convert"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
@@ -31,6 +32,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="40" />
             </Grid.RowDefinitions>
             <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
@@ -43,7 +45,7 @@
                     VerticalAlignment="Center"
                     FontSize="20"
                     Foreground="{StaticResource lightbrush}"
-                    Text="" />
+                    Text="{Binding Title}" />
                 <StackPanel
                     Grid.Column="1"
                     Height="auto"
@@ -195,7 +197,7 @@
                                 Grid.Row="4"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource label}" Text="所在区域：" />
+                                <TextBlock Style="{StaticResource label}" Text="线体名称：" />
                             </Border>
                             <Border
                                 Grid.Row="4"
@@ -213,7 +215,7 @@
                                 Grid.Row="5"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource label}" Text="Ip地址：" />
+                                <TextBlock Style="{StaticResource label}" Text="IP地址：" />
                             </Border>
                             <Border
                                 Grid.Row="5"
@@ -237,71 +239,36 @@
                                 Grid.Row="6"
                                 Grid.Column="1"
                                 VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding socketljzt}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Style="{DynamicResource status_style}" Tag="{Binding socketljzt}" />
+                                    <TextBlock Style="{StaticResource labelitem}" Text="{Binding socket_linkcnt, StringFormat=连接数[{0}]}" />
+                                    <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.port, StringFormat=端口号[{0}]}" />
+                                </StackPanel>
                             </Border>
                         </Grid>
-                        <UniformGrid Grid.Row="1" Columns="5">
-                            <Button
-                                Background="{Binding QLColor}"
-                                Command="{Binding QLTJCMD}"
-                                IsEnabled="{Binding qlenable}"
-                                Template="{StaticResource CornBtn}">
-                                <Button.Content>
-                                    <StackPanel>
-                                        <TextBlock HorizontalAlignment="Center" Text="{Binding qltxt}" />
-                                        <TextBlock HorizontalAlignment="Center" Text="{Binding qltjsj}" />
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-                            <Button
-                                Background="{Binding JxColor}"
-                                Command="{Binding JXTJCMD}"
-                                IsEnabled="{Binding jxenable}"
-                                Template="{StaticResource CornBtn}">
-                                <Button.Content>
-                                    <StackPanel>
-                                        <TextBlock HorizontalAlignment="Center" Text="{Binding jxtxt}" />
-                                        <TextBlock HorizontalAlignment="Center" Text="{Binding jxtjsj}" />
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-                            <Button
-                                Background="{Binding HmColor}"
-                                Command="{Binding HMTJCMD}"
-                                IsEnabled="{Binding hmenable}"
-                                Template="{StaticResource CornBtn}">
-                                <Button.Content>
-                                    <StackPanel>
-                                        <TextBlock HorizontalAlignment="Center" Text="{Binding hmtxt}" />
-                                        <TextBlock HorizontalAlignment="Center" Text="{Binding hmtjsj}" />
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-                            <Button
-                                Background="{Binding GzColor}"
-                                Command="{Binding GZTJCMD}"
-                                IsEnabled="{Binding gzenable}"
-                                Template="{StaticResource CornBtn}">
-                                <Button.Content>
-                                    <StackPanel>
-                                        <TextBlock HorizontalAlignment="Center" Text="{Binding gztxt}" />
-                                        <TextBlock HorizontalAlignment="Center" Text="{Binding gztjsj}" />
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-                            <Button
-                                Background="{Binding QtColor}"
-                                Command="{Binding QTTJCMD}"
-                                IsEnabled="{Binding qtenable}"
-                                Template="{StaticResource CornBtn}">
-                                <Button.Content>
-                                    <StackPanel>
-                                        <TextBlock HorizontalAlignment="Center" Text="{Binding qttjtxt}" />
-                                        <TextBlock HorizontalAlignment="Center" Text="{Binding qttjsj}" />
-                                    </StackPanel>
-                                </Button.Content>
-                            </Button>
-                        </UniformGrid>
+                        <ListBox Grid.Row="1" ItemsSource="{Binding BtnStatusList}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Button
+                                            x:Name="item"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.BTNCMD}"
+                                            CommandParameter="{Binding ElementName=item, Path=DataContext}"
+                                            IsEnabled="{Binding ElementName=item, Path=DataContext.btnenable}"
+                                            Style="{StaticResource listboxitembtn}"
+                                            Tag="{Binding ElementName=item, Path=DataContext.flag}">
+                                            <Button.Content>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding btntxt}" />
+                                                    <TextBlock Text="{Binding tjsj, Converter={StaticResource timeconvert}}" />
+                                                </StackPanel>
+                                            </Button.Content>
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
 
                     </Grid>
                 </TabItem>
@@ -317,10 +284,18 @@
                             HorizontalAlignment="Left"
                             FontSize="18"
                             Foreground="{StaticResource lightbrush}"
-                            Text="{Binding socketdata}" />
+                            Text="{Binding socketdata}"
+                            TextWrapping="Wrap" />
                     </ScrollViewer>
                 </TabItem>
             </TabControl>
+            <DockPanel Grid.Row="2" Margin="5,0,5,20">
+                <TextBlock
+                    DockPanel.Dock="Bottom"
+                    FontSize="16"
+                    Foreground="Red"
+                    Text="{Binding ErrorMsg}" />
+            </DockPanel>
         </Grid>
     </Border>
 </Window>

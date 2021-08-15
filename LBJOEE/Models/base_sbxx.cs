@@ -202,6 +202,15 @@ namespace LBJOEE
             get { return _tjms; }
             set { SetProperty(ref _tjms, value); }
         }
+        /// <summary>
+        /// socket服务端端口号
+        /// </summary>
+        private int _port;
+        public int port
+        {
+            get { return _port; }
+            set { SetProperty(ref _port, value); }
+        }
 
 
     }

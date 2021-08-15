@@ -73,10 +73,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Convert\HeightConvert.cs" />
+    <Compile Include="Convert\TimeConvert.cs" />
     <Compile Include="DAO\OracleBaseFixture.cs" />
     <Compile Include="InterfaceImp\DBImp.cs" />
     <Compile Include="Interface\IDB.cs" />
     <Compile Include="Models\base_sbxx.cs" />
+    <Compile Include="Models\BtnStatus.cs" />
     <Compile Include="Models\JsonEntity.cs" />
     <Compile Include="Models\sbsj.cs" />
     <Compile Include="Models\sbtj.cs" />
