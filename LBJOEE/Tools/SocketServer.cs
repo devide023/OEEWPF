@@ -51,6 +51,7 @@ namespace LBJOEE.Tools
                         {
                             byte[] bs = Encoding.Default.GetBytes("Server Information");
                             Socket client = remoteclients[i].client;
+                            log.Info("发送数据到客户端");
                             client.Send(bs, bs.Length, 0);
                             var ip = remoteclients[i].remoteip;
                             if (client.Poll(-1, SelectMode.SelectRead))
