@@ -13,12 +13,14 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Threading;
 using System.Windows.Controls;
-
+using System.Threading;
+using log4net;
 namespace LBJOEE.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private string _title = "压铸OEE";
+        private ILog log;
+        private string _title = "压铸OEE数据采集";
         private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer;
         private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
@@ -26,6 +28,7 @@ namespace LBJOEE.ViewModels
         public DelegateCommand<BtnStatus> BTNCMD { get; private set; }
         public DelegateCommand<object> ComBoxCMD { get; private set; }
         private int _index=0;
+        private Timer _clear_errtimer;
         public int comboboxindex
         {
             get { return _index; }
@@ -87,6 +90,7 @@ namespace LBJOEE.ViewModels
         private SocketServer _socketserver;
         public MainWindowViewModel(SocketServer socketserver, SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService)
         {
+            log = LogManager.GetLogger(this.GetType());
             var pcip = Tool.GetIpAddress();
             _sbxxservice = sBXXService;
             _sbxxservice.ErrorAction = new Action<string>(Error_Handel);
@@ -106,6 +110,13 @@ namespace LBJOEE.ViewModels
             WinMinCMD = new DelegateCommand<object>(WinminHandle);
             WinMaxCMD = new DelegateCommand<object>(WinmaxHandle);
             WinCloseCMD = new DelegateCommand<object>(WincloseHandle);
+            _clear_errtimer = new Timer(ClearErrorHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            _clear_errtimer.Change(0, 1000*30);
+        }
+
+        private void ClearErrorHandle(object state)
+        {
+            ErrorMsg = "";
         }
 
         private void Error_Handel(string errormsg)
@@ -114,8 +125,12 @@ namespace LBJOEE.ViewModels
         }
         private void ComBoHandle(object parm)
         {
-            var obj = parm as RoutedEventArgs;
-            
+            if (comboboxindex >= 0)
+            {
+                var ip = ClientList[comboboxindex].remoteip;
+                log.Info($"选择了{ip}");
+                _socketserver.CurrentClientIp = ip;
+            }
         }
         private void BtnHandel(BtnStatus obj)
         {

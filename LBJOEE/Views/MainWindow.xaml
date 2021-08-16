@@ -10,7 +10,7 @@
     x:Name="main_window"
     Title="{Binding Title}"
     Width="700"
-    Height="770"
+    Height="500"
     prism:ViewModelLocator.AutoWireViewModel="True"
     AllowsTransparency="True"
     Background="Transparent"
@@ -254,12 +254,13 @@
                             </Border>
                             <Border Grid.Row="7" Grid.Column="1">
                                 <ComboBox
+                                    x:Name="ddlip"
                                     DisplayMemberPath="remoteip"
                                     ItemsSource="{Binding ClientList}"
                                     SelectedIndex="{Binding comboboxindex}">
                                     <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Selected">
-                                            <prism:InvokeCommandAction Command="{Binding ComBoxCMD}" CommandParameter="{Binding DataContext}" />
+                                        <i:EventTrigger EventName="SelectionChanged">
+                                            <prism:InvokeCommandAction Command="{Binding ComBoxCMD}" />
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
 
@@ -314,7 +315,8 @@
                     DockPanel.Dock="Bottom"
                     FontSize="16"
                     Foreground="Red"
-                    Text="{Binding ErrorMsg}" />
+                    Text="{Binding ErrorMsg}"
+                    TextWrapping="Wrap" />
             </DockPanel>
         </Grid>
     </Border>
