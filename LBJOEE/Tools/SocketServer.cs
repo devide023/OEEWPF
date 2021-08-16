@@ -59,6 +59,7 @@ namespace LBJOEE.Tools
                                 remoteclients.RemoveAt(i);
                                 ConnectState?.Invoke(new sockconstate { state = 0, name = "未连接", ljcnt = socketljs, remoteip = ip, list = remoteclients });
                                 log.Info($"{ip}已断开,当前连接数为:{remoteclients.Count}");
+                                continue;
                             }
 
                         }
