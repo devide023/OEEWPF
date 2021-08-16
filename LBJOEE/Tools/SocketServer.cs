@@ -44,6 +44,7 @@ namespace LBJOEE.Tools
             {
                 lock (locker)
                 {
+                    log.Info("心跳包");
                     if (remoteclients.Count > 0)
                     {
 
