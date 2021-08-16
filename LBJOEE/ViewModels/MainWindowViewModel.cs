@@ -8,7 +8,12 @@ using LBJOEE.Services;
 using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Threading;
+using System.Windows.Controls;
+
 namespace LBJOEE.ViewModels
 {
     public class MainWindowViewModel : BindableBase
@@ -17,7 +22,15 @@ namespace LBJOEE.ViewModels
         private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer;
         private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
+        public ObservableCollection<socketinfo> ClientList { get; set; } = new ObservableCollection<socketinfo>();
         public DelegateCommand<BtnStatus> BTNCMD { get; private set; }
+        public DelegateCommand<object> ComBoxCMD { get; private set; }
+        private int _index=0;
+        public int comboboxindex
+        {
+            get { return _index; }
+            set { SetProperty(ref _index, value); }
+        }
         public string Title
         {
             get { return _title; }
@@ -71,9 +84,9 @@ namespace LBJOEE.ViewModels
         private SBXXService _sbxxservice;
         private SBTJService _sbtjservice;
         private SBSJService _sbsjservice;
+        private SocketServer _socketserver;
         public MainWindowViewModel(SocketServer socketserver, SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService)
         {
-            
             var pcip = Tool.GetIpAddress();
             _sbxxservice = sBXXService;
             _sbxxservice.ErrorAction = new Action<string>(Error_Handel);
@@ -81,13 +94,14 @@ namespace LBJOEE.ViewModels
             _sbtjservice.ErrorAction = new Action<string>(Error_Handel);
             _sbsjservice = sBSJService;
             _sbsjservice.ErrorAction = new Action<string>(Error_Handel);
-
+            _socketserver = socketserver;
             base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
-            socketserver.Init(pcip, base_sbxx.port);
-            socketserver.ConnectState = ScoketConnState;
-            socketserver.ReceiveAction = ReceiveData;
+            _socketserver.Init(pcip, base_sbxx.port);
+            _socketserver.ConnectState = ScoketConnState;
+            _socketserver.ReceiveAction = ReceiveData;
             InitBtnStatus();
             BTNCMD = new DelegateCommand<BtnStatus>(BtnHandel);
+            ComBoxCMD = new DelegateCommand<object>(ComBoHandle);
             InitTimer();
             WinMinCMD = new DelegateCommand<object>(WinminHandle);
             WinMaxCMD = new DelegateCommand<object>(WinmaxHandle);
@@ -98,7 +112,11 @@ namespace LBJOEE.ViewModels
         {
             ErrorMsg = errormsg;
         }
-
+        private void ComBoHandle(object parm)
+        {
+            var obj = parm as RoutedEventArgs;
+            
+        }
         private void BtnHandel(BtnStatus obj)
         {
             switch (obj.name)
@@ -257,11 +275,30 @@ namespace LBJOEE.ViewModels
                 ErrorMsg = e.Message;
             }
         }
-
+        /// <summary>
+        /// socket回调
+        /// </summary>
+        /// <param name="obj"></param>
         private void ScoketConnState(sockconstate obj)
         {
-            socketljzt = obj.state;
-            socket_linkcnt = obj.ljcnt;
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                SynchronizationContext.SetSynchronizationContext(new
+                    DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+                SynchronizationContext.Current.Post(pl =>
+                {
+                    var list = obj.list.ToList();
+                    ClientList.Clear();
+                    foreach (var item in list)
+                    {
+                        ClientList.Add(item);
+                    }
+                    comboboxindex = 0;
+                    socketljzt = list.Count>0?1:0;
+                    socket_linkcnt = obj.ljcnt;
+                }, null);
+            });
+            
         }
         private void DeviceNormal(dynamic obj)
         {

@@ -144,15 +144,12 @@
         <Setter Property="Height" Value="20" />
         <Setter Property="Fill" Value="{DynamicResource darkbrush}" />
         <Style.Triggers>
-            <Trigger Property="Tag" Value="0">
+            <DataTrigger Binding="{Binding socketljzt}" Value="0">
                 <Setter Property="Fill" Value="{DynamicResource darkbrush}" />
-            </Trigger>
-            <Trigger Property="Tag" Value="3">
+            </DataTrigger>
+            <DataTrigger Binding="{Binding socketljzt}" Value="1">
                 <Setter Property="Fill" Value="{DynamicResource successbrush}" />
-            </Trigger>
-            <Trigger Property="Tag" Value="4">
-                <Setter Property="Fill" Value="{DynamicResource errorbrush}" />
-            </Trigger>
+            </DataTrigger>
         </Style.Triggers>
     </Style>
 </ResourceDictionary>

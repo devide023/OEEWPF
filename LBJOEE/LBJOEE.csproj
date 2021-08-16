@@ -83,6 +83,7 @@
     <Compile Include="Models\sbsj.cs" />
     <Compile Include="Models\sbtj.cs" />
     <Compile Include="Models\sockconstate.cs" />
+    <Compile Include="Models\socketinfo.cs" />
     <Compile Include="Services\SBSJService.cs" />
     <Compile Include="Services\SBTJService.cs" />
     <Compile Include="Services\SBXXService.cs" />
@@ -147,6 +148,9 @@
     <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
     <PackageReference Include="Prism.Wpf">
       <Version>8.1.97</Version>
+    </PackageReference>
+    <PackageReference Include="System.Windows.Interactivity.WPF">
+      <Version>2.0.20525</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

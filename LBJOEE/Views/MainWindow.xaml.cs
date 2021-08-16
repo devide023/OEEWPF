@@ -17,5 +17,10 @@ namespace LBJOEE.Views
         {
             this.DragMove();
         }
+
+        private void ComboBox_Selected(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
