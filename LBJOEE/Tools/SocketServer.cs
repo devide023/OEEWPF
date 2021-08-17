@@ -26,6 +26,8 @@ namespace LBJOEE.Tools
             _check_conn_timer.Change(0, 1000);
         }
 
+        
+
         public string CurrentClientIp
         {
             set
@@ -42,36 +44,34 @@ namespace LBJOEE.Tools
         {
             try
             {
-                lock (locker)
+                if (remoteclients.Count > 0)
                 {
-                    log.Info("心跳包");
-                    if (remoteclients.Count > 0)
-                    {
-
+                    
                         for (int i = remoteclients.Count - 1; i >= 0; i--)
                         {
                             byte[] bs = Encoding.Default.GetBytes("Server Information");
                             Socket client = remoteclients[i].client;
                             client.Send(bs, bs.Length, 0);
                             var ip = remoteclients[i].remoteip;
-                            log.Info($"发送数据到客户端{ip}");
+                            log.Info($"进程:{Thread.CurrentThread.ManagedThreadId},index:{i},发送数据到客户端{ip}");
+                        
                             if (client.Poll(-1, SelectMode.SelectRead))
                             {
                                 client.Close();
                                 remoteclients.RemoveAt(i);
                                 ConnectState?.Invoke(new sockconstate { state = 0, name = "未连接", ljcnt = socketljs, remoteip = ip, list = remoteclients });
-                                log.Info($"{ip}已断开,当前连接数为:{remoteclients.Count}");
+                                log.Info($"进程:{Thread.CurrentThread.ManagedThreadId},index:{i},{ip}已断开,当前连接数为:{remoteclients.Count}");
                                 continue;
                             }
 
+                        
                         }
-
-                    }
+                    
                 }
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error($"进程{Thread.CurrentThread.ManagedThreadId}:{e.Message}");
                 ConnectState?.Invoke(new sockconstate { state = 2, name = e.Message, ljcnt = socketljs, remoteip = "", list = remoteclients });
             }
         }
@@ -102,14 +102,15 @@ namespace LBJOEE.Tools
                     }
                     log.Info("等待客户端连接");
                     var client = _socket.Accept();
-                    string remoteip = client.RemoteEndPoint.ToString();
-                    remoteclients.Add(new socketinfo() { client = client, remoteip = remoteip });
-                    ConnectState?.Invoke(new sockconstate { state = 1, name = "已连接", ljcnt = socketljs, remoteip = remoteip, list = remoteclients });
-                    log.Info($"与{remoteip}建立连接");
-                    Task.Run(() =>
-                    {
-                        ReceiveData();
-                    });
+                    
+                        string remoteip = client.RemoteEndPoint.ToString();
+                        remoteclients.Add(new socketinfo() { client = client, remoteip = remoteip });
+                        ConnectState?.Invoke(new sockconstate { state = 1, name = "已连接", ljcnt = socketljs, remoteip = remoteip, list = remoteclients });
+                        log.Info($"与{remoteip}建立连接");
+                        Task.Run(() =>
+                        {
+                            ReceiveData();
+                        });
                 }
             }
             catch (Exception e)
@@ -136,7 +137,7 @@ namespace LBJOEE.Tools
                     {
                         continue;
                     }
-                    byte[] receive = new byte[2048];
+                    byte[] receive = new byte[40960];
                     log.Info("等待客户端发送数据");
                     int len = clientlink.Receive(receive);
                     if (len == 0)
@@ -146,7 +147,7 @@ namespace LBJOEE.Tools
                     else
                     {
                         string receivedata = Encoding.Default.GetString(receive, 0, len);
-                        log.Info($"接收数据:{receivedata}");
+                        //log.Info($"接收数据:{receivedata}");
                         ReceiveAction?.Invoke(receivedata);
                     }
                 }
@@ -166,15 +167,22 @@ namespace LBJOEE.Tools
                 byte[] tmp = new byte[1];
                 client.Blocking = false;
                 client.Send(tmp, 0, 0);
-                return false;
+                log.Info("已连接");
+                return true;
             }
             catch (SocketException e)
             {
                 // 产生 10035 == WSAEWOULDBLOCK 错误，说明被阻止了，但是还是连接的
                 if (e.NativeErrorCode.Equals(10035))
-                    return false;
-                else
+                {
+                    log.Info("已连接,阻止发送");
                     return true;
+                }
+                else
+                {
+                    log.Info("已断开连接");
+                    return false;
+                }
             }
             finally
             {

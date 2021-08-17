@@ -24,14 +24,13 @@
                 <ResourceDictionary Source="/Resources/MainStyle.xaml" />
                 <ResourceDictionary Source="/Resources/scrollstyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <local:HeightConvert x:Key="myconvert" />
         </ResourceDictionary>
     </Window.Resources>
     <Border Background="#FF06527E" CornerRadius="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
-                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="40" />
             </Grid.RowDefinitions>
             <Grid Margin="0,0,0,10">
@@ -103,7 +102,13 @@
                 x:Name="main_tab"
                 Grid.Row="1"
                 Width="auto"
-                Height="auto">
+                Height="auto"
+                SelectedIndex="{Binding tabselectindex}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <prism:InvokeCommandAction Command="{Binding TabChangeCMD}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <TabItem
                     Name="jbxx"
                     Header="基本信息"
@@ -132,13 +137,7 @@
                                 <TextBlock Style="{StaticResource label}" Text="设备编号：" />
                             </Border>
                             <Border Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbbh}">
-                                    <TextBlock.TextDecorations>
-                                        <TextDecorationCollection>
-                                            <TextDecoration PenOffset="3" />
-                                        </TextDecorationCollection>
-                                    </TextBlock.TextDecorations>
-                                </TextBlock>
+                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbbh}" />
                             </Border>
                             <Border
                                 Grid.Row="1"
@@ -150,13 +149,7 @@
                                 Grid.Row="1"
                                 Grid.Column="1"
                                 VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbmc}">
-                                    <TextBlock.TextDecorations>
-                                        <TextDecorationCollection>
-                                            <TextDecoration PenOffset="3" />
-                                        </TextDecorationCollection>
-                                    </TextBlock.TextDecorations>
-                                </TextBlock>
+                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbmc}" />
                             </Border>
                             <Border
                                 Grid.Row="2"
@@ -175,11 +168,7 @@
                                             <Binding Path="base_sbxx.sbxh" />
                                         </MultiBinding>
                                     </TextBlock.Text>
-                                    <TextBlock.TextDecorations>
-                                        <TextDecorationCollection>
-                                            <TextDecoration PenOffset="3" />
-                                        </TextDecorationCollection>
-                                    </TextBlock.TextDecorations>
+
                                 </TextBlock>
                             </Border>
                             <Border
@@ -204,13 +193,7 @@
                                 Grid.Row="4"
                                 Grid.Column="1"
                                 VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbqy}">
-                                    <TextBlock.TextDecorations>
-                                        <TextDecorationCollection>
-                                            <TextDecoration PenOffset="3" />
-                                        </TextDecorationCollection>
-                                    </TextBlock.TextDecorations>
-                                </TextBlock>
+                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbqy}" />
                             </Border>
                             <Border
                                 Grid.Row="5"
@@ -222,13 +205,7 @@
                                 Grid.Row="5"
                                 Grid.Column="1"
                                 VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.ip}">
-                                    <TextBlock.TextDecorations>
-                                        <TextDecorationCollection>
-                                            <TextDecoration PenOffset="3" />
-                                        </TextDecorationCollection>
-                                    </TextBlock.TextDecorations>
-                                </TextBlock>
+                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.ip}" />
                             </Border>
                             <Border
                                 Grid.Row="6"
@@ -293,25 +270,78 @@
 
                     </Grid>
                 </TabItem>
-                <TabItem Name="cjxx" Header="采集信息">
-                    <ScrollViewer
-                        Width="auto"
-                        Height="{Binding Path=Height, ElementName=main_window, Converter={StaticResource myconvert}}"
-                        Margin="2,0,2,0"
-                        Template="{StaticResource MyScrollViewer}"
+                <TabItem
+                    Name="drtjtj"
+                    Height="auto"
+                    Header="当日停机统计">
+                    <DataGrid
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        HorizontalScrollBarVisibility="Auto"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding TJList}"
+                        RowHeaderWidth="0"
+                        SelectionMode="Single"
                         VerticalScrollBarVisibility="Auto">
-                        <TextBlock
-                            Margin="10,0,0,10"
-                            HorizontalAlignment="Left"
-                            FontSize="18"
-                            Foreground="{StaticResource lightbrush}"
-                            Text="{Binding socketdata}"
-                            TextWrapping="Wrap" />
-                    </ScrollViewer>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="auto"
+                                Binding="{Binding tjkssj, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
+                                Header="开始时间" />
+                            <DataGridTextColumn
+                                Width="auto"
+                                Binding="{Binding tjjssj, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
+                                Header="结束时间" />
+                            <DataGridTextColumn
+                                Width="auto"
+                                Binding="{Binding tjsj, Converter={StaticResource timeconvert}}"
+                                Header="时长" />
+                            <DataGridTextColumn
+                                Width="auto"
+                                Binding="{Binding tjlx}"
+                                Header="停机类型" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding tjms}"
+                                Header="停机描述" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Name="cjxx" Header="采集信息">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Orientation="Vertical">
+                            <TextBlock Text="原始数据" />
+                            <ScrollViewer
+                                Margin="2,0,2,0"
+                                Template="{StaticResource MyScrollViewer}"
+                                VerticalScrollBarVisibility="Auto">
+                                <TextBlock
+                                    Margin="10,0,0,10"
+                                    HorizontalAlignment="Left"
+                                    FontSize="18"
+                                    Foreground="{StaticResource lightbrush}"
+                                    Text="{Binding socketdata}"
+                                    TextWrapping="Wrap" />
+                            </ScrollViewer>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Orientation="Vertical">
+                            <TextBlock Text="历史数据" />
+                            <DataGrid
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                IsReadOnly="True" />
+                        </StackPanel>
+                    </Grid>
                 </TabItem>
             </TabControl>
-            <DockPanel Grid.Row="2" Margin="5,0,5,20">
+            <DockPanel Grid.Row="2" Height="auto">
                 <TextBlock
+                    Height="40"
                     DockPanel.Dock="Bottom"
                     FontSize="16"
                     Foreground="Red"

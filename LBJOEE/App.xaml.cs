@@ -2,7 +2,7 @@
 using Prism.Ioc;
 using Prism.Modularity;
 using System.Windows;
-
+using LBJOEE.Services;
 namespace LBJOEE
 {
     /// <summary>
@@ -17,7 +17,8 @@ namespace LBJOEE
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-
+            containerRegistry.Register<LogService>();
+            containerRegistry.RegisterForNavigation<DataInterface>();
         }
     }
 }

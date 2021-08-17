@@ -1,9 +1,13 @@
-﻿using System;
+﻿using DapperExtensions;
+using DapperExtensions.Predicate;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Dapper;
+using Dapper.Oracle;
+using log4net;
 namespace LBJOEE.Services
 {
     /// <summary>
@@ -11,6 +15,11 @@ namespace LBJOEE.Services
     /// </summary>
     public class SBTJService:DBImp<sbtj>
     {
+        private ILog log;
+        public SBTJService()
+        {
+            log = LogManager.GetLogger(this.GetType());
+        }
         /// <summary>
         /// 计算设备停机时间
         /// </summary>
@@ -60,6 +69,30 @@ namespace LBJOEE.Services
         {
             var ts = d2 - d1;
             return (int)ts.TotalMinutes;
+        }
+
+        public IEnumerable<sbtj> QueryTjList(DateTime ksrq,DateTime jsrq,string sbbh)
+        {
+            try
+            {
+                List<sbtj> list = new List<sbtj>();
+                StringBuilder sql = new StringBuilder();
+                OracleDynamicParameters p = new OracleDynamicParameters();
+                p.Add(":sbbh", sbbh, OracleMappingType.Varchar2, System.Data.ParameterDirection.Input);
+                p.Add(":ksrq", ksrq, OracleMappingType.Date, System.Data.ParameterDirection.Input);
+                p.Add(":jsrq", jsrq, OracleMappingType.Date, System.Data.ParameterDirection.Input);
+                sql.Append(" select sbbh, tjlx, tjsj, tjkssj, tjjssj, tjms ");
+                sql.Append(" from SBTJ ");
+                sql.Append(" where trunc(tjkssj) between trunc(:ksrq) and trunc(:jsrq) ");
+                sql.Append(" and sbbh = :sbbh");
+                return Db.Connection.Query<sbtj>(sql.ToString(), p);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                ErrorAction?.Invoke(e.Message);
+                return new List<sbtj>();
+            }
         }
     }
 }

@@ -64,6 +64,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\DataInterface.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -79,21 +87,32 @@
     <Compile Include="Interface\IDB.cs" />
     <Compile Include="Models\base_sbxx.cs" />
     <Compile Include="Models\BtnStatus.cs" />
+    <Compile Include="Models\history_json_data.cs" />
     <Compile Include="Models\JsonEntity.cs" />
     <Compile Include="Models\sbsj.cs" />
     <Compile Include="Models\sbtj.cs" />
     <Compile Include="Models\sockconstate.cs" />
     <Compile Include="Models\socketinfo.cs" />
+    <Compile Include="Models\sys_log.cs" />
+    <Compile Include="Services\LogService.cs" />
     <Compile Include="Services\SBSJService.cs" />
     <Compile Include="Services\SBTJService.cs" />
     <Compile Include="Services\SBXXService.cs" />
     <Compile Include="Tools\SocketServer.cs" />
     <Compile Include="Tools\Tool.cs" />
+    <Compile Include="ViewModels\DataInterfaceViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="Views\DataInterface.xaml.cs">
+      <DependentUpon>DataInterface.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\scrollstyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

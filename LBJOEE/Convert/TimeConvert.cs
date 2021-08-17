@@ -16,12 +16,12 @@ namespace LBJOEE.Convert
             var isok = double.TryParse(value.ToString(), out seconds);
             if(!isok)
             {
-                return "0";
+                return "";
             }
             TimeSpan ts = TimeSpan.FromSeconds(seconds);
             if (seconds == 0)
             {
-                return 0.ToString();
+                return "";
             }
             else if (seconds <= 60)
             {

@@ -13,7 +13,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Threading;
 using System.Windows.Controls;
-using System.Threading;
+using Prism.Navigation;
+using Prism.Regions;
+using Prism.Ioc;
 using log4net;
 namespace LBJOEE.ViewModels
 {
@@ -25,7 +27,15 @@ namespace LBJOEE.ViewModels
         private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
         public ObservableCollection<socketinfo> ClientList { get; set; } = new ObservableCollection<socketinfo>();
+        
+        private ObservableCollection<sbtj> _sbtj = new ObservableCollection<sbtj>();
+        public ObservableCollection<sbtj> TJList
+        {
+            get { return _sbtj; }
+            set { SetProperty(ref _sbtj, value); }
+        }
         public DelegateCommand<BtnStatus> BTNCMD { get; private set; }
+        public DelegateCommand<object> TabChangeCMD { get; private set; }
         public DelegateCommand<object> ComBoxCMD { get; private set; }
         private int _index=0;
         private Timer _clear_errtimer;
@@ -34,23 +44,25 @@ namespace LBJOEE.ViewModels
             get { return _index; }
             set { SetProperty(ref _index, value); }
         }
+        private int _tabselectindex=0;
+        public int tabselectindex
+        {
+            get { return _tabselectindex; }
+            set { SetProperty(ref _tabselectindex, value); }
+        }
         public string Title
         {
             get { return _title; }
             set { SetProperty(ref _title, value); }
         }
-        private string _socketdata;
+        
         private string _errormsg;
         public string ErrorMsg
         {
             get { return _errormsg; }
             set { SetProperty(ref _errormsg, value); }
         }
-        public string socketdata
-        {
-            get { return _socketdata; }
-            set { SetProperty(ref _socketdata, value); }
-        }
+        
         private int _socekljzt = 0;
         /// <summary>
         /// socket连接状态
@@ -75,9 +87,16 @@ namespace LBJOEE.ViewModels
             get { return _base_sbxx; }
             set { SetProperty(ref _base_sbxx, value); }
         }
-        
+
+        private string _socket_receive;
+        public string socket_receive_data
+        {
+            get { return _socket_receive; }
+            set { SetProperty(ref _socket_receive, value); }
+        }
+
         #region 按钮命令
-        
+
         public DelegateCommand<object> WinMinCMD { get; private set; }
         public DelegateCommand<object> WinMaxCMD { get; private set; }
         public DelegateCommand<object> WinCloseCMD { get; private set; }
@@ -88,8 +107,12 @@ namespace LBJOEE.ViewModels
         private SBTJService _sbtjservice;
         private SBSJService _sbsjservice;
         private SocketServer _socketserver;
-        public MainWindowViewModel(SocketServer socketserver, SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService)
+        private IContainerExtension _container;
+        private IRegionManager _regionmgr;
+        public MainWindowViewModel(SocketServer socketserver, SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService,IContainerExtension container)
         {
+            _container = container;
+            _regionmgr = container.Resolve<IRegionManager>();
             log = LogManager.GetLogger(this.GetType());
             var pcip = Tool.GetIpAddress();
             _sbxxservice = sBXXService;
@@ -102,16 +125,56 @@ namespace LBJOEE.ViewModels
             base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
             _socketserver.Init(pcip, base_sbxx.port);
             _socketserver.ConnectState = ScoketConnState;
-            _socketserver.ReceiveAction = ReceiveData;
+            _socketserver.ReceiveAction = SocketReceiveData;
             InitBtnStatus();
             BTNCMD = new DelegateCommand<BtnStatus>(BtnHandel);
             ComBoxCMD = new DelegateCommand<object>(ComBoHandle);
+            TabChangeCMD = new DelegateCommand<object>(TabItemChangeHandle);
             InitTimer();
             WinMinCMD = new DelegateCommand<object>(WinminHandle);
             WinMaxCMD = new DelegateCommand<object>(WinmaxHandle);
             WinCloseCMD = new DelegateCommand<object>(WincloseHandle);
             _clear_errtimer = new Timer(ClearErrorHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             _clear_errtimer.Change(0, 1000*30);
+            
+        }
+        /// <summary>
+        /// 从socket端接收到的数据
+        /// </summary>
+        /// <param name="data"></param>
+        private void SocketReceiveData(string data)
+        {
+            try
+            {
+                socket_receive_data = data;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void TabItemChangeHandle(object parm)
+        {
+            var s = _container.Resolve<LogService>();
+            s.Add(new Models.sys_log()
+            {
+                txt="test"
+            });
+            var arg = parm as SelectionChangedEventArgs;
+            if (tabselectindex == 1)
+            {
+                var list = _sbtjservice.QueryTjList(DateTime.Now, DateTime.Now, base_sbxx.sbbh);
+                TJList = new ObservableCollection<sbtj>(list);
+            }
+            //if (tabselectindex == 2)
+            //{
+            //    NavigationParameters p = new NavigationParameters();
+            //    p.Add("sbxx", base_sbxx);
+            //    p.Add("socketservice", _socketserver);
+            //    _regionmgr.RequestNavigate("Tab3", "DataInterface", p);
+            //}
+            arg.Handled = true;
         }
 
         private void ClearErrorHandle(object state)
@@ -125,12 +188,14 @@ namespace LBJOEE.ViewModels
         }
         private void ComBoHandle(object parm)
         {
+            var arg = parm as SelectionChangedEventArgs;
             if (comboboxindex >= 0)
             {
                 var ip = ClientList[comboboxindex].remoteip;
                 log.Info($"选择了{ip}");
                 _socketserver.CurrentClientIp = ip;
             }
+            arg.Handled = true;
         }
         private void BtnHandel(BtnStatus obj)
         {
@@ -246,50 +311,7 @@ namespace LBJOEE.ViewModels
             BtnStatusList.Add(_qtbtn);
         }
         
-        /// <summary>
-        /// 接收数据采集软件数据
-        /// </summary>
-        /// <param name="data"></param>
-        private void ReceiveData(string data)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(data))
-                {
-                    var receive_data = JsonConvert.DeserializeObject<JsonEntity>(data);
-                    receive_data.devicedata.sbbh = base_sbxx.sbbh;
-                    switch (receive_data.status)
-                    {
-                        case "故障":
-                            DeviceError(new
-                            {
-                                status = receive_data.status,
-                                message = receive_data.message,
-                                errorcode = receive_data.errorcode,
-                            });
-                            break;
-                        case "正常":
-                            {
-                                DeviceNormal(new
-                                {
-                                    status = receive_data.status,
-                                    message = receive_data.message,
-                                    errorcode = receive_data.errorcode,
-                                });
-                                _sbsjservice.Add(receive_data.devicedata);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    socketdata = JsonConvert.SerializeObject(receive_data) ;
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorMsg = e.Message;
-            }
-        }
+        
         /// <summary>
         /// socket回调
         /// </summary>
@@ -315,37 +337,7 @@ namespace LBJOEE.ViewModels
             });
             
         }
-        private void DeviceNormal(dynamic obj)
-        {
-            if (base_sbxx.sfgz == "Y")
-            {
-                _gztimer.Change(-1, -1);
-                base_sbxx.sbzt = obj.status;
-                base_sbxx.sfgz = "N";
-                BtnStatusList[3].tjsj = 0;
-                DateTime now = DateTime.Now;
-                _sbtjservice.Add(new sbtj()
-                {
-                    sbbh = base_sbxx.sbbh,
-                    tjjssj = now,
-                    tjkssj = base_sbxx.gzkssj,
-                    tjlx = "故障",
-                    tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
-                    tjms = obj.message
-                });
-            }
-        }
-        private void DeviceError(dynamic obj)
-        {
-            if (base_sbxx.sfgz != "Y")
-            {
-                base_sbxx.sbzt = obj.status;
-                base_sbxx.sfgz = "Y";
-                base_sbxx.tjms = obj.message;
-                base_sbxx.gzkssj = DateTime.Now;
-                _sbxxservice.SetGZtj(base_sbxx);
-            }
-        }
+        
         #region 按钮事件处理函数
         /// <summary>
         /// 故障停机处理函数
