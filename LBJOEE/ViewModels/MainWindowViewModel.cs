@@ -42,6 +42,12 @@ namespace LBJOEE.ViewModels
         public DelegateCommand<BtnStatus> BTNCMD { get; private set; }
         public DelegateCommand<object> TabChangeCMD { get; private set; }
         public DelegateCommand<object> ComBoxCMD { get; private set; }
+        private string _original_data;
+        public string original_data
+        {
+            get { return _original_data; }
+            set { SetProperty(ref _original_data, value); }
+        }
         private int _index=0;
         private Timer _clear_errtimer;
         public int comboboxindex
@@ -111,34 +117,29 @@ namespace LBJOEE.ViewModels
         private SBXXService _sbxxservice;
         private SBTJService _sbtjservice;
         private SBSJService _sbsjservice;
+        private HisService _hisservice;
         private IContainerExtension _container;
         private IRegionManager _regionmgr;
         public MainWindowViewModel(SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService,IContainerExtension container)
         {
             _container = container;
             _regionmgr = container.Resolve<IRegionManager>();
+            _hisservice = _container.Resolve<HisService>();
             log = LogManager.GetLogger(this.GetType());
             var pcip = Tool.GetIpAddress();
             _sbxxservice = sBXXService;
-            _sbxxservice.ErrorAction = new Action<string>(Error_Handel);
             _sbtjservice = sbtjservice;
-            _sbtjservice.ErrorAction = new Action<string>(Error_Handel);
             _sbsjservice = sBSJService;
+            _sbxxservice.ErrorAction = new Action<string>(Error_Handel);
+            _sbtjservice.ErrorAction = new Action<string>(Error_Handel);
             _sbsjservice.ErrorAction = new Action<string>(Error_Handel);
-            
             base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
-
             InitSocketServer();
-
-
-            //_socketserver.Init(pcip, base_sbxx.port);
-            //_socketserver.ConnectState = ScoketConnState;
-            //_socketserver.ReceiveAction = SocketReceiveData;
             InitBtnStatus();
+            InitTimer();
             BTNCMD = new DelegateCommand<BtnStatus>(BtnHandel);
             ComBoxCMD = new DelegateCommand<object>(ComBoHandle);
             TabChangeCMD = new DelegateCommand<object>(TabItemChangeHandle);
-            InitTimer();
             WinMinCMD = new DelegateCommand<object>(WinminHandle);
             WinMaxCMD = new DelegateCommand<object>(WinmaxHandle);
             WinCloseCMD = new DelegateCommand<object>(WincloseHandle);
@@ -156,7 +157,8 @@ namespace LBJOEE.ViewModels
             server.HandleRecMsg = new Action<byte[], SocketConnection, OEESocket.SocketServer>((bytes, client, theServer) =>
             {
                 string msg = Encoding.Default.GetString(bytes);
-                log.Info($"来至{client.remoteip}的消息:{msg}");
+                original_data = $"{DateTime.Now} {client.remoteip} \r\n{msg}\r\n";
+                //_hisservice.Add(new Models.history_json_data() { json = msg,ip=client.remoteip });
             });
 
             //处理服务器启动后事件
@@ -168,14 +170,14 @@ namespace LBJOEE.ViewModels
             //处理新的客户端连接后的事件
             server.HandleNewClientConnected = new Action<OEESocket.SocketServer, SocketConnection>((theServer, theCon) =>
             {
-                log.Info($"一个新的客户端接入，当前连接数：{theServer.ClientList.Count}");
+                log.Info($"一个新的客户端接入{theCon.remoteip}，当前连接数：{theServer.ClientList.Count}");
                 Freshdata(theServer.ClientList);
             });
 
             //处理客户端连接关闭后的事件
             server.HandleClientClose = new Action<SocketConnection, OEESocket.SocketServer>((theCon, theServer) =>
             {
-                log.Info($"一个客户端关闭，当前连接数为：{theServer.ClientList.Count}");
+                log.Info($"一个客户端关闭{theCon.remoteip}，当前连接数为：{theServer.ClientList.Count}");
                 Freshdata(theServer.ClientList);
             });
 

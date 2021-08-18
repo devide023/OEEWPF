@@ -314,21 +314,23 @@
                 <TabItem Name="cjxx" Header="采集信息">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
+                            <RowDefinition x:Name="upitem" Height="auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Orientation="Vertical">
                             <TextBlock Text="原始数据" />
                             <ScrollViewer
-                                Margin="2,0,2,0"
+                                Width="{Binding ElementName=main_window, Path=Width}"
+                                Height="150"
+                                Margin="10,0,10,0"
+                                HorizontalAlignment="Left"
                                 Template="{StaticResource MyScrollViewer}"
                                 VerticalScrollBarVisibility="Auto">
                                 <TextBlock
-                                    Margin="10,0,0,10"
                                     HorizontalAlignment="Left"
-                                    FontSize="18"
+                                    FontSize="15"
                                     Foreground="{StaticResource lightbrush}"
-                                    Text="{Binding socketdata}"
+                                    Text="{Binding original_data}"
                                     TextWrapping="Wrap" />
                             </ScrollViewer>
                         </StackPanel>

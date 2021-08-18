@@ -10,6 +10,8 @@ namespace LBJOEE.Models
     {
         public DateTime rq { get; set; } = DateTime.Now;
         public string json { get; set; }
+
+        public string ip { get; set; }
     }
 
     public class history_json_data_maper : ClassMapper<history_json_data>

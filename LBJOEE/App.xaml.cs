@@ -19,7 +19,6 @@ namespace LBJOEE
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.Register<LogService>();
-            containerRegistry.RegisterForNavigation<DataInterface>();
         }
     }
 }
