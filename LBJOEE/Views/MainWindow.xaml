@@ -232,7 +232,6 @@
                             <Border Grid.Row="7" Grid.Column="1">
                                 <ComboBox
                                     x:Name="ddlip"
-                                    DisplayMemberPath="remoteip"
                                     ItemsSource="{Binding ClientList}"
                                     SelectedIndex="{Binding comboboxindex}">
                                     <i:Interaction.Triggers>
@@ -240,7 +239,11 @@
                                             <prism:InvokeCommandAction Command="{Binding ComBoxCMD}" />
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
-
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
                                 </ComboBox>
                             </Border>
                         </Grid>

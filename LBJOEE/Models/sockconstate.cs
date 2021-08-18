@@ -12,7 +12,6 @@ namespace LBJOEE
         public string name { get; set; }
         public string remoteip { get; set; }
         public int ljcnt { get; set; }
-        public List<socketinfo> list { get; set; }
 
     }
 }

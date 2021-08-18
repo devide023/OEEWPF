@@ -140,8 +140,8 @@
         </Setter>
     </Style>
     <Style x:Key="status_style" TargetType="Ellipse">
-        <Setter Property="Width" Value="20" />
-        <Setter Property="Height" Value="20" />
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
         <Setter Property="Fill" Value="{DynamicResource darkbrush}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding socketljzt}" Value="0">
@@ -149,6 +149,21 @@
             </DataTrigger>
             <DataTrigger Binding="{Binding socketljzt}" Value="1">
                 <Setter Property="Fill" Value="{DynamicResource successbrush}" />
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard x:Name="dks">
+                        <Storyboard>
+                            <ColorAnimation
+                                RepeatBehavior="Forever"
+                                Storyboard.TargetProperty="(Fill).(SolidColorBrush.Color)"
+                                From="Blue"
+                                To="White"
+                                Duration="0:0:0.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <StopStoryboard BeginStoryboardName="dks" />
+                </DataTrigger.ExitActions>
             </DataTrigger>
         </Style.Triggers>
     </Style>

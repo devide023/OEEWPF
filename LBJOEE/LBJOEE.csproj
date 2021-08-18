@@ -92,13 +92,16 @@
     <Compile Include="Models\sbsj.cs" />
     <Compile Include="Models\sbtj.cs" />
     <Compile Include="Models\sockconstate.cs" />
-    <Compile Include="Models\socketinfo.cs" />
     <Compile Include="Models\sys_log.cs" />
+    <Compile Include="OEESocket\SocketClient.cs" />
+    <Compile Include="OEESocket\SocketConnection.cs" />
     <Compile Include="Services\LogService.cs" />
     <Compile Include="Services\SBSJService.cs" />
     <Compile Include="Services\SBTJService.cs" />
     <Compile Include="Services\SBXXService.cs" />
-    <Compile Include="Tools\SocketServer.cs" />
+    <Compile Include="OEESocket\SocketServer.cs" />
+    <Compile Include="Tools\MySocketServer.cs" />
+    <Compile Include="Tools\SocketSession.cs" />
     <Compile Include="Tools\Tool.cs" />
     <Compile Include="ViewModels\DataInterfaceViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -168,8 +171,8 @@
     <PackageReference Include="Prism.Wpf">
       <Version>8.1.97</Version>
     </PackageReference>
-    <PackageReference Include="System.Windows.Interactivity.WPF">
-      <Version>2.0.20525</Version>
+    <PackageReference Include="SuperSocket.Engine">
+      <Version>1.6.6.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

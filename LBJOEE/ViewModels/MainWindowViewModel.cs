@@ -17,6 +17,11 @@ using Prism.Navigation;
 using Prism.Regions;
 using Prism.Ioc;
 using log4net;
+using SuperSocket.SocketBase.Config;
+using SuperSocket.SocketEngine;
+using LBJOEE.OEESocket;
+using System.Text;
+
 namespace LBJOEE.ViewModels
 {
     public class MainWindowViewModel : BindableBase
@@ -26,7 +31,7 @@ namespace LBJOEE.ViewModels
         private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer;
         private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
-        public ObservableCollection<socketinfo> ClientList { get; set; } = new ObservableCollection<socketinfo>();
+        public ObservableCollection<string> ClientList { get; set; } = new ObservableCollection<string>();
         
         private ObservableCollection<sbtj> _sbtj = new ObservableCollection<sbtj>();
         public ObservableCollection<sbtj> TJList
@@ -106,10 +111,9 @@ namespace LBJOEE.ViewModels
         private SBXXService _sbxxservice;
         private SBTJService _sbtjservice;
         private SBSJService _sbsjservice;
-        private SocketServer _socketserver;
         private IContainerExtension _container;
         private IRegionManager _regionmgr;
-        public MainWindowViewModel(SocketServer socketserver, SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService,IContainerExtension container)
+        public MainWindowViewModel(SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService,IContainerExtension container)
         {
             _container = container;
             _regionmgr = container.Resolve<IRegionManager>();
@@ -121,11 +125,15 @@ namespace LBJOEE.ViewModels
             _sbtjservice.ErrorAction = new Action<string>(Error_Handel);
             _sbsjservice = sBSJService;
             _sbsjservice.ErrorAction = new Action<string>(Error_Handel);
-            _socketserver = socketserver;
+            
             base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
-            _socketserver.Init(pcip, base_sbxx.port);
-            _socketserver.ConnectState = ScoketConnState;
-            _socketserver.ReceiveAction = SocketReceiveData;
+
+            InitSocketServer();
+
+
+            //_socketserver.Init(pcip, base_sbxx.port);
+            //_socketserver.ConnectState = ScoketConnState;
+            //_socketserver.ReceiveAction = SocketReceiveData;
             InitBtnStatus();
             BTNCMD = new DelegateCommand<BtnStatus>(BtnHandel);
             ComBoxCMD = new DelegateCommand<object>(ComBoHandle);
@@ -138,42 +146,85 @@ namespace LBJOEE.ViewModels
             _clear_errtimer.Change(0, 1000*30);
             
         }
-        /// <summary>
-        /// 从socket端接收到的数据
-        /// </summary>
-        /// <param name="data"></param>
-        private void SocketReceiveData(string data)
-        {
-            try
-            {
-                socket_receive_data = data;
-            }
-            catch (Exception)
-            {
 
+        private void InitSocketServer()
+        {
+            //创建服务器对象，默认监听本机0.0.0.0，
+            OEESocket.SocketServer server = new OEESocket.SocketServer(base_sbxx.port);
+
+            //处理从客户端收到的消息
+            server.HandleRecMsg = new Action<byte[], SocketConnection, OEESocket.SocketServer>((bytes, client, theServer) =>
+            {
+                string msg = Encoding.Default.GetString(bytes);
+                log.Info($"来至{client.remoteip}的消息:{msg}");
+            });
+
+            //处理服务器启动后事件
+            server.HandleServerStarted = new Action<OEESocket.SocketServer>(theServer =>
+            {
+                log.Info("服务已启动************");
+            });
+
+            //处理新的客户端连接后的事件
+            server.HandleNewClientConnected = new Action<OEESocket.SocketServer, SocketConnection>((theServer, theCon) =>
+            {
+                log.Info($"一个新的客户端接入，当前连接数：{theServer.ClientList.Count}");
+                Freshdata(theServer.ClientList);
+            });
+
+            //处理客户端连接关闭后的事件
+            server.HandleClientClose = new Action<SocketConnection, OEESocket.SocketServer>((theCon, theServer) =>
+            {
+                log.Info($"一个客户端关闭，当前连接数为：{theServer.ClientList.Count}");
+                Freshdata(theServer.ClientList);
+            });
+
+
+            void Freshdata(LinkedList<SocketConnection> list)
+            {
+                ThreadPool.QueueUserWorkItem(delegate
+                {
+                    SynchronizationContext.SetSynchronizationContext(new
+                        DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+                    SynchronizationContext.Current.Post(pl =>
+                    {
+                        socket_linkcnt = list.Count;
+                        if (list.Count > 0)
+                        {
+                            socketljzt = 1;
+                        }
+                        else
+                        {
+                            socketljzt = 0;
+                        }
+                        ClientList.Clear();
+                        foreach (var item in list)
+                        {
+                            ClientList.Add(item.remoteip);
+                        }
+                        comboboxindex = 0;
+                    }, null);
+                });
             }
+
+
+            //处理异常
+            server.HandleException = new Action<Exception>(ex =>
+            {
+                log.Info(ex.Message);
+            });
+            //服务器启动
+            server.StartServer();
         }
 
         private void TabItemChangeHandle(object parm)
         {
-            var s = _container.Resolve<LogService>();
-            s.Add(new Models.sys_log()
-            {
-                txt="test"
-            });
             var arg = parm as SelectionChangedEventArgs;
             if (tabselectindex == 1)
             {
                 var list = _sbtjservice.QueryTjList(DateTime.Now, DateTime.Now, base_sbxx.sbbh);
                 TJList = new ObservableCollection<sbtj>(list);
             }
-            //if (tabselectindex == 2)
-            //{
-            //    NavigationParameters p = new NavigationParameters();
-            //    p.Add("sbxx", base_sbxx);
-            //    p.Add("socketservice", _socketserver);
-            //    _regionmgr.RequestNavigate("Tab3", "DataInterface", p);
-            //}
             arg.Handled = true;
         }
 
@@ -189,12 +240,7 @@ namespace LBJOEE.ViewModels
         private void ComBoHandle(object parm)
         {
             var arg = parm as SelectionChangedEventArgs;
-            if (comboboxindex >= 0)
-            {
-                var ip = ClientList[comboboxindex].remoteip;
-                log.Info($"选择了{ip}");
-                _socketserver.CurrentClientIp = ip;
-            }
+            
             arg.Handled = true;
         }
         private void BtnHandel(BtnStatus obj)
@@ -310,33 +356,7 @@ namespace LBJOEE.ViewModels
             };
             BtnStatusList.Add(_qtbtn);
         }
-        
-        
-        /// <summary>
-        /// socket回调
-        /// </summary>
-        /// <param name="obj"></param>
-        private void ScoketConnState(sockconstate obj)
-        {
-            ThreadPool.QueueUserWorkItem(delegate
-            {
-                SynchronizationContext.SetSynchronizationContext(new
-                    DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-                SynchronizationContext.Current.Post(pl =>
-                {
-                    var list = obj.list.ToList();
-                    ClientList.Clear();
-                    foreach (var item in list)
-                    {
-                        ClientList.Add(item);
-                    }
-                    comboboxindex = 0;
-                    socketljzt = list.Count>0?1:0;
-                    socket_linkcnt = obj.ljcnt;
-                }, null);
-            });
-            
-        }
+             
         
         #region 按钮事件处理函数
         /// <summary>

@@ -54,9 +54,6 @@ namespace LBJOEE.ViewModels
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
-            base_sbxx = navigationContext.Parameters.GetValue<base_sbxx>("sbxx");
-            var socketservice = navigationContext.Parameters.GetValue<SocketServer>("socketservice");
-            socketservice.ReceiveAction = ReceiveData;
         }
 
         /// <summary>

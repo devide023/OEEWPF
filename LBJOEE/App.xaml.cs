@@ -3,6 +3,7 @@ using Prism.Ioc;
 using Prism.Modularity;
 using System.Windows;
 using LBJOEE.Services;
+using SuperSocket;
 namespace LBJOEE
 {
     /// <summary>
