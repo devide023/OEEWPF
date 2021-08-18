@@ -49,5 +49,6 @@
             <Setter Property="Foreground" Value="{StaticResource lightbrush}" />
         </Style>
         <local:TimeConvert x:Key="timeconvert" />
+        <local:HeightConvert x:Key="heightconvert" />
     </Application.Resources>
 </prism:PrismApplication>

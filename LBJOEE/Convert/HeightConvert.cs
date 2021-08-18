@@ -12,7 +12,7 @@ namespace LBJOEE.Convert
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var newheight = (double)value - (double)110;
+            var newheight = (double)value - (double)160;
             return newheight;
         }
 

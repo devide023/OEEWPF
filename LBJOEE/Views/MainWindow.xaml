@@ -312,18 +312,20 @@
                     </DataGrid>
                 </TabItem>
                 <TabItem Name="cjxx" Header="采集信息">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition x:Name="upitem" Height="auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Vertical">
+                    <Grid Height="auto">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <GridSplitter
+                            Width="3"
+                            HorizontalAlignment="Right"
+                            Background="Gray"
+                            Cursor="ScrollWE" />
+                        <StackPanel Margin="10,0,5,0" Orientation="Vertical">
                             <TextBlock Text="原始数据" />
                             <ScrollViewer
-                                Width="{Binding ElementName=main_window, Path=Width}"
-                                Height="150"
-                                Margin="10,0,10,0"
-                                HorizontalAlignment="Left"
+                                Height="{Binding ElementName=main_window, Path=Height, Converter={StaticResource heightconvert}}"
                                 Template="{StaticResource MyScrollViewer}"
                                 VerticalScrollBarVisibility="Auto">
                                 <TextBlock
@@ -334,7 +336,10 @@
                                     TextWrapping="Wrap" />
                             </ScrollViewer>
                         </StackPanel>
-                        <StackPanel Grid.Row="1" Orientation="Vertical">
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="5,0,10,0"
+                            Orientation="Vertical">
                             <TextBlock Text="历史数据" />
                             <DataGrid
                                 CanUserAddRows="False"
