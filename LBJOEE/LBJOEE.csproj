@@ -72,7 +72,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Convert\HeightConvert.cs" />
     <Compile Include="Convert\TimeConvert.cs" />
     <Compile Include="DAO\OracleBaseFixture.cs" />
     <Compile Include="InterfaceImp\DBImp.cs" />
