@@ -49,24 +49,32 @@ namespace LBJOEE.OEESocket
                 {
                     try
                     {
-                        Socket newSocket = _socket.EndAccept(asyncResult);
-
-                        //马上进行下一轮监听,增加吞吐量
-                        if (_isListen)
-                            StartListen();
-
-                        SocketConnection newClient = new SocketConnection(newSocket, this)
+                        if (ClientList.Count < 2)
                         {
-                            HandleRecMsg = HandleRecMsg == null ? null : new Action<byte[], SocketConnection, SocketServer>(HandleRecMsg),
-                            HandleClientClose = HandleClientClose == null ? null : new Action<SocketConnection, SocketServer>(HandleClientClose),
-                            HandleSendMsg = HandleSendMsg == null ? null : new Action<byte[], SocketConnection, SocketServer>(HandleSendMsg),
-                            HandleException = HandleException == null ? null : new Action<Exception>(HandleException)
-                        };
+                            Socket newSocket = _socket.EndAccept(asyncResult);
 
-                        newClient.StartRecMsg();
-                        ClientList.AddLast(newClient);
+                            //马上进行下一轮监听,增加吞吐量
+                            if (_isListen)
+                                StartListen();
 
-                        HandleNewClientConnected?.Invoke(this, newClient);
+                            SocketConnection newClient = new SocketConnection(newSocket, this)
+                            {
+                                HandleRecMsg = HandleRecMsg == null ? null : new Action<byte[], SocketConnection, SocketServer>(HandleRecMsg),
+                                HandleClientClose = HandleClientClose == null ? null : new Action<SocketConnection, SocketServer>(HandleClientClose),
+                                HandleSendMsg = HandleSendMsg == null ? null : new Action<byte[], SocketConnection, SocketServer>(HandleSendMsg),
+                                HandleException = HandleException == null ? null : new Action<Exception>(HandleException)
+                            };
+
+                            newClient.StartRecMsg();
+
+                            ClientList.AddLast(newClient);
+
+                            HandleNewClientConnected?.Invoke(this, newClient);
+                        }
+                        else
+                        {
+                            HandleException?.Invoke(new Exception("超出最大连接数量"));
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -100,7 +108,7 @@ namespace LBJOEE.OEESocket
                 //将 监听套接字绑定到 对应的IP和端口
                 _socket.Bind(endpoint);
                 //设置监听队列长度为Int32最大值(同时能够处理连接请求数量)
-                _socket.Listen(int.MaxValue);
+                _socket.Listen(5);
                 //开始监听客户端
                 StartListen();
                 HandleServerStarted?.Invoke(this);
