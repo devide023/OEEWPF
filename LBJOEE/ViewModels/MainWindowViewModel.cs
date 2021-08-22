@@ -148,6 +148,7 @@ namespace LBJOEE.ViewModels
                 ErrorMsg = $"该IP地址{pcip}未配置";
                 return;
             }
+            base_sbxx.sbzt = base_sbxx.sbzt == "运行" ? "" : base_sbxx.sbzt;
             InitSocketServer();
             InitBtnStatus();
             InitTimer();
@@ -427,7 +428,6 @@ namespace LBJOEE.ViewModels
                 sfql = base_sbxx.sfql == "Y",
                 btntxt = base_sbxx.sfql == "Y"? "缺料恢复" : "缺料停机",
                 btnenable = base_sbxx.sbzt=="运行",
-                flag = base_sbxx.sbzt == "运行"?1:0,
                 normaltxt = "缺料停机",
                 tjtxt = "缺料恢复",
                 tjlx = "缺料停机",
@@ -441,7 +441,6 @@ namespace LBJOEE.ViewModels
                 sfjx = base_sbxx.sfjx == "Y" ,
                 btntxt = base_sbxx.sfjx == "Y"? "检修恢复" : "检修停机",
                 btnenable = base_sbxx.sbzt == "运行",
-                flag = base_sbxx.sbzt == "运行" ? 1 : 0,
                 normaltxt = "检修停机",
                 tjtxt = "检修恢复",
                 tjlx = "检修停机",
@@ -455,7 +454,6 @@ namespace LBJOEE.ViewModels
                 sfhm = base_sbxx.sfhm == "Y" ,
                 btntxt = base_sbxx.sfhm == "Y"? "换模恢复" : "换模停机",
                 btnenable = base_sbxx.sbzt == "运行",
-                flag = base_sbxx.sbzt == "运行" ? 1 : 0,
                 normaltxt = "换模停机",
                 tjtxt = "换模恢复",
                 tjlx = "换模停机",
@@ -468,7 +466,6 @@ namespace LBJOEE.ViewModels
                 sfgz = base_sbxx.sfgz == "Y" ,
                 btntxt = base_sbxx.sfgz == "Y"? "故障恢复" : "故障停机",
                 btnenable = base_sbxx.sbzt == "运行",
-                flag = base_sbxx.sbzt == "运行" ? 1 : 0,
                 normaltxt = "故障停机",
                 tjtxt = "故障恢复",
                 tjlx = "故障停机",
@@ -481,7 +478,6 @@ namespace LBJOEE.ViewModels
                 sfqt = base_sbxx.sfqttj == "Y" ,
                 btntxt = base_sbxx.sfqttj == "Y"? "停机恢复" : "其他停机",
                 btnenable = base_sbxx.sbzt == "运行",
-                flag = base_sbxx.sbzt == "运行" ? 1 : 0,
                 normaltxt = "其他停机",
                 tjtxt = "停机恢复",
                 tjlx = "其他停机",
