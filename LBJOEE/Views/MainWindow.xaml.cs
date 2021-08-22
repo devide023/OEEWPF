@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace LBJOEE.Views
 {
@@ -18,6 +19,8 @@ namespace LBJOEE.Views
         {
             this.DragMove();
         }
+
+        
 
     }
 }

@@ -17,8 +17,6 @@ using Prism.Navigation;
 using Prism.Regions;
 using Prism.Ioc;
 using log4net;
-using SuperSocket.SocketBase.Config;
-using SuperSocket.SocketEngine;
 using LBJOEE.OEESocket;
 using System.Text;
 
@@ -32,7 +30,12 @@ namespace LBJOEE.ViewModels
         private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
         public ObservableCollection<string> ClientList { get; set; } = new ObservableCollection<string>();
-        
+        private ObservableCollection<JsonEntity> _hislist = new ObservableCollection<JsonEntity>();
+        public ObservableCollection<JsonEntity> HisList
+        {
+            get { return _hislist; }
+            set { SetProperty(ref _hislist, value); }
+        }
         private ObservableCollection<sbtj> _sbtj = new ObservableCollection<sbtj>();
         public ObservableCollection<sbtj> TJList
         {
@@ -49,7 +52,7 @@ namespace LBJOEE.ViewModels
             set { SetProperty(ref _original_data, value); }
         }
         private int _index=0;
-        private Timer _clear_errtimer;
+        private readonly Timer _clear_errtimer;
         public int comboboxindex
         {
             get { return _index; }
@@ -114,17 +117,20 @@ namespace LBJOEE.ViewModels
 
         #endregion
         
-        private SBXXService _sbxxservice;
-        private SBTJService _sbtjservice;
-        private SBSJService _sbsjservice;
-        private HisService _hisservice;
-        private IContainerExtension _container;
-        private IRegionManager _regionmgr;
+        private readonly SBXXService _sbxxservice;
+        private readonly SBTJService _sbtjservice;
+        private readonly SBSJService _sbsjservice;
+        private readonly HisService _hisservice;
+        private readonly LogService _logservice;
+        private readonly IContainerExtension _container;
+        private readonly IRegionManager _regionmgr;
         public MainWindowViewModel(SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService,IContainerExtension container)
         {
+            Title = Title + AppCheckUpdate.CurrentVersion;
             _container = container;
             _regionmgr = container.Resolve<IRegionManager>();
             _hisservice = _container.Resolve<HisService>();
+            _logservice = _container.Resolve<LogService>();
             log = LogManager.GetLogger(this.GetType());
             var pcip = Tool.GetIpAddress();
             _sbxxservice = sBXXService;
@@ -133,55 +139,161 @@ namespace LBJOEE.ViewModels
             _sbxxservice.ErrorAction = new Action<string>(Error_Handel);
             _sbtjservice.ErrorAction = new Action<string>(Error_Handel);
             _sbsjservice.ErrorAction = new Action<string>(Error_Handel);
+            WinMinCMD = new DelegateCommand<object>(WinminHandle);
+            WinMaxCMD = new DelegateCommand<object>(WinmaxHandle);
+            WinCloseCMD = new DelegateCommand<object>(WincloseHandle);
             base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
+            if (base_sbxx == null)
+            {
+                ErrorMsg = $"该IP地址{pcip}未配置";
+                return;
+            }
             InitSocketServer();
             InitBtnStatus();
             InitTimer();
             BTNCMD = new DelegateCommand<BtnStatus>(BtnHandel);
             ComBoxCMD = new DelegateCommand<object>(ComBoHandle);
             TabChangeCMD = new DelegateCommand<object>(TabItemChangeHandle);
-            WinMinCMD = new DelegateCommand<object>(WinminHandle);
-            WinMaxCMD = new DelegateCommand<object>(WinmaxHandle);
-            WinCloseCMD = new DelegateCommand<object>(WincloseHandle);
+            
             _clear_errtimer = new Timer(ClearErrorHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             _clear_errtimer.Change(0, 1000*30);
-            
+
+            foreach (var item in BtnStatusList)
+            {
+                if (base_sbxx.sfgz == "Y")
+                {
+                    var btn = BtnStatusList.Where(t => t.name == "gz").First();
+                    btn.sfgz = true;
+                    btn.flag = 1;
+                    btn.btntxt = btn.tjtxt;
+                    EnableOtherBtn(btn, false);
+                }
+                if (base_sbxx.sfhm == "Y")
+                {
+                    var btn = BtnStatusList.Where(t => t.name == "hm").First();
+                    btn.sfhm = true;
+                    btn.flag = 1;
+                    btn.btntxt = btn.tjtxt;
+                    EnableOtherBtn(btn, false);
+                }
+                if (base_sbxx.sfjx == "Y")
+                {
+                    var btn = BtnStatusList.Where(t => t.name == "jx").First();
+                    btn.sfjx = true;
+                    btn.flag = 1;
+                    btn.btntxt = btn.tjtxt;
+                    EnableOtherBtn(btn, false);
+                }
+                if (base_sbxx.sfql == "Y")
+                {
+                    var btn = BtnStatusList.Where(t => t.name == "ql").First();
+                    btn.sfql = true;
+                    btn.flag = 1;
+                    btn.btntxt = btn.tjtxt;
+                    EnableOtherBtn(btn, false);
+                }
+                if (base_sbxx.sfqttj == "Y")
+                {
+                    var btn = BtnStatusList.Where(t => t.name == "qt").First();
+                    btn.sfqt = true;
+                    btn.flag = 1;
+                    btn.btntxt = btn.tjtxt;
+                    EnableOtherBtn(btn, false);
+                }
+            }
         }
+
 
         private void InitSocketServer()
         {
             //创建服务器对象，默认监听本机0.0.0.0，
-            OEESocket.SocketServer server = new OEESocket.SocketServer(base_sbxx.port);
-
-            //处理从客户端收到的消息
-            server.HandleRecMsg = new Action<byte[], SocketConnection, OEESocket.SocketServer>((bytes, client, theServer) =>
+            SocketServer server = new SocketServer(base_sbxx.port)
             {
-                string msg = Encoding.Default.GetString(bytes);
-                original_data = $"{DateTime.Now} {client.remoteip} \r\n{msg}\r\n";
-                //_hisservice.Add(new Models.history_json_data() { json = msg,ip=client.remoteip });
-            });
+                //处理从客户端收到的消息
+                HandleRecMsg = new Action<byte[], SocketConnection, OEESocket.SocketServer>((bytes, client, theServer) =>
+                {
+                    try
+                    {
+                        string msg = Encoding.Default.GetString(bytes);
+                        original_data = $"{DateTime.Now} {client.remoteip} \r\n{msg}\r\n";
+                        var data = JsonConvert.DeserializeObject<JsonEntity>(msg);
+                        ShowHisData(new JsonEntity() { 
+                        日期 = DateTime.Now,
+                        IP = client.remoteip,
+                        状态= data.状态,
+                        设备数据 = data.设备数据
+                        });
+                        //接收到故障信息
+                        var btn = BtnStatusList.Where(t => t.name == "gz").First();
+                        if (data.状态 == "故障" && base_sbxx.sbzt != data.状态)
+                        {
+                            _gztimer.Change(btn.tjsj, 1000);
+                            base_sbxx.sfgz = "Y";
+                            base_sbxx.sbzt = "故障";
+                            base_sbxx.gzkssj = DateTime.Now;
+                            btn.btnenable = false;
+                            btn.sfgz = true;
+                            btn.flag = 1;
+                            btn.btntxt = btn.tjtxt;
+                            _sbxxservice.SetGZtj(base_sbxx);
+                            EnableOtherBtn(btn, false);
+                        }
+                        if (data.状态 == "运行" && base_sbxx.sbzt != data.状态)
+                        {
+                            _gztimer.Change(-1, -1);
+                            base_sbxx.sbzt = "运行";
+                            base_sbxx.sfgz = "N";
+                            btn.btnenable = true;
+                            btn.tjsj = 0;
+                            btn.flag = 0;
+                            btn.sfgz = false;
+                            btn.btntxt = btn.normaltxt;
+                            EnableOtherBtn(btn, true);
+                            DateTime now = DateTime.Now;
+                            _sbtjservice.Add(new sbtj()
+                            {
+                                sbbh = base_sbxx.sbbh,
+                                tjjssj = now,
+                                tjkssj = base_sbxx.gzkssj,
+                                tjlx = btn.tjlx,
+                                tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
+                                tjms = btn.tjms
+                            });
+                            _sbxxservice.SetGZtj(base_sbxx);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorMsg = e.Message;
+                        _logservice.Error(e.Message, e.StackTrace);
+                    }
+                }),
 
-            //处理服务器启动后事件
-            server.HandleServerStarted = new Action<OEESocket.SocketServer>(theServer =>
-            {
-                log.Info("服务已启动************");
-            });
+                //处理服务器启动后事件
+                HandleServerStarted = new Action<OEESocket.SocketServer>(theServer =>
+                {
+                    _logservice.Info("服务已启动");
+                }),
 
-            //处理新的客户端连接后的事件
-            server.HandleNewClientConnected = new Action<OEESocket.SocketServer, SocketConnection>((theServer, theCon) =>
-            {
-                log.Info($"一个新的客户端接入{theCon.remoteip}，当前连接数：{theServer.ClientList.Count}");
-                Freshdata(theServer.ClientList);
-            });
+                //处理新的客户端连接后的事件
+                HandleNewClientConnected = new Action<OEESocket.SocketServer, SocketConnection>((theServer, theCon) =>
+                {
+                    _logservice.Info($"一个新的客户端接入{theCon.remoteip}，当前连接数：{theServer.ClientList.Count}");
+                    Freshdata(theServer.ClientList);
+                }),
 
-            //处理客户端连接关闭后的事件
-            server.HandleClientClose = new Action<SocketConnection, OEESocket.SocketServer>((theCon, theServer) =>
-            {
-                log.Info($"一个客户端关闭{theCon.remoteip}，当前连接数为：{theServer.ClientList.Count}");
-                Freshdata(theServer.ClientList);
-            });
-
-
+                //处理客户端连接关闭后的事件
+                HandleClientClose = new Action<SocketConnection, OEESocket.SocketServer>((theCon, theServer) =>
+                {
+                    _logservice.Info($"一个客户端关闭{theCon.remoteip}，当前连接数为：{theServer.ClientList.Count}");
+                    Freshdata(theServer.ClientList);
+                }),
+                //处理异常
+                HandleException = new Action<Exception>(ex =>
+                {
+                    _logservice.Error(ex.Message,ex.StackTrace);
+                })
+            };
             void Freshdata(LinkedList<SocketConnection> list)
             {
                 ThreadPool.QueueUserWorkItem(delegate
@@ -208,13 +320,22 @@ namespace LBJOEE.ViewModels
                     }, null);
                 });
             }
-
-
-            //处理异常
-            server.HandleException = new Action<Exception>(ex =>
+            void ShowHisData(JsonEntity entity)
             {
-                log.Info(ex.Message);
-            });
+                ThreadPool.QueueUserWorkItem(delegate
+                {
+                    SynchronizationContext.SetSynchronizationContext(new
+                        DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
+                    SynchronizationContext.Current.Post(pl =>
+                    {
+                        if (HisList.Count > 20)
+                        {
+                            HisList.Clear();
+                        }
+                        HisList.Insert(0,entity);
+                    }, null);
+                });
+            }
             //服务器启动
             server.StartServer();
         }
@@ -303,8 +424,10 @@ namespace LBJOEE.ViewModels
             _qlbtn = new BtnStatus()
             {
                 name = "ql",
-                sfql = base_sbxx.sfql == "Y" ? true : false,
-                btntxt = "缺料停机",
+                sfql = base_sbxx.sfql == "Y",
+                btntxt = base_sbxx.sfql == "Y"? "缺料恢复" : "缺料停机",
+                btnenable = base_sbxx.sbzt=="运行",
+                flag = base_sbxx.sbzt == "运行"?1:0,
                 normaltxt = "缺料停机",
                 tjtxt = "缺料恢复",
                 tjlx = "缺料停机",
@@ -315,9 +438,11 @@ namespace LBJOEE.ViewModels
             _jxbtn = new BtnStatus()
             {
                 name = "jx",
-                sfjx = base_sbxx.sfjx == "Y" ? true : false,
-                btntxt = "检修停机",
-                normaltxt= "检修停机",
+                sfjx = base_sbxx.sfjx == "Y" ,
+                btntxt = base_sbxx.sfjx == "Y"? "检修恢复" : "检修停机",
+                btnenable = base_sbxx.sbzt == "运行",
+                flag = base_sbxx.sbzt == "运行" ? 1 : 0,
+                normaltxt = "检修停机",
                 tjtxt = "检修恢复",
                 tjlx = "检修停机",
                 tjms = "检修"
@@ -327,8 +452,10 @@ namespace LBJOEE.ViewModels
             _hmbtn = new BtnStatus()
             {
                 name = "hm",
-                sfhm = base_sbxx.sfhm == "Y" ? true : false,
-                btntxt = "换模停机",
+                sfhm = base_sbxx.sfhm == "Y" ,
+                btntxt = base_sbxx.sfhm == "Y"? "换模恢复" : "换模停机",
+                btnenable = base_sbxx.sbzt == "运行",
+                flag = base_sbxx.sbzt == "运行" ? 1 : 0,
                 normaltxt = "换模停机",
                 tjtxt = "换模恢复",
                 tjlx = "换模停机",
@@ -338,8 +465,10 @@ namespace LBJOEE.ViewModels
             _gzbtn = new BtnStatus()
             {
                 name = "gz",
-                sfgz = base_sbxx.sfgz == "Y" ? true : false,
-                btntxt = "故障停机",
+                sfgz = base_sbxx.sfgz == "Y" ,
+                btntxt = base_sbxx.sfgz == "Y"? "故障恢复" : "故障停机",
+                btnenable = base_sbxx.sbzt == "运行",
+                flag = base_sbxx.sbzt == "运行" ? 1 : 0,
                 normaltxt = "故障停机",
                 tjtxt = "故障恢复",
                 tjlx = "故障停机",
@@ -349,8 +478,10 @@ namespace LBJOEE.ViewModels
             _qtbtn = new BtnStatus()
             {
                 name = "qt",
-                sfqt = base_sbxx.sfqttj == "Y" ? true : false,
-                btntxt = "其他停机",
+                sfqt = base_sbxx.sfqttj == "Y" ,
+                btntxt = base_sbxx.sfqttj == "Y"? "停机恢复" : "其他停机",
+                btnenable = base_sbxx.sbzt == "运行",
+                flag = base_sbxx.sbzt == "运行" ? 1 : 0,
                 normaltxt = "其他停机",
                 tjtxt = "停机恢复",
                 tjlx = "其他停机",
@@ -366,195 +497,230 @@ namespace LBJOEE.ViewModels
         /// </summary>
         private void DealGZHandle(BtnStatus obj)
         {
-            if (base_sbxx.sfgz == "Y")
+            try
             {
-                _gztimer.Change(-1, -1);
-                base_sbxx.sbzt = "运行";
-                base_sbxx.sfgz = "N";
-                obj.tjsj = 0;
-                obj.flag = 0;
-                obj.sfgz = false;
-                obj.btntxt = obj.normaltxt;
-                EnableOtherBtn(obj, true);
-                DateTime now = DateTime.Now;
-                _sbtjservice.Add(new sbtj()
+                if (base_sbxx.sfgz == "Y")
                 {
-                    sbbh = base_sbxx.sbbh,
-                    tjjssj = now,
-                    tjkssj = base_sbxx.gzkssj,
-                    tjlx = obj.tjlx,
-                    tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
-                    tjms = obj.tjms
-                });
+                    _gztimer.Change(-1, -1);
+                    base_sbxx.sbzt = "运行";
+                    base_sbxx.sfgz = "N";
+                    obj.tjsj = 0;
+                    obj.flag = 0;
+                    obj.sfgz = false;
+                    obj.btntxt = obj.normaltxt;
+                    EnableOtherBtn(obj, true);
+                    DateTime now = DateTime.Now;
+                    _sbtjservice.Add(new sbtj()
+                    {
+                        sbbh = base_sbxx.sbbh,
+                        tjjssj = now,
+                        tjkssj = base_sbxx.gzkssj,
+                        tjlx = obj.tjlx,
+                        tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
+                        tjms = obj.tjms
+                    });
+                }
+                else
+                {
+                    _gztimer.Change(obj.tjsj, 1000);
+                    base_sbxx.sbzt = "故障";
+                    base_sbxx.sfgz = "Y";
+                    base_sbxx.gzkssj = DateTime.Now;
+                    obj.flag = 1;
+                    obj.sfgz = true;
+                    obj.btntxt = obj.tjtxt;
+                    EnableOtherBtn(obj, false);
+                }
+                _sbxxservice.SetGZtj(base_sbxx);
             }
-            else
+            catch (Exception e)
             {
-                _gztimer.Change(obj.tjsj, 1000);
-                base_sbxx.sbzt = "故障";
-                base_sbxx.sfgz = "Y";
-                base_sbxx.gzkssj = DateTime.Now;
-                obj.flag = 1;
-                obj.sfgz = true;
-                obj.btntxt = obj.tjtxt;
-                EnableOtherBtn(obj, false);
+                _logservice.Error(e.Message, e.StackTrace);
             }
-            _sbxxservice.SetGZtj(base_sbxx);
         }
         /// <summary>
         /// 其他停机处理函数
         /// </summary>
         private void DealQTHandle(BtnStatus obj)
         {
-            if (base_sbxx.sfqttj == "Y")
+            try
             {
-                _qttimer.Change(-1, -1);
-                base_sbxx.sbzt = "运行";
-                base_sbxx.sfqttj = "N";
-                obj.tjsj = 0;
-                obj.flag = 0;
-                obj.sfqt = false;
-                obj.btntxt = obj.normaltxt;
-                EnableOtherBtn(obj, true);
-                DateTime now = DateTime.Now;
-                _sbtjservice.Add(new sbtj()
+                if (base_sbxx.sfqttj == "Y")
                 {
-                    sbbh = base_sbxx.sbbh,
-                    tjjssj = now,
-                    tjkssj = base_sbxx.qttjkssj,
-                    tjlx = obj.tjlx,
-                    tjsj = (int)(now - base_sbxx.qttjkssj).TotalSeconds,
-                    tjms = obj.tjms
-                });
+                    _qttimer.Change(-1, -1);
+                    base_sbxx.sbzt = "运行";
+                    base_sbxx.sfqttj = "N";
+                    obj.tjsj = 0;
+                    obj.flag = 0;
+                    obj.sfqt = false;
+                    obj.btntxt = obj.normaltxt;
+                    EnableOtherBtn(obj, true);
+                    DateTime now = DateTime.Now;
+                    _sbtjservice.Add(new sbtj()
+                    {
+                        sbbh = base_sbxx.sbbh,
+                        tjjssj = now,
+                        tjkssj = base_sbxx.qttjkssj,
+                        tjlx = obj.tjlx,
+                        tjsj = (int)(now - base_sbxx.qttjkssj).TotalSeconds,
+                        tjms = obj.tjms
+                    });
+                }
+                else
+                {
+                    _qttimer.Change(obj.tjsj, 1000);
+                    base_sbxx.sbzt = "停机";
+                    base_sbxx.sfqttj = "Y";
+                    base_sbxx.qttjkssj = DateTime.Now;
+                    obj.flag = 1;
+                    obj.sfqt = true;
+                    obj.btntxt = obj.tjtxt;
+                    EnableOtherBtn(obj, false);
+                }
+                _sbxxservice.SetQTtj(base_sbxx);
             }
-            else
+            catch (Exception e)
             {
-                _qttimer.Change(obj.tjsj, 1000);
-                base_sbxx.sbzt = "停机";
-                base_sbxx.sfqttj = "Y";
-                base_sbxx.qttjkssj = DateTime.Now;
-                obj.flag = 1;
-                obj.sfqt = true;
-                obj.btntxt = obj.tjtxt;
-                EnableOtherBtn(obj, false);
+                _logservice.Error(e.Message, e.StackTrace);
             }
-            _sbxxservice.SetQTtj(base_sbxx);
         }
         /// <summary>
         /// 换模停机处理函数
         /// </summary>
         private void DealHMHandle(BtnStatus obj)
         {
-            if (base_sbxx.sfhm == "Y")
+            try
             {
-                _hmtimer.Change(-1, -1);
-                base_sbxx.sbzt = "运行";
-                base_sbxx.sfhm = "N";
-                obj.tjsj = 0;
-                obj.flag = 0;
-                obj.sfhm = false;
-                obj.btntxt = obj.normaltxt;
-                EnableOtherBtn(obj, true);
-                DateTime now = DateTime.Now;
-                _sbtjservice.Add(new sbtj()
+                if (base_sbxx.sfhm == "Y")
                 {
-                    sbbh = base_sbxx.sbbh,
-                    tjjssj = now,
-                    tjkssj = base_sbxx.hmkssj,
-                    tjlx = obj.tjlx,
-                    tjsj = (int)(now - base_sbxx.hmkssj).TotalSeconds,
-                    tjms = obj.tjms
-                });
+                    _hmtimer.Change(-1, -1);
+                    base_sbxx.sbzt = "运行";
+                    base_sbxx.sfhm = "N";
+                    obj.tjsj = 0;
+                    obj.flag = 0;
+                    obj.sfhm = false;
+                    obj.btntxt = obj.normaltxt;
+                    EnableOtherBtn(obj, true);
+                    DateTime now = DateTime.Now;
+                    _sbtjservice.Add(new sbtj()
+                    {
+                        sbbh = base_sbxx.sbbh,
+                        tjjssj = now,
+                        tjkssj = base_sbxx.hmkssj,
+                        tjlx = obj.tjlx,
+                        tjsj = (int)(now - base_sbxx.hmkssj).TotalSeconds,
+                        tjms = obj.tjms
+                    });
+                }
+                else
+                {
+                    _hmtimer.Change(obj.tjsj, 1000);
+                    base_sbxx.sbzt = "换模";
+                    base_sbxx.sfhm = "Y";
+                    base_sbxx.hmkssj = DateTime.Now;
+                    obj.sfhm = true;
+                    obj.flag = 1;
+                    obj.btntxt = obj.tjtxt;
+                    EnableOtherBtn(obj, false);
+                }
+                _sbxxservice.SetHMtj(base_sbxx);
             }
-            else
+            catch (Exception e)
             {
-                _hmtimer.Change(obj.tjsj, 1000);
-                base_sbxx.sbzt = "换模";
-                base_sbxx.sfhm = "Y";
-                base_sbxx.hmkssj = DateTime.Now;
-                obj.sfhm = true;
-                obj.flag = 1;
-                obj.btntxt = obj.tjtxt;
-                EnableOtherBtn(obj, false);
+                _logservice.Error(e.Message, e.StackTrace);
             }
-            _sbxxservice.SetHMtj(base_sbxx);
         }
         /// <summary>
         /// 检修停机处理函数
         /// </summary>
         private void DealJXHandle(BtnStatus obj)
         {
-            if (base_sbxx.sfjx == "Y")
+            try
             {
-                _jxtimer.Change(-1, -1);
-                base_sbxx.sbzt = "运行";
-                base_sbxx.sfjx = "N";
-                obj.tjsj = 0;
-                obj.flag = 0;
-                obj.sfjx = false;
-                obj.btntxt = obj.normaltxt;
-                EnableOtherBtn(obj, true);
-                DateTime now = DateTime.Now;
-                _sbtjservice.Add(new sbtj()
+                if (base_sbxx.sfjx == "Y")
                 {
-                    sbbh = base_sbxx.sbbh,
-                    tjjssj = now,
-                    tjkssj = base_sbxx.jxkssj,
-                    tjlx = obj.tjlx,
-                    tjsj = (int)(now - base_sbxx.jxkssj).TotalSeconds,
-                    tjms = obj.tjms
-                });
+                    _jxtimer.Change(-1, -1);
+                    base_sbxx.sbzt = "运行";
+                    base_sbxx.sfjx = "N";
+                    obj.tjsj = 0;
+                    obj.flag = 0;
+                    obj.sfjx = false;
+                    obj.btntxt = obj.normaltxt;
+                    EnableOtherBtn(obj, true);
+                    DateTime now = DateTime.Now;
+                    _sbtjservice.Add(new sbtj()
+                    {
+                        sbbh = base_sbxx.sbbh,
+                        tjjssj = now,
+                        tjkssj = base_sbxx.jxkssj,
+                        tjlx = obj.tjlx,
+                        tjsj = (int)(now - base_sbxx.jxkssj).TotalSeconds,
+                        tjms = obj.tjms
+                    });
+                }
+                else
+                {
+                    _jxtimer.Change(obj.tjsj, 1000);
+                    base_sbxx.sbzt = "检修";
+                    base_sbxx.sfjx = "Y";
+                    base_sbxx.jxkssj = DateTime.Now;
+                    obj.sfjx = true;
+                    obj.flag = 1;
+                    obj.btntxt = obj.tjtxt;
+                    EnableOtherBtn(obj, false);
+                }
+                _sbxxservice.SetJXtj(base_sbxx);
             }
-            else
+            catch (Exception e)
             {
-                _jxtimer.Change(obj.tjsj, 1000);
-                base_sbxx.sbzt = "检修";
-                base_sbxx.sfjx = "Y";
-                base_sbxx.jxkssj = DateTime.Now;
-                obj.sfjx = true;
-                obj.flag = 1;
-                obj.btntxt = obj.tjtxt;
-                EnableOtherBtn(obj, false);
+                _logservice.Error(e.Message, e.StackTrace);
             }
-            _sbxxservice.SetJXtj(base_sbxx);
         }
         /// <summary>
         /// 缺料停机处理函数
         /// </summary>
         private void DealQLHandle(BtnStatus obj)
         {
-            if (base_sbxx.sfql == "Y")
+            try
             {
-                _qltimer.Change(-1, -1);
-                base_sbxx.sbzt = "运行";
-                base_sbxx.sfql = "N";
-                obj.tjsj = 0;
-                obj.flag = 0;
-                obj.sfql = false;
-                obj.btntxt = obj.normaltxt;
-                EnableOtherBtn(obj, true);
-                DateTime now = DateTime.Now;
-                _sbtjservice.Add(new sbtj()
+                if (base_sbxx.sfql == "Y")
                 {
-                    sbbh = base_sbxx.sbbh,
-                    tjjssj = now,
-                    tjkssj = base_sbxx.qlkssj,
-                    tjlx = obj.tjlx,
-                    tjsj = (int)(now - base_sbxx.qlkssj).TotalSeconds,
-                    tjms = obj.tjms
-                });
+                    _qltimer.Change(-1, -1);
+                    base_sbxx.sbzt = "运行";
+                    base_sbxx.sfql = "N";
+                    obj.tjsj = 0;
+                    obj.flag = 0;
+                    obj.sfql = false;
+                    obj.btntxt = obj.normaltxt;
+                    EnableOtherBtn(obj, true);
+                    DateTime now = DateTime.Now;
+                    _sbtjservice.Add(new sbtj()
+                    {
+                        sbbh = base_sbxx.sbbh,
+                        tjjssj = now,
+                        tjkssj = base_sbxx.qlkssj,
+                        tjlx = obj.tjlx,
+                        tjsj = (int)(now - base_sbxx.qlkssj).TotalSeconds,
+                        tjms = obj.tjms
+                    });
+                }
+                else
+                {
+                    _qltimer.Change(obj.tjsj, 1000);
+                    base_sbxx.sbzt = "空闲";
+                    base_sbxx.sfql = "Y";
+                    base_sbxx.qlkssj = DateTime.Now;
+                    obj.sfql = true;
+                    obj.flag = 1;
+                    obj.btntxt = obj.tjtxt;
+                    EnableOtherBtn(obj, false);
+                }
+                _sbxxservice.SetQLtj(base_sbxx);
             }
-            else
+            catch (Exception e)
             {
-                _qltimer.Change(obj.tjsj, 1000);
-                base_sbxx.sbzt = "空闲";
-                base_sbxx.sfql = "Y";
-                base_sbxx.qlkssj = DateTime.Now;
-                obj.sfql = true;
-                obj.flag = 1;
-                obj.btntxt = obj.tjtxt;
-                EnableOtherBtn(obj, false);
+                _logservice.Error(e.Message, e.StackTrace);
             }
-            _sbxxservice.SetQLtj(base_sbxx);
         }
         private void EnableOtherBtn(BtnStatus obj,bool flag)
         {

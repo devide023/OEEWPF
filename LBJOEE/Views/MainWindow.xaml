@@ -5,7 +5,7 @@
     xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:local="clr-namespace:LBJOEE.Convert"
+    xmlns:local="clr-namespace:LBJOEE.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:prism="http://prismlibrary.com/"
     x:Name="main_window"
@@ -24,10 +24,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/MainStyle.xaml" />
                 <ResourceDictionary Source="/Resources/scrollstyle.xaml" />
+                <ResourceDictionary Source="/Resources/OEEButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Border Background="#FF06527E" CornerRadius="10">
+    <Border Background="{StaticResource winbgbrush}" CornerRadius="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
@@ -44,7 +45,7 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     FontSize="20"
-                    Foreground="{StaticResource lightbrush}"
+                    Foreground="{StaticResource fontbrush}"
                     Text="{Binding Title}" />
                 <StackPanel
                     Grid.Column="1"
@@ -60,7 +61,7 @@
                             <Setter Property="FontSize" Value="20" />
                             <Setter Property="Margin" Value="5,0,0,5" />
                             <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="Foreground" Value="{StaticResource lightbrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource fontbrush}" />
                             <Setter Property="FontFamily" Value="/Resources/#iconfont" />
                             <Setter Property="BorderThickness" Value="0" />
                             <Setter Property="BorderBrush" Value="{x:Null}" />
@@ -117,137 +118,34 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <Grid HorizontalAlignment="Left">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="180" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Border HorizontalAlignment="Right" VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource label}" Text="设备编号：" />
-                            </Border>
-                            <Border Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbbh}" />
-                            </Border>
-                            <Border
-                                Grid.Row="1"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource label}" Text="设备名称：" />
-                            </Border>
-                            <Border
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbmc}" />
-                            </Border>
-                            <Border
-                                Grid.Row="2"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource label}" Text="品牌型号：" />
-                            </Border>
-                            <Border
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelitem}">
-                                    <TextBlock.Text>
-                                        <MultiBinding StringFormat="{}{0}{1}">
-                                            <Binding Path="base_sbxx.sbpp" />
-                                            <Binding Path="base_sbxx.sbxh" />
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-
-                                </TextBlock>
-                            </Border>
-                            <Border
-                                Grid.Row="3"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource label}" Text="设备状态：" />
-                            </Border>
-                            <Border
-                                Grid.Row="3"
-                                Grid.Column="1"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelzt}" Text="{Binding base_sbxx.sbzt}" />
-                            </Border>
-                            <Border
-                                Grid.Row="4"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource label}" Text="线体名称：" />
-                            </Border>
-                            <Border
-                                Grid.Row="4"
-                                Grid.Column="1"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.sbqy}" />
-                            </Border>
-                            <Border
-                                Grid.Row="5"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource label}" Text="IP地址：" />
-                            </Border>
-                            <Border
-                                Grid.Row="5"
-                                Grid.Column="1"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.ip}" />
-                            </Border>
-                            <Border
-                                Grid.Row="6"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource label}" Text="连接状态：" />
-                            </Border>
-                            <Border
-                                Grid.Row="6"
-                                Grid.Column="1"
-                                VerticalAlignment="Center">
-                                <StackPanel Orientation="Horizontal">
-                                    <Ellipse Style="{DynamicResource status_style}" />
-                                    <TextBlock Style="{StaticResource labelitem}" Text="{Binding socket_linkcnt, StringFormat=连接数[{0}]}" />
-                                    <TextBlock Style="{StaticResource labelitem}" Text="{Binding base_sbxx.port, StringFormat=端口号[{0}]}" />
-                                </StackPanel>
-                            </Border>
-                            <Border
-                                Grid.Row="7"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center">
-                                <TextBlock Style="{StaticResource label}" Text="客户端列表：" />
-                            </Border>
-                            <Border Grid.Row="7" Grid.Column="1">
-                                <ComboBox
-                                    x:Name="ddlip"
-                                    ItemsSource="{Binding ClientList}"
-                                    SelectedIndex="{Binding comboboxindex}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="SelectionChanged">
-                                            <prism:InvokeCommandAction Command="{Binding ComBoxCMD}" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding}" />
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                            </Border>
-                        </Grid>
+                        <WrapPanel Margin="10,0,10,0" Orientation="Horizontal">
+                            <WrapPanel.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="14" />
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                </Style>
+                            </WrapPanel.Resources>
+                            <TextBlock Text="设备编号：" />
+                            <TextBlock Text="{Binding base_sbxx.sbbh, StringFormat='{}{0}  '}" />
+                            <TextBlock Text="品牌型号：" />
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}{1}  ">
+                                        <Binding Path="base_sbxx.sbpp" />
+                                        <Binding Path="base_sbxx.sbxh" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                            <TextBlock Text="本机IP：" />
+                            <TextBlock Text="{Binding base_sbxx.ip, StringFormat='{}{0}  '}" />
+                            <TextBlock Text="设备状态：" />
+                            <Ellipse
+                                x:Name="yzsbzt"
+                                Style="{DynamicResource device_status_style}"
+                                Tag="{Binding base_sbxx.sbzt}" />
+                        </WrapPanel>
                         <ListBox Grid.Row="1" ItemsSource="{Binding BtnStatusList}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
@@ -257,8 +155,7 @@
                                             Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.BTNCMD}"
                                             CommandParameter="{Binding ElementName=item, Path=DataContext}"
                                             IsEnabled="{Binding ElementName=item, Path=DataContext.btnenable}"
-                                            Style="{StaticResource listboxitembtn}"
-                                            Tag="{Binding ElementName=item, Path=DataContext.flag}">
+                                            Style="{StaticResource TJBtnStyle}">
                                             <Button.Content>
                                                 <StackPanel>
                                                     <TextBlock Text="{Binding btntxt}" />
@@ -270,22 +167,21 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-
-
                     </Grid>
+
                 </TabItem>
                 <TabItem
                     Name="drtjtj"
                     Height="auto"
                     Header="当日停机统计">
                     <DataGrid
+                        Margin="5,5,0,5"
                         AutoGenerateColumns="False"
                         CanUserAddRows="False"
                         CanUserDeleteRows="False"
                         HorizontalScrollBarVisibility="Auto"
                         IsReadOnly="True"
                         ItemsSource="{Binding TJList}"
-                        RowHeaderWidth="0"
                         SelectionMode="Single"
                         VerticalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
@@ -312,43 +208,87 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>
-                <TabItem Name="cjxx" Header="采集信息">
-                    <Grid Height="auto">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <GridSplitter
-                            Width="3"
-                            HorizontalAlignment="Right"
-                            Background="Gray"
-                            Cursor="ScrollWE" />
-                        <StackPanel Margin="10,0,5,0" Orientation="Vertical">
-                            <TextBlock Text="原始数据" />
-                            <ScrollViewer
-                                Height="{c:Binding ElementName=main_window,
-                                                   Mode=OneWay,
-                                                   Path=Height-156}"
-                                Template="{StaticResource MyScrollViewer}"
-                                VerticalScrollBarVisibility="Auto">
-                                <TextBlock
-                                    HorizontalAlignment="Left"
-                                    FontSize="15"
-                                    Foreground="{StaticResource lightbrush}"
-                                    Text="{Binding original_data}"
-                                    TextWrapping="Wrap" />
-                            </ScrollViewer>
-                        </StackPanel>
-                        <StackPanel
-                            Grid.Column="1"
-                            Margin="5,0,10,0"
-                            Orientation="Vertical">
-                            <TextBlock Text="历史数据" />
-                            <DataGrid
-                                CanUserAddRows="False"
-                                CanUserDeleteRows="False"
-                                IsReadOnly="True" />
-                        </StackPanel>
+                <TabItem Name="cjxx" Header="数据采集">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <WrapPanel Margin="10,5,10,5">
+                            <WrapPanel.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="14" />
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                </Style>
+                            </WrapPanel.Resources>
+                            <TextBlock Text="连接状态：" />
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Style="{DynamicResource status_style}" />
+                                <TextBlock Text="{Binding socket_linkcnt, StringFormat=' 连接数[{0}]'}" />
+                                <TextBlock Text="{Binding base_sbxx.port, StringFormat=' 端口号[{0}]'}" />
+                            </StackPanel>
+                            <TextBlock Text="客户端列表：" />
+                            <ComboBox
+                                x:Name="ddlip"
+                                ItemsSource="{Binding ClientList}"
+                                SelectedIndex="{Binding comboboxindex}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectionChanged">
+                                        <prism:InvokeCommandAction Command="{Binding ComBoxCMD}" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </WrapPanel>
+                        <Grid Grid.Row="1" Height="auto">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.3*" />
+                                <ColumnDefinition Width="0.7*" />
+                            </Grid.ColumnDefinitions>
+                            <GridSplitter
+                                Width="3"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Stretch"
+                                Background="Transparent"
+                                Cursor="ScrollWE" />
+                            <GroupBox
+                                Margin="10,0,5,0"
+                                BorderBrush="{StaticResource fontbrush}"
+                                BorderThickness="1,1,1,1"
+                                Header="原始数据">
+                                <ScrollViewer
+                                    Height="{c:Binding ElementName=main_window,
+                                                       Mode=OneWay,
+                                                       Path=Height-200}"
+                                    Template="{StaticResource MyScrollViewer}"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <TextBlock
+                                        HorizontalAlignment="Left"
+                                        FontSize="15"
+                                        Foreground="{StaticResource fontbrush}"
+                                        Text="{Binding original_data}"
+                                        TextWrapping="Wrap" />
+                                </ScrollViewer>
+                            </GroupBox>
+                            <GroupBox
+                                Grid.Column="1"
+                                Margin="0,0,10,0"
+                                BorderBrush="{StaticResource fontbrush}"
+                                BorderThickness="1,1,1,1"
+                                Header="历史数据">
+                                <DataGrid
+                                    AutoGenerateColumns="True"
+                                    CanUserAddRows="False"
+                                    CanUserDeleteRows="False"
+                                    IsReadOnly="True"
+                                    ItemsSource="{Binding HisList}"
+                                    SelectionMode="Single" />
+                            </GroupBox>
+                        </Grid>
                     </Grid>
                 </TabItem>
             </TabControl>

@@ -8,9 +8,11 @@ namespace LBJOEE
 {
     public class JsonEntity
     {
-        public string status { get; set; }
-        public string message { get; set; }
-        public string errorcode { get; set; }
-        public sbsj devicedata { get; set; }
+        public DateTime 日期 { get; set; } = DateTime.Now;
+        public string IP { get; set; }
+        public string 状态 { get; set; }
+        public string 故障信息 { get; set; }
+        public string 故障码 { get; set; }
+        public sbsj 设备数据 { get; set; }
     }
 }

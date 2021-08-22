@@ -11,7 +11,15 @@ namespace LBJOEE.Models
         public DateTime rq { get; set; } = DateTime.Now;
         public string txt { get; set; }
         public string location { get; set; }
-        public string loglev { get; set; }
+        public loglevel loglev { get; set; }
+        public string ip { get; set; }
+    }
+
+    public enum loglevel
+    {
+        info,
+        error,
+        warning
     }
 
     public class sys_log_mapper : ClassMapper<sys_log> {

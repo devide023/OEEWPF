@@ -14,7 +14,7 @@
                         <Border
                             Grid.Row="1"
                             Padding="0"
-                            Background="#06527E"
+                            Background="{StaticResource winbgbrush}"
                             BorderBrush="Transparent"
                             BorderThickness="0">
                             <ContentPresenter ContentSource="SelectedContent" />
@@ -27,8 +27,8 @@
     <Style TargetType="TabItem">
         <Setter Property="Height" Value="50" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Foreground" Value="White" />
-        <Setter Property="Background" Value="#06527E" />
+        <Setter Property="Foreground" Value="{StaticResource fontbrush}" />
+        <Setter Property="Background" Value="{StaticResource winbgbrush}" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0,0,0,0" />
@@ -48,6 +48,7 @@
                             x:Name="txt"
                             Margin="30,0"
                             VerticalAlignment="Center"
+                            Foreground="{StaticResource titlefontbrush}"
                             Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Header}" />
                         <Rectangle
                             Name="LeftSideRectangle"
@@ -73,9 +74,10 @@
         </Setter>
     </Style>
     <Style TargetType="ListBox">
-        <Setter Property="Background" Value="#FF06527E" />
+        <Setter Property="Background" Value="{StaticResource winbgbrush}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Margin" Value="5,0,0,0" />
+        <Setter Property="Width" Value="auto" />
+        <Setter Property="Margin" Value="5,0,5,0" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Template">
             <Setter.Value>
@@ -91,6 +93,7 @@
         </Setter>
     </Style>
     <Style TargetType="ListBoxItem">
+        <Setter Property="Margin" Value="10" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
@@ -106,58 +109,24 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="listboxitembtn" TargetType="Button">
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <ControlTemplate.Resources>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="White" />
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="HorizontalAlignment" Value="Center" />
-                        </Style>
-                    </ControlTemplate.Resources>
-                    <Border
-                        x:Name="bg"
-                        Width="120"
-                        Height="90"
-                        Margin="8"
-                        Background="{StaticResource successbrush}"
-                        CornerRadius="6">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding btnenable}" Value="false">
-                            <Setter TargetName="bg" Property="Background" Value="{StaticResource darkbrush}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding flag}" Value="1">
-                            <Setter TargetName="bg" Property="Background" Value="{StaticResource warningbrush}" />
-                        </DataTrigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+
     <Style x:Key="status_style" TargetType="Ellipse">
         <Setter Property="Width" Value="30" />
         <Setter Property="Height" Value="30" />
-        <Setter Property="Fill" Value="{DynamicResource darkbrush}" />
+        <Setter Property="Fill" Value="#e2e2e2" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding socketljzt}" Value="0">
-                <Setter Property="Fill" Value="{DynamicResource darkbrush}" />
+                <Setter Property="Fill" Value="#e2e2e2" />
             </DataTrigger>
             <DataTrigger Binding="{Binding socketljzt}" Value="1">
-                <Setter Property="Fill" Value="{DynamicResource successbrush}" />
+                <Setter Property="Fill" Value="#81FC00" />
                 <DataTrigger.EnterActions>
                     <BeginStoryboard x:Name="dks">
                         <Storyboard>
-                            <ColorAnimation
-                                RepeatBehavior="Forever"
-                                Storyboard.TargetProperty="(Fill).(SolidColorBrush.Color)"
-                                From="Blue"
-                                To="White"
-                                Duration="0:0:0.2" />
+                            <ColorAnimationUsingKeyFrames RepeatBehavior="Forever" Storyboard.TargetProperty="(Fill).(SolidColorBrush.Color)">
+                                <DiscreteColorKeyFrame KeyTime="0:0:0.25" Value="{StaticResource winbg}" />
+                                <DiscreteColorKeyFrame KeyTime="0:0:0.5" Value="#81FC00" />
+                            </ColorAnimationUsingKeyFrames>
                         </Storyboard>
                     </BeginStoryboard>
                 </DataTrigger.EnterActions>
@@ -167,8 +136,66 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+    <Style x:Key="device_status_style" TargetType="Ellipse">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Fill" Value="#e2e2e2" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding ElementName=yzsbzt, Path=Tag}" Value="停机">
+                <Setter Property="Fill" Value="{DynamicResource disconnectbrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ElementName=yzsbzt, Path=Tag}" Value="运行">
+                <Setter Property="Fill" Value="#81FC00" />
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard x:Name="sbyx">
+                        <Storyboard>
+                            <ColorAnimationUsingKeyFrames RepeatBehavior="Forever" Storyboard.TargetProperty="(Fill).(SolidColorBrush.Color)">
+                                <DiscreteColorKeyFrame KeyTime="0:0:0.25" Value="{StaticResource winbg}" />
+                                <DiscreteColorKeyFrame KeyTime="0:0:0.5" Value="#81FC00" />
+                            </ColorAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <StopStoryboard BeginStoryboardName="sbyx" />
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ElementName=yzsbzt, Path=Tag}" Value="空闲">
+                <Setter Property="Fill" Value="{DynamicResource qlbrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ElementName=yzsbzt, Path=Tag}" Value="检修">
+                <Setter Property="Fill" Value="{DynamicResource jxbrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ElementName=yzsbzt, Path=Tag}" Value="换模">
+                <Setter Property="Fill" Value="{DynamicResource warningbrush}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ElementName=yzsbzt, Path=Tag}" Value="故障">
+                <Setter Property="Fill" Value="{DynamicResource errorbrush}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="DataGrid">
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0,0,0,0" />
+        <Setter Property="AlternationCount" Value="2" />
+        <Setter Property="AlternatingRowBackground" Value="#355575C8" />
+        <Setter Property="RowBackground" Value="Transparent" />
+        <Setter Property="GridLinesVisibility" Value="None" />
+        <Setter Property="Foreground" Value="{StaticResource fontbrush}" />
+        <Setter Property="Margin" Value="5,0,5,0" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
     <Style TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="BorderThickness" Value="0,0,0,0" />
+        <Setter Property="BorderBrush" Value="{StaticResource fontbrush}" />
     </Style>
+    <Style TargetType="DataGridCell">
+        <Setter Property="BorderThickness" Value="0,0,0,0" />
+        <Setter Property="BorderBrush" Value="{StaticResource fontbrush}" />
+    </Style>
+
 </ResourceDictionary>

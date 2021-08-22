@@ -68,6 +68,9 @@ namespace LBJOEE
         }
 
         private int _flag;
+        /// <summary>
+        /// 停机按钮颜色标志,1表示
+        /// </summary>
         public int flag
         {
             get { return _flag; }

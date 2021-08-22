@@ -5,49 +5,24 @@
     xmlns:local="clr-namespace:LBJOEE.Convert"
     xmlns:prism="http://prismlibrary.com/">
     <Application.Resources>
-        <Color x:Key="primarycolor">#5575C8</Color>
-        <Color x:Key="successcolor">#63CE63</Color>
-        <Color x:Key="warningcolor">#FFBF2F</Color>
-        <Color x:Key="errorcolor">#E52B20</Color>
-        <Color x:Key="dangercolor">#FF00FF</Color>
-        <Color x:Key="blackcolor">#353C42</Color>
-        <Color x:Key="darkcolor">#CCCED0</Color>
-        <Color x:Key="mediumcolor">#ECECEE</Color>
-        <Color x:Key="lightcolor">#F9F9FB</Color>
-        <SolidColorBrush x:Key="primarybrush" Color="{StaticResource primarycolor}" />
-        <SolidColorBrush x:Key="successbrush" Color="{StaticResource successcolor}" />
-        <SolidColorBrush x:Key="warningbrush" Color="{StaticResource warningcolor}" />
+        <Color x:Key="winbg">#CADEF5</Color>
+        <Color x:Key="fontcolor">#3F5578</Color>
+        <Color x:Key="titlecolor">#1275FD</Color>
+        <Color x:Key="connectedcolor">#81FC00</Color>
+        <Color x:Key="disconnectcolor">#BDBDBD</Color>
+        <Color x:Key="errorcolor">#FF0000</Color>
+        <Color x:Key="qlcolor">#FF00BF</Color>
+        <Color x:Key="warningcolor">#FFAB00</Color>
+        <Color x:Key="jxcolor">#FBF017</Color>
+        <SolidColorBrush x:Key="winbgbrush" Color="{StaticResource winbg}" />
+        <SolidColorBrush x:Key="fontbrush" Color="{StaticResource fontcolor}" />
+        <SolidColorBrush x:Key="titlefontbrush" Color="{StaticResource titlecolor}" />
+        <SolidColorBrush x:Key="connectedbrush" Color="{StaticResource connectedcolor}" />
+        <SolidColorBrush x:Key="disconnectbrush" Color="{StaticResource disconnectcolor}" />
         <SolidColorBrush x:Key="errorbrush" Color="{StaticResource errorcolor}" />
-        <SolidColorBrush x:Key="dangerbrush" Color="{StaticResource dangercolor}" />
-        <SolidColorBrush x:Key="blackbrush" Color="{StaticResource blackcolor}" />
-        <SolidColorBrush x:Key="darkbrush" Color="{StaticResource darkcolor}" />
-        <SolidColorBrush x:Key="mediumbrush" Color="{StaticResource mediumcolor}" />
-        <SolidColorBrush x:Key="lightbrush" Color="{StaticResource lightcolor}" />
-        <Style TargetType="Button">
-            <Setter Property="Margin" Value="10" />
-            <Setter Property="Width" Value="110" />
-            <Setter Property="Height" Value="80" />
-            <Setter Property="Padding" Value="5,10,5,10" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="25" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="FontFamily" Value="仿宋" />
-            <Setter Property="Cursor" Value="Hand" />
-        </Style>
-        <Style x:Key="label" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="{StaticResource lightbrush}" />
-        </Style>
-        <Style x:Key="labelitem" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="Foreground" Value="{StaticResource lightbrush}" />
-        </Style>
-        <Style x:Key="labelzt" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Foreground" Value="{StaticResource lightbrush}" />
-        </Style>
+        <SolidColorBrush x:Key="warningbrush" Color="{StaticResource warningcolor}" />
+        <SolidColorBrush x:Key="qlbrush" Color="{StaticResource qlcolor}" />
+        <SolidColorBrush x:Key="jxbrush" Color="{StaticResource jxcolor}" />
         <local:TimeConvert x:Key="timeconvert" />
     </Application.Resources>
 </prism:PrismApplication>
