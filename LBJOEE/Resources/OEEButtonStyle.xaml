@@ -61,9 +61,9 @@
                         <DataTrigger Binding="{Binding btnenable}" Value="false">
                             <Setter TargetName="bg" Property="Background" Value="{StaticResource disenablebtnbg}" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding flag}" Value="1">
+                        <!--<DataTrigger Binding="{Binding flag}" Value="1">
                             <Setter TargetName="bg" Property="Background" Value="{StaticResource oeebtnbg}" />
-                        </DataTrigger>
+                        </DataTrigger>-->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
 

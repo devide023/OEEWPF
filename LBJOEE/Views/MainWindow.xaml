@@ -159,7 +159,7 @@
                                             <Button.Content>
                                                 <StackPanel>
                                                     <TextBlock Text="{Binding btntxt}" />
-                                                    <TextBlock Text="{Binding tjsj, Converter={StaticResource timeconvert}}" />
+                                                    <TextBlock Text="{Binding tjsj, Converter={StaticResource timeconvert}}" Visibility="{Binding tjsjvisible}" />
                                                 </StackPanel>
                                             </Button.Content>
                                         </Button>

@@ -35,6 +35,9 @@ namespace LBJOEE
         }
 
         private bool _sfgz = false;
+        /// <summary>
+        /// 手动按钮设置的故障
+        /// </summary>
         public bool sfgz
         {
             get { return _sfgz; }
@@ -75,6 +78,24 @@ namespace LBJOEE
         {
             get { return _flag; }
             set { SetProperty(ref _flag, value); }
+        }
+        /// <summary>
+        /// 停机时间是否可见
+        /// </summary>
+        private string _tjsjvisibale = "Collapsed";
+        public string tjsjvisible
+        {
+            get { return _tjsjvisibale; }
+            set { SetProperty(ref _tjsjvisibale, value); }
+        }
+        /// <summary>
+        /// 是否数据采集发过来的故障状态
+        /// </summary>
+        private bool _iscjgz = true;
+        public bool iscjgz
+        {
+            get { return _iscjgz; }
+            set { SetProperty(ref _iscjgz, value); }
         }
     }
 }
