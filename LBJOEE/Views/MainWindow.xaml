@@ -138,8 +138,6 @@
                                     </MultiBinding>
                                 </TextBlock.Text>
                             </TextBlock>
-                            <TextBlock Text="本机IP：" />
-                            <TextBlock Text="{Binding base_sbxx.ip, StringFormat='{}{0}  '}" />
                             <TextBlock Text="设备状态：" />
                             <Ellipse
                                 x:Name="yzsbzt"
@@ -222,24 +220,23 @@
                                 </Style>
                             </WrapPanel.Resources>
                             <TextBlock Text="连接状态：" />
-                            <StackPanel Orientation="Horizontal">
-                                <Ellipse Style="{DynamicResource status_style}" />
-                                <TextBlock Text="{Binding socket_linkcnt, StringFormat=' 连接数[{0}]'}" />
-                                <TextBlock Text="{Binding base_sbxx.port, StringFormat=' 端口号[{0}]'}" />
-                            </StackPanel>
-                            <TextBlock Text="客户端列表：" />
+                            <Ellipse Style="{DynamicResource status_style}" />
+                            <TextBlock Text=" 本机IP:" />
+                            <TextBlock Text="{Binding base_sbxx.ip, StringFormat='{}{0} '}" />
+                            <TextBlock Text="{Binding base_sbxx.port, StringFormat='端口:{0} '}" />
+                            <TextBlock Text="{Binding socket_linkcnt, StringFormat='连接数:{0} '}" />
+                            <TextBlock Text="客户端:" />
                             <ComboBox
                                 x:Name="ddlip"
                                 ItemsSource="{Binding ClientList}"
                                 SelectedIndex="{Binding comboboxindex}">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="SelectionChanged">
-                                        <prism:InvokeCommandAction Command="{Binding ComBoxCMD}" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding}" />
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontSize="12"
+                                            Foreground="{StaticResource fontbrush}"
+                                            Text="{Binding}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
