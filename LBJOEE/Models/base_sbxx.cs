@@ -211,6 +211,14 @@ namespace LBJOEE
             get { return _port; }
             set { SetProperty(ref _port, value); }
         }
+        /// <summary>
+        /// 是否哦日志
+        /// </summary>
+        public string log { get; set; }
+        /// <summary>
+        /// 是否采集故障
+        /// </summary>
+        public string cjgz { get; set; }
 
 
     }

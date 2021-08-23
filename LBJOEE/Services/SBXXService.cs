@@ -55,13 +55,14 @@ namespace LBJOEE.Services
                 q.Add(":sbbh", entity.sbbh, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":tjms", entity.tjms ?? "", OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
+                q.Add(":cjgz", entity.cjgz, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfgz == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='Y',gzkssj=:xtsj,tjms=:tjms where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='Y',gzkssj=:xtsj,tjms=:tjms,cjgz=:cjgz where sbbh=:sbbh ");
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='N',tjms='' where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='N',tjms='',cjgz=:cjgz where sbbh=:sbbh ");
                 }
                 var ret = Db.Connection.Execute(sql.ToString(), q);
                 return ret > 0 ? true : false;

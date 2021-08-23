@@ -166,6 +166,7 @@ namespace LBJOEE.ViewModels
                     var btn = BtnStatusList.Where(t => t.name == "gz").First();
                     btn.sfgz = true;
                     btn.flag = 1;
+                    btn.iscjgz = base_sbxx.cjgz == "Y" ? true : false;
                     btn.btnenable = btn.iscjgz?false:true;
                     btn.btntxt = btn.tjtxt;
                     btn.tjsjvisible = "Visible";
@@ -240,6 +241,7 @@ namespace LBJOEE.ViewModels
                         {
                             _gztimer.Change(0, 1000);
                             base_sbxx.sfgz = "Y";
+                            base_sbxx.cjgz = "Y";
                             base_sbxx.sbzt = "故障";
                             base_sbxx.tjms = "采集到的故障信息";
                             base_sbxx.gzkssj = DateTime.Now;
@@ -256,6 +258,7 @@ namespace LBJOEE.ViewModels
                         {
                             base_sbxx.sbzt = "运行";
                             base_sbxx.sfgz = "N";
+                            base_sbxx.cjgz = "N";
                             btn.flag = 0;
                             btn.sfgz = false;
                             btn.iscjgz = false;
@@ -522,7 +525,9 @@ namespace LBJOEE.ViewModels
                     _gztimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfgz = "N";
+                    base_sbxx.cjgz = "N";
                     obj.flag = 0;
+                    obj.tjsj = 0;
                     obj.sfgz = false;
                     obj.iscjgz = false;
                     obj.btntxt = obj.normaltxt;
@@ -544,8 +549,10 @@ namespace LBJOEE.ViewModels
                     _gztimer.Change(0, 1000);
                     base_sbxx.sbzt = "故障";
                     base_sbxx.sfgz = "Y";
+                    base_sbxx.cjgz = "N";
                     base_sbxx.gzkssj = DateTime.Now;
                     obj.flag = 1;
+                    obj.tjsj = 0;
                     obj.sfgz = true;
                     obj.iscjgz = false;
                     obj.btnenable = true;
@@ -591,6 +598,7 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _qttimer.Change(obj.tjsj, 1000);
                     base_sbxx.sbzt = "停机";
                     base_sbxx.sfqttj = "Y";
@@ -639,6 +647,7 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _hmtimer.Change(obj.tjsj, 1000);
                     base_sbxx.sbzt = "换模";
                     base_sbxx.sfhm = "Y";
@@ -687,6 +696,7 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _jxtimer.Change(obj.tjsj, 1000);
                     base_sbxx.sbzt = "检修";
                     base_sbxx.sfjx = "Y";
@@ -735,6 +745,7 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _qltimer.Change(obj.tjsj, 1000);
                     base_sbxx.sbzt = "空闲";
                     base_sbxx.sfql = "Y";
