@@ -17,8 +17,8 @@ namespace LBJOEE.Views
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             this.MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
             string path = Process.GetCurrentProcess().MainModule.FileName;
-            AutoStart auto = new AutoStart();
-            auto.SetMeAutoStart(true);
+            //AutoStart auto = new AutoStart();
+            //auto.SetMeAutoStart(true);
             
         }
 
