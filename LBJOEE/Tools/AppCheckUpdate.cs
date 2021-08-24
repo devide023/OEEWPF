@@ -9,6 +9,8 @@ using log4net;
 using System.Windows;
 using LBJOEE.Tools;
 using LBJOEE.Services;
+using System.ComponentModel;
+using Prism.Services.Dialogs;
 namespace LBJOEE.Tools
 {
     public static class AppCheckUpdate
@@ -23,7 +25,6 @@ namespace LBJOEE.Tools
         }
         public static void InstallUpdateSyncWithInfo()
         {
-            LogService logservice = new LogService();
             UpdateCheckInfo info = null;
             if (ApplicationDeployment.IsNetworkDeployed)
             {                
@@ -52,9 +53,10 @@ namespace LBJOEE.Tools
                 {
                     try
                     {
-                        logservice.Info("有新版本需要更新");
+                        logservice.Info($"有新版本需要更新,原版本号{CurrentVersion}");
                         ad.Update();
-                        RestartApp();
+                        System.Windows.Forms.Application.Restart();
+                        Application.Current.Shutdown();
                     }
                     catch (DeploymentDownloadException dde)
                     {
@@ -64,11 +66,95 @@ namespace LBJOEE.Tools
                 }
             }
         }
-        public static void RestartApp()
+        
+        private static LogService logservice = new LogService();
+        private static long sizeOfUpdate = 0;
+        public static void UpdateApplication()
         {
-            System.Reflection.Assembly.GetEntryAssembly();
-            string startpath = System.IO.Directory.GetCurrentDirectory();
-            System.Diagnostics.Process.Start(startpath + "\\LBJOEE.exe");
+            if (ApplicationDeployment.IsNetworkDeployed)
+            {
+                ApplicationDeployment ad = ApplicationDeployment.CurrentDeployment;
+                ad.CheckForUpdateCompleted += new CheckForUpdateCompletedEventHandler(ad_CheckForUpdateCompleted);
+                ad.CheckForUpdateProgressChanged += new DeploymentProgressChangedEventHandler(ad_CheckForUpdateProgressChanged);
+                ad.CheckForUpdateAsync();
+            }
+        }
+
+        private static void ad_CheckForUpdateProgressChanged(object sender, DeploymentProgressChangedEventArgs e)
+        {
+            string msg = String.Format("Downloading: {0}. {1:D}K of {2:D}K downloaded.", GetProgressString(e.State), e.BytesCompleted / 1024, e.BytesTotal / 1024);
+            if(e.BytesTotal == e.BytesCompleted)
+            { 
+                //logservice.Info(msg);
+            }
+        }
+
+        static string GetProgressString(DeploymentProgressState state)
+        {
+            if (state == DeploymentProgressState.DownloadingApplicationFiles)
+            {
+                return "application files";
+            }
+            else if (state == DeploymentProgressState.DownloadingApplicationInformation)
+            {
+                return "application manifest";
+            }
+            else
+            {
+                return "deployment manifest";
+            }
+        }
+
+        static void ad_CheckForUpdateCompleted(object sender, CheckForUpdateCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                logservice.Error("ERROR: Could not retrieve new version of the application. Reason: \n" + e.Error.Message + "\nPlease report this error to the system administrator.");
+                return;
+            }
+            else if (e.Cancelled == true)
+            {
+                logservice.Info("The update was cancelled.");
+            }
+
+            // Ask the user if they would like to update the application now.
+            if (e.UpdateAvailable)
+            {
+                logservice.Info($"有可更新的应用程序新版本,原版本号：{ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString()}");
+                sizeOfUpdate = e.UpdateSizeBytes;
+                BeginUpdate();
+            }
+        }
+
+        private static void BeginUpdate()
+        {
+            ApplicationDeployment ad = ApplicationDeployment.CurrentDeployment;
+            ad.UpdateCompleted += new AsyncCompletedEventHandler(ad_UpdateCompleted);
+            // Indicate progress in the application's status bar.
+            ad.UpdateProgressChanged += new DeploymentProgressChangedEventHandler(ad_UpdateProgressChanged);
+            ad.UpdateAsync();
+        }
+
+        static void ad_UpdateProgressChanged(object sender, DeploymentProgressChangedEventArgs e)
+        {
+            String progressText = String.Format("{0:D}K out of {1:D}K downloaded - {2:D}% complete", e.BytesCompleted / 1024, e.BytesTotal / 1024, e.ProgressPercentage);
+            
+        }
+
+        static void ad_UpdateCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                logservice.Info("The update of the application's latest version was cancelled.");
+                return;
+            }
+            else if (e.Error != null)
+            {
+                logservice.Info("ERROR: Could not install the latest version of the application. Reason: \n" + e.Error.Message + "\nPlease report this error to the system administrator.");
+                return;
+            }
+            logservice.Info($"完成更新,包大小{sizeOfUpdate}");
+            System.Windows.Forms.Application.Restart();
             Application.Current.Shutdown();
         }
     }

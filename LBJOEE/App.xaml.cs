@@ -6,6 +6,10 @@ using LBJOEE.Services;
 using LBJOEE.Tools;
 using System;
 using System.Threading;
+using System.Collections.Generic;
+using System.IO;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace LBJOEE
 {
@@ -14,7 +18,12 @@ namespace LBJOEE
     /// </summary>
     public partial class App
     {
+        public App()
+        {
+            AppCheckUpdate.InstallUpdateSyncWithInfo();
+        }
         public EventWaitHandle ProgramStarted { get; set; }
+
         protected override Window CreateShell()
         {
             return Container.Resolve<MainWindow>();
@@ -24,14 +33,13 @@ namespace LBJOEE
         {
             containerRegistry.Register<LogService>();
         }
-
+        
         protected override void OnStartup(StartupEventArgs e)
         {
             bool createNew;
             ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, "OEE", out createNew);
             if (!createNew)
             {
-                MessageBox.Show("程序已运行","提示");
                 App.Current.Shutdown();
                 Environment.Exit(0);
             }
