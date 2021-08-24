@@ -25,6 +25,7 @@
                 <ResourceDictionary Source="/Resources/MainStyle.xaml" />
                 <ResourceDictionary Source="/Resources/scrollstyle.xaml" />
                 <ResourceDictionary Source="/Resources/OEEButtonStyle.xaml" />
+                <ResourceDictionary Source="/Resources/ComboboxStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -228,8 +229,10 @@
                             <TextBlock Text="客户端:" />
                             <ComboBox
                                 x:Name="ddlip"
+                                VerticalAlignment="Center"
                                 ItemsSource="{Binding ClientList}"
-                                SelectedIndex="{Binding comboboxindex}">
+                                SelectedIndex="{Binding comboboxindex}"
+                                Style="{StaticResource ComboBoxStyle1}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock
