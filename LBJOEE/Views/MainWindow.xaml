@@ -229,10 +229,13 @@
                             <TextBlock Text="客户端:" />
                             <ComboBox
                                 x:Name="ddlip"
+                                Width="170"
+                                Height="20"
                                 VerticalAlignment="Center"
+                                FontSize="14"
                                 ItemsSource="{Binding ClientList}"
                                 SelectedIndex="{Binding comboboxindex}"
-                                Style="{StaticResource ComboBoxStyle1}">
+                                Style="{StaticResource ComboBoxStyle}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock
