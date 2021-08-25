@@ -15,7 +15,9 @@ namespace LBJOEE.Tools
 {
     public static class AppCheckUpdate
     {
-        private static ILog log = LogManager.GetLogger(typeof(AppCheckUpdate));
+        private static readonly ILog log = LogManager.GetLogger(typeof(AppCheckUpdate));
+        private static readonly LogService logservice = new LogService();
+        private static readonly SBXXService service = new SBXXService();
         public static string CurrentVersion
         {
             get
@@ -26,11 +28,13 @@ namespace LBJOEE.Tools
         public static void InstallUpdateSyncWithInfo()
         {
             UpdateCheckInfo info = null;
+            base_sbxx config = null;
             if (ApplicationDeployment.IsNetworkDeployed)
-            {                
+            {
                 ApplicationDeployment ad = ApplicationDeployment.CurrentDeployment;
                 try
                 {
+                    config = service.Find_Sbxx_ByIp();
                     info = ad.CheckForDetailedUpdate(false);
                 }
                 catch (DeploymentDownloadException dde)
@@ -48,15 +52,23 @@ namespace LBJOEE.Tools
                     logservice.Error("无法更新此应用程序,它可能不是ClickOnce应用程序。" + ioe.Message, ioe.StackTrace);
                     return;
                 }
-
+                catch (Exception e) {
+                    logservice.Error(e.Message, e.StackTrace);
+                    return;
+                }  
+                
                 if (info.UpdateAvailable)
                 {
                     try
                     {
-                        logservice.Info($"有新版本需要更新,原版本号{CurrentVersion}");
-                        ad.Update();
-                        System.Windows.Forms.Application.Restart();
-                        Application.Current.Shutdown();
+                        
+                        if (config.isupdate == "Y")
+                        {
+                            logservice.Info($"有新版本需要更新,原版本号{CurrentVersion}");
+                            ad.Update();
+                            System.Windows.Forms.Application.Restart();
+                            Application.Current.Shutdown();
+                        }
                     }
                     catch (DeploymentDownloadException dde)
                     {
@@ -67,7 +79,6 @@ namespace LBJOEE.Tools
             }
         }
         
-        private static LogService logservice = new LogService();
         private static long sizeOfUpdate = 0;
         public static void UpdateApplication()
         {

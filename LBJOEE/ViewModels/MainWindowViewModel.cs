@@ -315,63 +315,13 @@ namespace LBJOEE.ViewModels
                         string msg = Encoding.Default.GetString(bytes);
                         original_data = $"{DateTime.Now} {client.remoteip} \r\n{msg}\r\n";
                         var data = JsonConvert.DeserializeObject<JsonEntity>(msg);
-                        ShowHisData(new JsonEntity() { 
-                        日期 = DateTime.Now,
-                        IP = client.remoteip,
-                        状态= data.状态,
-                        设备数据 = data.设备数据
-                        });
-                        //接收到故障信息
-                        var btn = BtnStatusList.Where(t => t.name == "gz").First();
-                        if (data.状态 == "故障" && base_sbxx.sbzt != data.状态)
+                        ShowHisData(data);
+                        //接收到设备状态信息
+                        ChangeDeviceStatus(new {status = data.status,errorcode=data.errorcode,errormsg = data.errormsg });
+                        //接收到设备数据
+                        if (data.devicedata != null && base_sbxx.sbzt=="运行")
                         {
-                            _gztimer.Change(0, 1000);
-                            base_sbxx.sfgz = "Y";
-                            base_sbxx.cjgz = "Y";
-                            base_sbxx.sbzt = "故障";
-                            base_sbxx.tjms = "采集到的故障信息";
-                            base_sbxx.gzkssj = DateTime.Now;
-                            btn.btnenable = false;
-                            btn.sfgz = true;
-                            btn.iscjgz = true;
-                            btn.flag = 1;
-                            btn.tjsjvisible = "Visible";
-                            btn.btntxt = btn.tjtxt;
-                            _sbxxservice.SetGZtj(base_sbxx);
-                            EnableOtherBtn(btn, false);
-                        }
-                        if(data.状态 == "运行" && base_sbxx.sbzt == "故障" && btn.iscjgz)
-                        {
-                            base_sbxx.sbzt = "运行";
-                            base_sbxx.sfgz = "N";
-                            base_sbxx.cjgz = "N";
-                            btn.flag = 0;
-                            btn.sfgz = false;
-                            btn.iscjgz = false;
-                            btn.btnenable = true;
-                            btn.btntxt = btn.normaltxt;
-                            btn.tjsjvisible = "Collapsed";
-                            EnableOtherBtn(btn, true);
-                            DateTime now = DateTime.Now;
-                            _sbtjservice.Add(new sbtj()
-                            {
-                                sbbh = base_sbxx.sbbh,
-                                tjjssj = now,
-                                tjkssj = base_sbxx.gzkssj,
-                                tjlx = btn.tjlx,
-                                tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
-                                tjms = btn.tjms
-                            });
-                            _sbxxservice.SetGZtj(base_sbxx);
-                        }
-                        if (data.状态 == "运行" && base_sbxx.sbzt =="")
-                        {
-                            base_sbxx.sbzt = "运行";
-                            foreach (var item in BtnStatusList)
-                            {
-                                item.btnenable = true;
-                                item.tjsj = 0;
-                            }
+                            DealDeviceData(data.devicedata);
                         }
                     }
                     catch (Exception e)
@@ -384,7 +334,7 @@ namespace LBJOEE.ViewModels
                 //处理服务器启动后事件
                 HandleServerStarted = new Action<OEESocket.SocketServer>(theServer =>
                 {
-                    _logservice.Info("服务已启动");
+                    _logservice.Info("Socket服务已启动");
                 }),
 
                 //处理新的客户端连接后的事件
@@ -451,6 +401,21 @@ namespace LBJOEE.ViewModels
             }
             //服务器启动
             server.StartServer();
+        }
+        /// <summary>
+        /// 设备数据处理
+        /// </summary>
+        /// <param name="devicedata"></param>
+        private void DealDeviceData(sbsj devicedata)
+        {
+            try
+            {
+                _sbsjservice.Add(devicedata);
+            }
+            catch (Exception e)
+            {
+                _logservice.Error(e.Message, e.StackTrace);
+            }
         }
 
         private void TabItemChangeHandle(object parm)
@@ -928,6 +893,63 @@ namespace LBJOEE.ViewModels
             var obj = state as BtnStatus;
             var ts = DateTime.Now - base_sbxx.jxkssj;
             obj.tjsj = (int)ts.TotalSeconds;
+        }
+        #endregion
+
+        #region 更新设备状态
+        private void ChangeDeviceStatus(dynamic stateinfo)
+        {
+            var btn = BtnStatusList.Where(t => t.name == "gz").First();
+            if (stateinfo.status == "故障" && base_sbxx.sbzt != stateinfo.status)
+            {
+                _gztimer.Change(0, 1000);
+                base_sbxx.sfgz = "Y";
+                base_sbxx.cjgz = "Y";
+                base_sbxx.sbzt = "故障";
+                base_sbxx.tjms = "采集到的故障信息";
+                base_sbxx.gzkssj = DateTime.Now;
+                btn.btnenable = false;
+                btn.sfgz = true;
+                btn.iscjgz = true;
+                btn.flag = 1;
+                btn.tjsjvisible = "Visible";
+                btn.btntxt = btn.tjtxt;
+                _sbxxservice.SetGZtj(base_sbxx);
+                EnableOtherBtn(btn, false);
+            }
+            if (stateinfo.status == "运行" && base_sbxx.sbzt == "故障" && btn.iscjgz)
+            {
+                base_sbxx.sbzt = "运行";
+                base_sbxx.sfgz = "N";
+                base_sbxx.cjgz = "N";
+                btn.flag = 0;
+                btn.sfgz = false;
+                btn.iscjgz = false;
+                btn.btnenable = true;
+                btn.btntxt = btn.normaltxt;
+                btn.tjsjvisible = "Collapsed";
+                EnableOtherBtn(btn, true);
+                DateTime now = DateTime.Now;
+                _sbtjservice.Add(new sbtj()
+                {
+                    sbbh = base_sbxx.sbbh,
+                    tjjssj = now,
+                    tjkssj = base_sbxx.gzkssj,
+                    tjlx = btn.tjlx,
+                    tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
+                    tjms = btn.tjms
+                });
+                _sbxxservice.SetGZtj(base_sbxx);
+            }
+            if (stateinfo.status == "运行" && base_sbxx.sbzt == "")
+            {
+                base_sbxx.sbzt = "运行";
+                foreach (var item in BtnStatusList)
+                {
+                    item.btnenable = true;
+                    item.tjsj = 0;
+                }
+            }
         }
         #endregion
     }

@@ -219,8 +219,10 @@ namespace LBJOEE
         /// 是否采集故障
         /// </summary>
         public string cjgz { get; set; }
-
-
+        /// <summary>
+        /// 是否更新
+        /// </summary>
+        public string isupdate { get; set; }
     }
 
     public class base_sbxx_mapper : ClassMapper<base_sbxx>

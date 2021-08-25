@@ -22,10 +22,11 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resources/MainStyle.xaml" />
                 <ResourceDictionary Source="/Resources/scrollstyle.xaml" />
+                <ResourceDictionary Source="/Resources/MainStyle.xaml" />
                 <ResourceDictionary Source="/Resources/OEEButtonStyle.xaml" />
                 <ResourceDictionary Source="/Resources/ComboboxStyle.xaml" />
+                <ResourceDictionary Source="/Resources/datagridstyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>

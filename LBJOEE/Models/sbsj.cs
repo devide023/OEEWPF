@@ -12,6 +12,14 @@ namespace LBJOEE
     public class sbsj
     {
         /// <summary>
+        /// 接收数据日期
+        /// </summary>
+        public DateTime rq { get; set; }
+        /// <summary>
+        /// 接收数据ip地址
+        /// </summary>
+        public string ip { get; set; }
+        /// <summary>
         /// 设备编号
         /// </summary>
         public string sbbh { get; set; }

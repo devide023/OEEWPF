@@ -173,18 +173,7 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
-    <Style TargetType="DataGrid">
-        <Setter Property="HeadersVisibility" Value="Column" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0,0,0,0" />
-        <Setter Property="AlternationCount" Value="2" />
-        <Setter Property="AlternatingRowBackground" Value="#355575C8" />
-        <Setter Property="RowBackground" Value="Transparent" />
-        <Setter Property="GridLinesVisibility" Value="None" />
-        <Setter Property="Foreground" Value="{StaticResource fontbrush}" />
-        <Setter Property="Margin" Value="5,0,5,0" />
-        <Setter Property="FontSize" Value="16" />
-    </Style>
+
     <Style TargetType="DataGridColumnHeader">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />

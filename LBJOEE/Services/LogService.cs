@@ -32,13 +32,20 @@ namespace LBJOEE.Services
 
         private void SaveLog(string msg,loglevel loglevel,string location = "")
         {
-            sys_log entity = new sys_log();
-            entity.rq = DateTime.Now;
-            entity.ip = ip;
-            entity.loglev = loglevel;
-            entity.txt = msg;
-            entity.location = location;
-            Db.Insert<sys_log>(entity);
+            try
+            {
+                sys_log entity = new sys_log();
+                entity.rq = DateTime.Now;
+                entity.ip = ip;
+                entity.loglev = loglevel;
+                entity.txt = msg;
+                entity.location = location;
+                Db.Insert<sys_log>(entity);
+            }
+            catch (Exception e)
+            {
+                
+            }
         }
 
         
