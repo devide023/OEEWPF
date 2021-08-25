@@ -11,12 +11,11 @@
                         <Border BorderBrush="Transparent" BorderThickness="0,0,0,0">
                             <TabPanel IsItemsHost="True" />
                         </Border>
-                        <Border
-                            Grid.Row="1"
-                            Padding="0"
-                            Background="{StaticResource winbgbrush}"
-                            BorderBrush="Transparent"
-                            BorderThickness="0">
+                        <Border Grid.Row="1"
+                                Padding="0"
+                                Background="{StaticResource winbgbrush}"
+                                BorderBrush="Transparent"
+                                BorderThickness="0">
                             <ContentPresenter ContentSource="SelectedContent" />
                         </Border>
                     </Grid>
@@ -25,42 +24,38 @@
         </Setter>
     </Style>
     <Style TargetType="TabItem">
-        <Setter Property="Height" Value="50" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Foreground" Value="{StaticResource fontbrush}" />
         <Setter Property="Background" Value="{StaticResource winbgbrush}" />
-        <Setter Property="FontSize" Value="20" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0,0,0,0" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Foreground" Value="{StaticResource fontbrush}" />
+        <Setter Property="Height" Value="50" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabItem">
                     <Grid>
-                        <Border
-                            x:Name="bd"
-                            Height="50"
-                            Margin="0"
-                            Background="Transparent"
-                            BorderBrush="Transparent"
-                            BorderThickness="0,0,0,0"
-                            CornerRadius="0,0,0,0" />
-                        <TextBlock
-                            x:Name="txt"
-                            Margin="30,0"
-                            VerticalAlignment="Center"
-                            Foreground="{StaticResource titlefontbrush}"
-                            Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Header}" />
-                        <Rectangle
-                            Name="LeftSideRectangle"
-                            Height="3"
-                            VerticalAlignment="Bottom"
-                            Fill="Red"
-                            Visibility="Hidden" />
+                        <Border x:Name="bd"
+                                Height="50"
+                                Margin="0"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="0,0,0,0"
+                                CornerRadius="0,0,0,0" />
+                        <TextBlock x:Name="txt"
+                                   Margin="30,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource titlefontbrush}"
+                                   Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Header}" />
+                        <Rectangle Name="LeftSideRectangle"
+                                   Height="3"
+                                   VerticalAlignment="Bottom"
+                                   Fill="Red"
+                                   Visibility="Hidden" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
-                            <Setter TargetName="bd" Property="Background" Value="#35000000" />
                             <Setter TargetName="LeftSideRectangle" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="bd" Property="Background" Value="#35000000" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -72,25 +67,25 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style TargetType="ListBox">
         <Setter Property="Background" Value="{StaticResource winbgbrush}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Width" Value="auto" />
-        <Setter Property="Margin" Value="5,0,5,0" />
         <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Margin" Value="5,0,5,0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                        <WrapPanel
-                            IsItemsHost="True"
-                            Orientation="Horizontal"
-                            ScrollViewer.CanContentScroll="True" />
+                        <WrapPanel IsItemsHost="True"
+                                   Orientation="Horizontal"
+                                   ScrollViewer.CanContentScroll="True" />
                     </ScrollViewer>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="Width" Value="auto" />
     </Style>
     <Style TargetType="ListBoxItem">
         <Setter Property="Margin" Value="10" />
@@ -110,9 +105,9 @@
         </Setter>
     </Style>
     <Style x:Key="status_style" TargetType="Ellipse">
-        <Setter Property="Width" Value="30" />
-        <Setter Property="Height" Value="30" />
         <Setter Property="Fill" Value="#808080" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Width" Value="30" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding socketljzt}" Value="0">
                 <Setter Property="Fill" Value="#808080" />
@@ -136,9 +131,9 @@
         </Style.Triggers>
     </Style>
     <Style x:Key="device_status_style" TargetType="Ellipse">
-        <Setter Property="Width" Value="30" />
-        <Setter Property="Height" Value="30" />
         <Setter Property="Fill" Value="#808080" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Width" Value="30" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding ElementName=yzsbzt, Path=Tag}" Value="停机">
                 <Setter Property="Fill" Value="#808080" />
@@ -176,14 +171,14 @@
 
     <Style TargetType="DataGridColumnHeader">
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{StaticResource fontbrush}" />
+        <Setter Property="BorderThickness" Value="0,0,0,0" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="BorderThickness" Value="0,0,0,0" />
-        <Setter Property="BorderBrush" Value="{StaticResource fontbrush}" />
     </Style>
     <Style TargetType="DataGridCell">
-        <Setter Property="BorderThickness" Value="0,0,0,0" />
         <Setter Property="BorderBrush" Value="{StaticResource fontbrush}" />
+        <Setter Property="BorderThickness" Value="0,0,0,0" />
     </Style>
 
 </ResourceDictionary>
