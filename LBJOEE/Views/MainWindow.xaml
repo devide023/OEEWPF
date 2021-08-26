@@ -1,24 +1,23 @@
-﻿<Window
-    x:Class="LBJOEE.Views.MainWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:local="clr-namespace:LBJOEE.Views"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:prism="http://prismlibrary.com/"
-    x:Name="main_window"
-    Title="{Binding Title}"
-    Width="700"
-    Height="500"
-    prism:ViewModelLocator.AutoWireViewModel="True"
-    AllowsTransparency="True"
-    Background="Transparent"
-    MouseLeftButtonDown="main_window_MouseLeftButtonDown"
-    WindowStartupLocation="CenterScreen"
-    WindowStyle="None"
-    mc:Ignorable="d">
+﻿<Window x:Class="LBJOEE.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:LBJOEE.Views"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:prism="http://prismlibrary.com/"
+        x:Name="main_window"
+        Title="{Binding Title}"
+        Width="800"
+        Height="600"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        AllowsTransparency="True"
+        Background="Transparent"
+        MouseLeftButtonDown="main_window_MouseLeftButtonDown"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        mc:Ignorable="d">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -30,6 +29,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
+
     <Border Background="{StaticResource winbgbrush}" CornerRadius="10">
         <Grid>
             <Grid.RowDefinitions>
@@ -42,43 +42,39 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <TextBlock
-                    Margin="15,0,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    FontSize="20"
-                    Foreground="{StaticResource fontbrush}"
-                    Text="{Binding Title}" />
-                <StackPanel
-                    Grid.Column="1"
-                    Height="auto"
-                    Margin="0,0,10,0"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Orientation="Horizontal">
+                <TextBlock Margin="15,0,0,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           FontSize="20"
+                           Foreground="{StaticResource fontbrush}"
+                           Text="{Binding Title}" />
+                <StackPanel Grid.Column="1"
+                            Height="auto"
+                            Margin="0,0,10,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
                     <StackPanel.Resources>
                         <Style TargetType="Button">
-                            <Setter Property="Width" Value="30" />
-                            <Setter Property="Height" Value="30" />
-                            <Setter Property="FontSize" Value="20" />
-                            <Setter Property="Margin" Value="5,0,0,5" />
                             <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="Foreground" Value="{StaticResource fontbrush}" />
-                            <Setter Property="FontFamily" Value="/Resources/#iconfont" />
-                            <Setter Property="BorderThickness" Value="0" />
                             <Setter Property="BorderBrush" Value="{x:Null}" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="FontFamily" Value="/Resources/#iconfont" />
+                            <Setter Property="FontSize" Value="20" />
+                            <Setter Property="Foreground" Value="{StaticResource fontbrush}" />
+                            <Setter Property="Height" Value="30" />
+                            <Setter Property="Margin" Value="5,0,0,5" />
+                            <Setter Property="Width" Value="30" />
                         </Style>
                         <ControlTemplate x:Key="winclose" TargetType="Button">
-                            <Border
-                                x:Name="border"
-                                Width="30"
-                                Height="30"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center">
-                                <ContentPresenter
+                            <Border x:Name="border"
+                                    Width="30"
+                                    Height="30"
                                     HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Content="{TemplateBinding Content}" />
+                                    VerticalAlignment="Center">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Content="{TemplateBinding Content}" />
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
@@ -87,36 +83,31 @@
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </StackPanel.Resources>
-                    <Button
-                        Command="{Binding WinMinCMD}"
-                        CommandParameter="{Binding ElementName=main_window}"
-                        Content="&#xe65d;" />
-                    <Button
-                        Command="{Binding WinMaxCMD}"
-                        CommandParameter="{Binding ElementName=main_window}"
-                        Content="&#xe623;" />
-                    <Button
-                        Command="{Binding WinCloseCMD}"
-                        CommandParameter="{Binding ElementName=main_window}"
-                        Content="&#xe6c9;"
-                        Template="{StaticResource winclose}" />
+                    <Button Command="{Binding WinMinCMD}"
+                            CommandParameter="{Binding ElementName=main_window}"
+                            Content="&#xe65d;" />
+                    <Button Command="{Binding WinMaxCMD}"
+                            CommandParameter="{Binding ElementName=main_window}"
+                            Content="&#xe623;" />
+                    <Button Command="{Binding WinCloseCMD}"
+                            CommandParameter="{Binding ElementName=main_window}"
+                            Content="&#xe6c9;"
+                            Template="{StaticResource winclose}" />
                 </StackPanel>
             </Grid>
-            <TabControl
-                x:Name="main_tab"
-                Grid.Row="1"
-                Width="auto"
-                Height="auto"
-                SelectedIndex="{Binding tabselectindex}">
+            <TabControl x:Name="main_tab"
+                        Grid.Row="1"
+                        Width="auto"
+                        Height="auto"
+                        SelectedIndex="{Binding tabselectindex}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <prism:InvokeCommandAction Command="{Binding TabChangeCMD}" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
-                <TabItem
-                    Name="jbxx"
-                    Header="基本信息"
-                    IsSelected="True">
+                <TabItem Name="jbxx"
+                         Header="基本信息"
+                         IsSelected="True">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
@@ -141,21 +132,19 @@
                                 </TextBlock.Text>
                             </TextBlock>
                             <TextBlock Text="设备状态：" />
-                            <Ellipse
-                                x:Name="yzsbzt"
-                                Style="{DynamicResource device_status_style}"
-                                Tag="{Binding base_sbxx.sbzt}" />
+                            <Ellipse x:Name="yzsbzt"
+                                     Style="{DynamicResource device_status_style}"
+                                     Tag="{Binding base_sbxx.sbzt}" />
                         </WrapPanel>
                         <ListBox Grid.Row="1" ItemsSource="{Binding BtnStatusList}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>
-                                        <Button
-                                            x:Name="item"
-                                            Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.BTNCMD}"
-                                            CommandParameter="{Binding ElementName=item, Path=DataContext}"
-                                            IsEnabled="{Binding ElementName=item, Path=DataContext.btnenable}"
-                                            Style="{StaticResource TJBtnStyle}">
+                                        <Button x:Name="item"
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.BTNCMD}"
+                                                CommandParameter="{Binding ElementName=item, Path=DataContext}"
+                                                IsEnabled="{Binding ElementName=item, Path=DataContext.btnenable}"
+                                                Style="{StaticResource TJBtnStyle}">
                                             <Button.Content>
                                                 <StackPanel>
                                                     <TextBlock Text="{Binding btntxt}" />
@@ -170,41 +159,34 @@
                     </Grid>
 
                 </TabItem>
-                <TabItem
-                    Name="drtjtj"
-                    Height="auto"
-                    Header="当日停机统计">
-                    <DataGrid
-                        Margin="5,5,0,5"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="False"
-                        CanUserDeleteRows="False"
-                        HorizontalScrollBarVisibility="Auto"
-                        IsReadOnly="True"
-                        ItemsSource="{Binding TJList}"
-                        SelectionMode="Single"
-                        VerticalScrollBarVisibility="Auto">
+                <TabItem Name="drtjtj"
+                         Height="auto"
+                         Header="当日停机统计">
+                    <DataGrid Margin="5,5,0,5"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              HorizontalScrollBarVisibility="Auto"
+                              IsReadOnly="True"
+                              ItemsSource="{Binding TJList}"
+                              SelectionMode="Single"
+                              VerticalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
-                            <DataGridTextColumn
-                                Width="auto"
-                                Binding="{Binding tjkssj, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
-                                Header="开始时间" />
-                            <DataGridTextColumn
-                                Width="auto"
-                                Binding="{Binding tjjssj, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
-                                Header="结束时间" />
-                            <DataGridTextColumn
-                                Width="auto"
-                                Binding="{Binding tjsj, Converter={StaticResource timeconvert}}"
-                                Header="时长" />
-                            <DataGridTextColumn
-                                Width="auto"
-                                Binding="{Binding tjlx}"
-                                Header="停机类型" />
-                            <DataGridTextColumn
-                                Width="*"
-                                Binding="{Binding tjms}"
-                                Header="停机描述" />
+                            <DataGridTextColumn Width="auto"
+                                                Binding="{Binding tjkssj, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
+                                                Header="开始时间" />
+                            <DataGridTextColumn Width="auto"
+                                                Binding="{Binding tjjssj, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
+                                                Header="结束时间" />
+                            <DataGridTextColumn Width="auto"
+                                                Binding="{Binding tjsj, Converter={StaticResource timeconvert}}"
+                                                Header="时长" />
+                            <DataGridTextColumn Width="auto"
+                                                Binding="{Binding tjlx}"
+                                                Header="停机类型" />
+                            <DataGridTextColumn Width="*"
+                                                Binding="{Binding tjms}"
+                                                Header="停机描述" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>
@@ -228,22 +210,20 @@
                             <TextBlock Text="{Binding base_sbxx.port, StringFormat='端口:{0} '}" />
                             <TextBlock Text="{Binding socket_linkcnt, StringFormat='连接数:{0} '}" />
                             <TextBlock Text="客户端:" />
-                            <ComboBox
-                                x:Name="ddlip"
-                                Width="170"
-                                Height="20"
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                ItemsSource="{Binding ClientList}"
-                                SelectedIndex="{Binding comboboxindex}"
-                                Style="{StaticResource ComboBoxStyle}">
+                            <ComboBox x:Name="ddlip"
+                                      Width="170"
+                                      Height="20"
+                                      VerticalAlignment="Center"
+                                      FontSize="14"
+                                      ItemsSource="{Binding ClientList}"
+                                      SelectedIndex="{Binding comboboxindex}"
+                                      Style="{StaticResource ComboBoxStyle}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock
-                                            VerticalAlignment="Center"
-                                            FontSize="12"
-                                            Foreground="{StaticResource fontbrush}"
-                                            Text="{Binding}" />
+                                        <TextBlock VerticalAlignment="Center"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource fontbrush}"
+                                                   Text="{Binding}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
@@ -253,58 +233,52 @@
                                 <ColumnDefinition Width="0.3*" />
                                 <ColumnDefinition Width="0.7*" />
                             </Grid.ColumnDefinitions>
-                            <GridSplitter
-                                Width="3"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Stretch"
-                                Background="Transparent"
-                                Cursor="ScrollWE" />
-                            <GroupBox
-                                Margin="10,0,5,0"
-                                BorderBrush="{StaticResource fontbrush}"
-                                BorderThickness="1,1,1,1"
-                                Header="原始数据">
-                                <ScrollViewer
-                                    Height="{c:Binding ElementName=main_window,
-                                                       Mode=OneWay,
-                                                       Path=Height-200}"
-                                    Template="{StaticResource MyScrollViewer}"
-                                    VerticalScrollBarVisibility="Auto">
-                                    <TextBlock
-                                        HorizontalAlignment="Left"
-                                        FontSize="15"
-                                        Foreground="{StaticResource fontbrush}"
-                                        Text="{Binding original_data}"
-                                        TextWrapping="Wrap" />
+                            <GridSplitter Width="3"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Stretch"
+                                          Background="Transparent"
+                                          Cursor="ScrollWE" />
+                            <GroupBox Margin="10,0,5,0"
+                                      BorderBrush="{StaticResource fontbrush}"
+                                      BorderThickness="1,1,1,1"
+                                      Header="原始数据">
+                                <ScrollViewer Height="{c:Binding ElementName=main_window,
+                                                                 Mode=OneWay,
+                                                                 Path=Height-200}"
+                                              Template="{StaticResource MyScrollViewer}"
+                                              VerticalScrollBarVisibility="Auto">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               FontSize="15"
+                                               Foreground="{StaticResource fontbrush}"
+                                               Text="{Binding original_data}"
+                                               TextWrapping="Wrap" />
                                 </ScrollViewer>
                             </GroupBox>
-                            <GroupBox
-                                Grid.Column="1"
-                                Margin="0,0,10,0"
-                                BorderBrush="{StaticResource fontbrush}"
-                                BorderThickness="1,1,1,1"
-                                Header="历史数据">
-                                <DataGrid
-                                    AutoGenerateColumns="True"
-                                    CanUserAddRows="False"
-                                    CanUserDeleteRows="False"
-                                    IsReadOnly="True"
-                                    ItemsSource="{Binding HisList}"
-                                    SelectionMode="Single" />
+                            <GroupBox Grid.Column="1"
+                                      Margin="0,0,10,0"
+                                      BorderBrush="{StaticResource fontbrush}"
+                                      BorderThickness="1,1,1,1"
+                                      Header="历史数据">
+                                <DataGrid AutoGenerateColumns="True"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="False"
+                                          IsReadOnly="True"
+                                          ItemsSource="{Binding HisList}"
+                                          SelectionMode="Single" />
                             </GroupBox>
                         </Grid>
                     </Grid>
                 </TabItem>
             </TabControl>
             <DockPanel Grid.Row="2" Height="auto">
-                <TextBlock
-                    Height="40"
-                    DockPanel.Dock="Bottom"
-                    FontSize="16"
-                    Foreground="Red"
-                    Text="{Binding ErrorMsg}"
-                    TextWrapping="Wrap" />
+                <TextBlock Height="40"
+                           DockPanel.Dock="Bottom"
+                           FontSize="16"
+                           Foreground="Red"
+                           Text="{Binding ErrorMsg}"
+                           TextWrapping="Wrap" />
             </DockPanel>
         </Grid>
     </Border>
+
 </Window>

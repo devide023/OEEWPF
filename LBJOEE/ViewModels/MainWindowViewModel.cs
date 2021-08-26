@@ -167,6 +167,7 @@ namespace LBJOEE.ViewModels
             //连接客户端
             if (ClientList.Count > 0)
             {
+                base_sbxx.sbzt = base_sbxx.sbzt == "" || base_sbxx.sbzt == "运行" ? "运行" : base_sbxx.sbzt;
                 if (base_sbxx.sfgz == "Y")
                 {
                     var btn = BtnStatusList.Where(t => t.name == "gz").First();
@@ -268,36 +269,11 @@ namespace LBJOEE.ViewModels
             }
             else
             {
-
-                if (base_sbxx.sfgz == "Y")
+                base_sbxx.sbzt = base_sbxx.sbzt == "" || base_sbxx.sbzt == "运行" ? "" : base_sbxx.sbzt;
+                foreach (var item in BtnStatusList)
                 {
-                    var btn = BtnStatusList.Where(t => t.name == "gz").First();
-                    btn.btnenable = false;
-                    btn.tjsjvisible = "Visible";
-                }
-                if (base_sbxx.sfhm == "Y")
-                {
-                    BtnStatus btn = BtnStatusList.Where(t => t.name == "hm").First();
-                    btn.btnenable = false;
-                    btn.tjsjvisible = "Visible";
-                }
-                if (base_sbxx.sfjx == "Y")
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "jx").First();
-                    btn.btnenable = false;
-                    btn.tjsjvisible = "Visible";
-                }
-                if (base_sbxx.sfql == "Y")
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "ql").First();
-                    btn.btnenable = false;
-                    btn.tjsjvisible = "Visible";
-                }
-                if (base_sbxx.sfqttj == "Y")
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "qt").First();
-                    btn.btnenable = false;
-                    btn.tjsjvisible = "Visible";
+                    item.btnenable = false;
+                    item.tjsjvisible = "Collapsed";
                 }
             }
         }
