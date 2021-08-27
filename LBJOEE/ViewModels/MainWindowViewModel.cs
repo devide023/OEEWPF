@@ -164,7 +164,7 @@ namespace LBJOEE.ViewModels
 
         private void FreshBtnListState()
         {
-
+            if (ClientList.Count > 0) { 
             foreach (var btn in BtnStatusList)
             {
                 btn.sfgz = false;
@@ -233,6 +233,15 @@ namespace LBJOEE.ViewModels
                 btn.btntxt = btn.tjtxt;
                 btn.tjsjvisible = "Visible";
                 EnableOtherBtn(btn, false);
+            }
+
+            }
+            else
+            {
+                foreach (var btn in BtnStatusList)
+                {
+                    btn.btnenable = false;
+                }
             }
 
         }
