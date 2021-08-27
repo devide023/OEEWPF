@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace LBJOEE
 {
@@ -21,6 +22,10 @@ namespace LBJOEE
         public App()
         {
             AppCheckUpdate.InstallUpdateSyncWithInfo();
+            //Task.Run(() =>
+            //{
+            //    AppCheckUpdate.InstallUpdateSyncWithInfo();
+            //});
         }
         public EventWaitHandle ProgramStarted { get; set; }
 

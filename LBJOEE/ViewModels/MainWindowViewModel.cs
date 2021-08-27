@@ -164,118 +164,77 @@ namespace LBJOEE.ViewModels
 
         private void FreshBtnListState()
         {
-            //连接客户端
-            if (ClientList.Count > 0)
-            {
-                base_sbxx.sbzt = base_sbxx.sbzt == "" || base_sbxx.sbzt == "运行" ? "运行" : base_sbxx.sbzt;
-                if (base_sbxx.sfgz == "Y")
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "gz").First();
-                    btn.sfgz = true;
-                    btn.flag = 1;
-                    btn.iscjgz = base_sbxx.cjgz == "Y" ? true : false;
-                    btn.btnenable = btn.iscjgz ? false : true;
-                    btn.btntxt = btn.tjtxt;
-                    btn.tjsjvisible = "Visible";
-                    EnableOtherBtn(btn, false);
-                }
-                else
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "gz").First();
-                    btn.sfgz = false;
-                    btn.flag = 0;
-                    btn.iscjgz = base_sbxx.cjgz == "Y" ? true : false;
-                    btn.btnenable = btn.iscjgz ? false : true;
-                    btn.btntxt = btn.normaltxt;
-                    btn.tjsjvisible = "Collapsed";
-                }
-                if (base_sbxx.sfhm == "Y")
-                {
-                    BtnStatus btn = BtnStatusList.Where(t => t.name == "hm").First();
-                    btn.sfhm = true;
-                    btn.flag = 1;
-                    btn.btnenable = true;
-                    btn.btntxt = btn.tjtxt;
-                    btn.tjsjvisible = "Visible";
-                    EnableOtherBtn(btn, false);
-                }
-                else
-                {
-                    BtnStatus btn = BtnStatusList.Where(t => t.name == "hm").First();
-                    btn.sfhm = false;
-                    btn.flag = 0;
-                    btn.btnenable = true;
-                    btn.btntxt = btn.normaltxt;
-                    btn.tjsjvisible = "Collapsed";
-                }
-                if (base_sbxx.sfjx == "Y")
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "jx").First();
-                    btn.sfjx = true;
-                    btn.flag = 1;
-                    btn.btnenable = true;
-                    btn.btntxt = btn.tjtxt;
-                    btn.tjsjvisible = "Visible";
-                    EnableOtherBtn(btn, false);
-                }
-                else
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "jx").First();
-                    btn.sfjx = false;
-                    btn.flag = 0;
-                    btn.btnenable = true;
-                    btn.btntxt = btn.normaltxt;
-                    btn.tjsjvisible = "Collapsed";
-                }
-                if (base_sbxx.sfql == "Y")
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "ql").First();
-                    btn.sfql = true;
-                    btn.flag = 1;
-                    btn.btnenable = true;
-                    btn.btntxt = btn.tjtxt;
-                    btn.tjsjvisible = "Visible";
-                    EnableOtherBtn(btn, false);
-                }
-                else
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "ql").First();
-                    btn.sfql = false;
-                    btn.flag = 0;
-                    btn.btnenable = true;
-                    btn.btntxt = btn.normaltxt;
-                    btn.tjsjvisible = "Collapsed";
-                }
-                if (base_sbxx.sfqttj == "Y")
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "qt").First();
-                    btn.sfqt = true;
-                    btn.flag = 1;
-                    btn.btnenable = true;
-                    btn.btntxt = btn.tjtxt;
-                    btn.tjsjvisible = "Visible";
-                    EnableOtherBtn(btn, false);
-                }
-                else
-                {
-                    var btn = BtnStatusList.Where(t => t.name == "qt").First();
-                    btn.sfqt = false;
-                    btn.flag = 0;
-                    btn.btnenable = true;
-                    btn.btntxt = btn.normaltxt;
-                    btn.tjsjvisible = "Collapsed";
-                }
 
-            }
-            else
+            foreach (var btn in BtnStatusList)
             {
-                base_sbxx.sbzt = base_sbxx.sbzt == "" || base_sbxx.sbzt == "运行" ? "" : base_sbxx.sbzt;
-                foreach (var item in BtnStatusList)
-                {
-                    item.btnenable = false;
-                    item.tjsjvisible = "Collapsed";
-                }
+                btn.sfgz = false;
+                btn.sfhm = false;
+                btn.sfjx = false;
+                btn.sfql = false;
+                btn.sfqt = false;
+                btn.flag = 0;
+                btn.iscjgz = base_sbxx.cjgz == "Y" ? true : false;
+                btn.btnenable = btn.iscjgz && !btn.sfgz ? false : true;
+                btn.btntxt = btn.normaltxt;
+                btn.tjsjvisible = "Collapsed";
             }
+            base_sbxx.sbzt = base_sbxx.sbzt == "" || base_sbxx.sbzt == "运行" ? "运行" : base_sbxx.sbzt;
+            if (base_sbxx.sfgz == "Y")
+            {
+                var btn = BtnStatusList.Where(t => t.name == "gz").First();
+                btn.sfgz = true;
+                btn.flag = 1;
+                btn.iscjgz = base_sbxx.cjgz == "Y" ? true : false;
+                btn.btnenable = btn.iscjgz ? false : true;
+                btn.btntxt = btn.tjtxt;
+                btn.tjsjvisible = "Visible";
+                EnableOtherBtn(btn, false);
+            }
+
+            if (base_sbxx.sfhm == "Y")
+            {
+                BtnStatus btn = BtnStatusList.Where(t => t.name == "hm").First();
+                btn.sfhm = true;
+                btn.flag = 1;
+                btn.btnenable = true;
+                btn.btntxt = btn.tjtxt;
+                btn.tjsjvisible = "Visible";
+                EnableOtherBtn(btn, false);
+            }
+
+            if (base_sbxx.sfjx == "Y")
+            {
+                var btn = BtnStatusList.Where(t => t.name == "jx").First();
+                btn.sfjx = true;
+                btn.flag = 1;
+                btn.btnenable = true;
+                btn.btntxt = btn.tjtxt;
+                btn.tjsjvisible = "Visible";
+                EnableOtherBtn(btn, false);
+            }
+
+            if (base_sbxx.sfql == "Y")
+            {
+                var btn = BtnStatusList.Where(t => t.name == "ql").First();
+                btn.sfql = true;
+                btn.flag = 1;
+                btn.btnenable = true;
+                btn.btntxt = btn.tjtxt;
+                btn.tjsjvisible = "Visible";
+                EnableOtherBtn(btn, false);
+            }
+
+            if (base_sbxx.sfqttj == "Y")
+            {
+                var btn = BtnStatusList.Where(t => t.name == "qt").First();
+                btn.sfqt = true;
+                btn.flag = 1;
+                btn.btnenable = true;
+                btn.btntxt = btn.tjtxt;
+                btn.tjsjvisible = "Visible";
+                EnableOtherBtn(btn, false);
+            }
+
         }
 
         private void InitSocketServer()
@@ -334,45 +293,35 @@ namespace LBJOEE.ViewModels
             };
             void Freshdata(LinkedList<SocketConnection> list)
             {
-                ThreadPool.QueueUserWorkItem(delegate
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    SynchronizationContext.SetSynchronizationContext(new
-                        DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-                    SynchronizationContext.Current.Post(pl =>
+                    socket_linkcnt = list.Count;
+                    if (list.Count > 0)
                     {
-                        socket_linkcnt = list.Count;
-                        if (list.Count > 0)
-                        {
-                            socketljzt = 1;
-                        }
-                        else
-                        {
-                            socketljzt = 0;
-                        }
-                        ClientList.Clear();
-                        foreach (var item in list)
-                        {
-                            ClientList.Add(item.remoteip);
-                        }
-                        comboboxindex = 0;
-                        FreshBtnListState();
-                    }, null);
-                });
+                        socketljzt = 1;
+                    }
+                    else
+                    {
+                        socketljzt = 0;
+                    }
+                    ClientList.Clear();
+                    foreach (var item in list)
+                    {
+                        ClientList.Add(item.remoteip);
+                    }
+                    comboboxindex = 0;
+                    FreshBtnListState();
+                });                
             }
             void ShowHisData(JsonEntity entity)
             {
-                ThreadPool.QueueUserWorkItem(delegate
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    SynchronizationContext.SetSynchronizationContext(new
-                        DispatcherSynchronizationContext(System.Windows.Application.Current.Dispatcher));
-                    SynchronizationContext.Current.Post(pl =>
+                    if (HisList.Count > 100)
                     {
-                        if (HisList.Count > 20)
-                        {
-                            HisList.Clear();
-                        }
-                        HisList.Insert(0,entity);
-                    }, null);
+                        HisList.Clear();
+                    }
+                    HisList.Insert(0, entity);
                 });
             }
             //服务器启动

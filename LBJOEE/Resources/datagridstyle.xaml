@@ -3,32 +3,30 @@
         <ResourceDictionary Source="/Resources/scrollstyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <Style TargetType="{x:Type DataGrid}">
-        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="AlternatingRowBackground" Value="#355575C8" />
+        <Setter Property="AlternationCount" Value="2" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0,0,0,0" />
-        <Setter Property="AlternationCount" Value="2" />
-        <Setter Property="AlternatingRowBackground" Value="#355575C8" />
-        <Setter Property="RowBackground" Value="Transparent" />
-        <Setter Property="GridLinesVisibility" Value="None" />
-        <Setter Property="Foreground" Value="{StaticResource fontbrush}" />
-        <Setter Property="Margin" Value="5,0,5,0" />
         <Setter Property="FontSize" Value="16" />
+        <Setter Property="Foreground" Value="{StaticResource fontbrush}" />
+        <Setter Property="GridLinesVisibility" Value="None" />
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="Margin" Value="5,0,5,0" />
+        <Setter Property="RowBackground" Value="Transparent" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
         <Setter Property="ScrollViewer.PanningMode" Value="Both" />
         <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGrid}">
-                    <Border
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        SnapsToDevicePixels="True">
-                        <ScrollViewer
-                            x:Name="DG_ScrollViewer"
-                            Focusable="false"
-                            Template="{StaticResource MyScrollViewer}">
+                    <Border Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="DG_ScrollViewer"
+                                      Focusable="false"
+                                      Template="{StaticResource MyScrollViewer}">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                         </ScrollViewer>
                     </Border>

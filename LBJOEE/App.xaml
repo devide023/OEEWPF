@@ -1,9 +1,8 @@
-﻿<prism:PrismApplication
-    x:Class="LBJOEE.App"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:LBJOEE.Convert"
-    xmlns:prism="http://prismlibrary.com/">
+﻿<prism:PrismApplication x:Class="LBJOEE.App"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:local="clr-namespace:LBJOEE.Convert"
+                        xmlns:prism="http://prismlibrary.com/">
     <Application.Resources>
         <Color x:Key="winbg">#CADEF5</Color>
         <Color x:Key="fontcolor">#3F5578</Color>

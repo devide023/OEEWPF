@@ -50,10 +50,10 @@
     </ControlTemplate>
     <SolidColorBrush x:Key="ScrollBarDisabledBackground" Color="#F4F4F4" />
     <Style x:Key="VerticalScrollBarPageButton" TargetType="{x:Type RepeatButton}">
-        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Focusable" Value="false" />
         <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -66,8 +66,8 @@
     </Style>
     <!--  滚动条颜色、圆角等设置  -->
     <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
-        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
@@ -87,10 +87,10 @@
         </Setter>
     </Style>
     <Style x:Key="HorizontalScrollBarPageButton" TargetType="{x:Type RepeatButton}">
-        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Focusable" Value="false" />
         <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -103,11 +103,9 @@
     </Style>
     <Style x:Key="MyScrollBarStyle" TargetType="{x:Type ScrollBar}">
         <Setter Property="Background" Value="#CADEF5" />
-        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
-        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
-        <!--  滚动条宽度  -->
-        <Setter Property="Width" Value="8" />
         <Setter Property="MinWidth" Value="6" />
+        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollBar}">
@@ -141,13 +139,14 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <!--  滚动条宽度  -->
+        <Setter Property="Width" Value="8" />
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
-                <Setter Property="Width" Value="Auto" />
-                <Setter Property="MinWidth" Value="0" />
+                <Setter Property="Background" Value="AliceBlue" />
                 <Setter Property="Height" Value="6" />
                 <Setter Property="MinHeight" Value="6" />
-                <Setter Property="Background" Value="AliceBlue" />
+                <Setter Property="MinWidth" Value="0" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ScrollBar}">
@@ -177,6 +176,7 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="Width" Value="Auto" />
             </Trigger>
         </Style.Triggers>
     </Style>
