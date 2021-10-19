@@ -93,4 +93,7 @@
             </MultiTrigger>
         </Style.Triggers>
     </Style>
+    <Style x:Key="contentCenterStyle" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
 </ResourceDictionary>
