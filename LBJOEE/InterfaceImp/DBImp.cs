@@ -20,7 +20,8 @@ namespace LBJOEE
         public Action<string> ErrorAction { get; set; }
         public virtual dynamic Add(T entity)
         {
-            return Db.Insert<T>(entity);
+            dynamic ret = Db.Insert<T>(entity);
+            return ret;
         }
 
         public virtual bool Add(List<T> entitys)

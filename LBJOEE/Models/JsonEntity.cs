@@ -11,6 +11,9 @@ namespace LBJOEE
         public string status { get; set; }
         public string errormsg { get; set; }
         public string errorcode { get; set; }
-        public sbsj devicedata { get; set; }
+        /// <summary>
+        /// 设备数据采集
+        /// </summary>
+        public sjcj devicedata { get; set; }
     }
 }

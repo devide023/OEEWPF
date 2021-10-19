@@ -110,6 +110,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\sjcj.cs" />
     <Compile Include="Tools\AutoStart.cs" />
     <Compile Include="Tools\RegTool.cs" />
     <Compile Include="Views\UserControl1.xaml.cs">

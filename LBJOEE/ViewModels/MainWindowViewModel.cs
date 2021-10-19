@@ -259,6 +259,8 @@ namespace LBJOEE.ViewModels
                         string msg = Encoding.Default.GetString(bytes);
                         original_data = $"{DateTime.Now} {client.remoteip} \r\n{msg}\r\n";
                         var data = JsonConvert.DeserializeObject<JsonEntity>(msg);
+                        data.devicedata.sbbh = base_sbxx.sbbh;
+                        data.devicedata.sbip = base_sbxx.ip;
                         ShowHisData(data);
                         //接收到设备状态信息
                         ChangeDeviceStatus(new {status = data.status,errorcode=data.errorcode,errormsg = data.errormsg });
@@ -340,7 +342,7 @@ namespace LBJOEE.ViewModels
         /// 设备数据处理
         /// </summary>
         /// <param name="devicedata"></param>
-        private void DealDeviceData(sbsj devicedata)
+        private void DealDeviceData(sjcj devicedata)
         {
             try
             {
