@@ -20,6 +20,7 @@ using log4net;
 using LBJOEE.OEESocket;
 using System.Text;
 using LBJOEE.Models;
+using System.Windows.Data;
 
 namespace LBJOEE.ViewModels
 {
@@ -31,8 +32,14 @@ namespace LBJOEE.ViewModels
         private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
         public ObservableCollection<string> ClientList { get; set; } = new ObservableCollection<string>();
-        private ObservableCollection<dynamic> _hislist = new ObservableCollection<dynamic>();
-        public ObservableCollection<dynamic> HisList
+        private ObservableCollection<dynamic> _datagridcols;
+        public ObservableCollection<dynamic> DataGridCols
+        {
+            get { return _datagridcols; }
+            set { SetProperty(ref _datagridcols, value); }
+        }
+        private ObservableCollection<sjcj> _hislist = new ObservableCollection<sjcj>();
+        public ObservableCollection<sjcj> HisList
         {
             get { return _hislist; }
             set { SetProperty(ref _hislist, value); }
@@ -286,15 +293,16 @@ namespace LBJOEE.ViewModels
                             data.status = bjzt.FirstOrDefault().value == "1" ? "故障" : "";
                         }
                         data.devicedata = receivedata;
-                        data.sbbh = base_sbxx.sbbh;
-                        data.sbip = base_sbxx.ip;
+                        data.SJCJ = FanShe(data.devicedata);
                         ShowHisData(data);
                         //接收到设备状态信息
                         ChangeDeviceStatus(new {status = data.status,errorcode=data.errorcode,errormsg = data.errormsg });
                         //接收到设备数据
-                        if (data.devicedata != null && base_sbxx.sbzt=="运行")
+                        if (data.SJCJ != null && base_sbxx.sbzt=="运行")
                         {
-                            DealDeviceData(data);
+                            data.SJCJ.sbbh = base_sbxx.sbbh;
+                            data.SJCJ.sbip = base_sbxx.ip;
+                            DealDeviceData(data.SJCJ);
                         }
                     }
                     catch (Exception e)
@@ -358,16 +366,19 @@ namespace LBJOEE.ViewModels
                     if (HisList.Count > 100)
                     {
                         HisList.Clear();
-                    }
-                    var obj = fanshe(entity.devicedata);
-                    HisList.Insert(0, obj);
+                    }                    
+                    HisList.Insert(0, entity.SJCJ);
                 });
             }
             //服务器启动
             server.StartServer();
         }
-
-        private sjcj fanshe(List<itemdata> datas)
+        /// <summary>
+        /// 通过反射设置对象属性值
+        /// </summary>
+        /// <param name="datas"></param>
+        /// <returns></returns>
+        private sjcj FanShe(List<itemdata> datas)
         {
             Type t = Type.GetType("LBJOEE.sjcj");
             var propertyInfos = t.GetProperties();
@@ -385,6 +396,7 @@ namespace LBJOEE.ViewModels
                     if (p.Name == gx.colname)
                     {
                         p.SetValue(entity, item.value);
+                        break;
                     }
                 }
             }
@@ -395,15 +407,11 @@ namespace LBJOEE.ViewModels
         /// 设备数据处理
         /// </summary>
         /// <param name="devicedata"></param>
-        private void DealDeviceData(JsonEntity data)
+        private void DealDeviceData(sjcj data)
         {
             try
             {
-                //反射设备数据
-                var sbsj = fanshe(data.devicedata);
-                sbsj.sbbh = data.sbbh;
-                sbsj.sbip = data.sbip;
-                _sbsjservice.Add(sbsj);
+                _sbsjservice.Add(data);
             }
             catch (Exception e)
             {

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using DapperExtensions.Mapper;
 namespace LBJOEE.Models
 {
+    /// <summary>
+    /// 字段名称与中文对应关系
+    /// </summary>
     public class dygx
     {
         public int id { get; set; }
@@ -13,6 +16,7 @@ namespace LBJOEE.Models
         public string colname { get; set; }
         public string sbbh { get; set; }
         public int status { get; set; }
+        public int seq { get; set; }
     }
     public class dygx_mapper : ClassMapper<dygx>
     {

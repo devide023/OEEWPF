@@ -18,7 +18,10 @@ namespace LBJOEE
         /// 设备数据采集
         /// </summary>
         public List<itemdata> devicedata { get; set; }
-
+        /// <summary>
+        /// 对应数据库字段（采集后的参数）
+        /// </summary>
+        public sjcj SJCJ { get; set; }
         
     }
 }
