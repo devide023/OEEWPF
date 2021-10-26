@@ -28,6 +28,18 @@ namespace LBJOEE
         /// </summary>
         public string sbip { get; set; }
         /// <summary>
+        /// 加工数
+        /// </summary>
+        public string jgs { get; set; }
+        /// <summary>
+        /// 运行状态
+        /// </summary>
+        public string yxzt { get; set; }
+        /// <summary>
+        /// 报警状态
+        /// </summary>
+        public string bjzt { get; set; }
+        /// <summary>
         /// 压射速度
         /// </summary>
         public string yssd { get; set; }

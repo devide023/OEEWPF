@@ -19,6 +19,7 @@ using Prism.Ioc;
 using log4net;
 using LBJOEE.OEESocket;
 using System.Text;
+using LBJOEE.Models;
 
 namespace LBJOEE.ViewModels
 {
@@ -30,8 +31,8 @@ namespace LBJOEE.ViewModels
         private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
         public ObservableCollection<string> ClientList { get; set; } = new ObservableCollection<string>();
-        private ObservableCollection<JsonEntity> _hislist = new ObservableCollection<JsonEntity>();
-        public ObservableCollection<JsonEntity> HisList
+        private ObservableCollection<dynamic> _hislist = new ObservableCollection<dynamic>();
+        public ObservableCollection<dynamic> HisList
         {
             get { return _hislist; }
             set { SetProperty(ref _hislist, value); }
@@ -124,6 +125,7 @@ namespace LBJOEE.ViewModels
         private readonly LogService _logservice;
         private readonly IContainerExtension _container;
         private readonly IRegionManager _regionmgr;
+        private IEnumerable<dygx> dygxlist;
         public MainWindowViewModel(SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService,IContainerExtension container)
         {
             Title = Title + AppCheckUpdate.CurrentVersion;
@@ -152,6 +154,7 @@ namespace LBJOEE.ViewModels
             InitSocketServer();
             InitBtnStatus();
             InitTimer();
+            InitDygx();
             BTNCMD = new DelegateCommand<BtnStatus>(BtnHandel);
             ComBoxCMD = new DelegateCommand<object>(ComBoHandle);
             TabChangeCMD = new DelegateCommand<object>(TabItemChangeHandle);
@@ -160,6 +163,18 @@ namespace LBJOEE.ViewModels
             _clear_errtimer.Change(0, 1000*30);
 
             FreshBtnListState();
+        }
+
+        private void InitDygx()
+        {
+            try
+            {
+                this.dygxlist = _sbxxservice.GetDYGX();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private void FreshBtnListState()
@@ -258,16 +273,28 @@ namespace LBJOEE.ViewModels
                     {
                         string msg = Encoding.Default.GetString(bytes);
                         original_data = $"{DateTime.Now} {client.remoteip} \r\n{msg}\r\n";
-                        var data = JsonConvert.DeserializeObject<JsonEntity>(msg);
-                        data.devicedata.sbbh = base_sbxx.sbbh;
-                        data.devicedata.sbip = base_sbxx.ip;
+                        var receivedata = JsonConvert.DeserializeObject<List<itemdata>>(msg);                        
+                        JsonEntity data = new JsonEntity();
+                        var yxzt = receivedata.Where(i => i.itemName == "运行状态");
+                        var bjzt = receivedata.Where(i => i.itemName == "报警状态");
+                        if (yxzt.Count() > 0)
+                        {
+                            data.status = yxzt.FirstOrDefault().value == "1" ? "运行" : "";
+                        }
+                        if (bjzt.Count() > 0)
+                        {
+                            data.status = bjzt.FirstOrDefault().value == "1" ? "故障" : "";
+                        }
+                        data.devicedata = receivedata;
+                        data.sbbh = base_sbxx.sbbh;
+                        data.sbip = base_sbxx.ip;
                         ShowHisData(data);
                         //接收到设备状态信息
                         ChangeDeviceStatus(new {status = data.status,errorcode=data.errorcode,errormsg = data.errormsg });
                         //接收到设备数据
                         if (data.devicedata != null && base_sbxx.sbzt=="运行")
                         {
-                            DealDeviceData(data.devicedata);
+                            DealDeviceData(data);
                         }
                     }
                     catch (Exception e)
@@ -332,21 +359,51 @@ namespace LBJOEE.ViewModels
                     {
                         HisList.Clear();
                     }
-                    HisList.Insert(0, entity);
+                    var obj = fanshe(entity.devicedata);
+                    HisList.Insert(0, obj);
                 });
             }
             //服务器启动
             server.StartServer();
         }
+
+        private sjcj fanshe(List<itemdata> datas)
+        {
+            Type t = Type.GetType("LBJOEE.sjcj");
+            var propertyInfos = t.GetProperties();
+            sjcj entity = new sjcj();
+            foreach (var item in datas)
+            {
+                var itemname = item.itemName;
+                var gx = this.dygxlist.Where(i => i.txt == itemname).FirstOrDefault();
+                if (gx == null)
+                {
+                    continue;
+                }
+                foreach (var p in propertyInfos)
+                {
+                    if (p.Name == gx.colname)
+                    {
+                        p.SetValue(entity, item.value);
+                    }
+                }
+            }
+            return entity;
+        }
+
         /// <summary>
         /// 设备数据处理
         /// </summary>
         /// <param name="devicedata"></param>
-        private void DealDeviceData(sjcj devicedata)
+        private void DealDeviceData(JsonEntity data)
         {
             try
             {
-                _sbsjservice.Add(devicedata);
+                //反射设备数据
+                var sbsj = fanshe(data.devicedata);
+                sbsj.sbbh = data.sbbh;
+                sbsj.sbip = data.sbip;
+                _sbsjservice.Add(sbsj);
             }
             catch (Exception e)
             {

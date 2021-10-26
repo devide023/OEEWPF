@@ -157,7 +157,6 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </Grid>
-
                 </TabItem>
                 <TabItem Name="drtjtj"
                          Height="auto"
@@ -268,129 +267,7 @@
                                           CanUserDeleteRows="False"
                                           IsReadOnly="True"
                                           ItemsSource="{Binding HisList}"
-                                          SelectionMode="Single">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding status}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="状态" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.yssd}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="压射速度" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.cnyl}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="储能压力" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.ysqx}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="压射曲线" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.mc}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="模次" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.scsj}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="生产时间" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.myssd}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="慢压射速度" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.kyssd}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="快压射速度" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.jysj}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="建压时间" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.jssj}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="建速时间" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.mjwd}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="模具温度" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.lbhd}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="料柄厚度" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.sml}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="锁模力" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.xtyl}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="系统压力" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.zyyl}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="增压压力" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.dqpyl}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="氮气瓶压力" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.slsd}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="射料速度" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.lqsj}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="冷却时间" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.eksd}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="二块速度" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.ekwz}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="二块位置" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.zyll}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="增压流量" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.jzwd}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="浇铸温度" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.ysys}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="压射延时" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.pwdw}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="喷雾点位" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.dhyh}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="顶回压回" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.ysjl}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="压射距离" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.ctzj}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="冲头直径" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding devicedata.rhcs}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="润滑参数" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding errorcode}"
-                                                            ElementStyle="{StaticResource contentCenterStyle}"
-                                                            Header="错误码" />
-                                        <DataGridTextColumn Width="100"
-                                                            Binding="{Binding errormsg}"
-                                                            Header="错误信息" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                          SelectionMode="Single" />
                             </GroupBox>
                         </Grid>
                     </Grid>
@@ -406,5 +283,4 @@
             </DockPanel>
         </Grid>
     </Border>
-
 </Window>

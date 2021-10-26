@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using LBJOEE.Tools;
 using Dapper;
 using Dapper.Oracle;
+using LBJOEE.Models;
+
 namespace LBJOEE.Services
 {
     /// <summary>
@@ -179,6 +181,19 @@ namespace LBJOEE.Services
             {
                 ErrorAction?.Invoke("SBXXService.SetQTtj" + e.Message);
                 return false;
+            }
+        }
+
+        public IEnumerable<dygx> GetDYGX()
+        {
+            try
+            {
+               return Db.Connection.Query<dygx>("select id, txt, colname, sbbh, status from DYGX ");
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
     }
