@@ -26,7 +26,7 @@ namespace LBJOEE.Views
             this.MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
             string path = Process.GetCurrentProcess().MainModule.FileName;
             var list = _sbxxservice.GetDYGX().OrderBy(t=>t.seq);
-            // 右对齐风格
+            // 居中对齐风格
             Style stylem = new Style(typeof(TextBlock));
             Setter setm = new Setter(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Center);
             stylem.Setters.Add(setm);
