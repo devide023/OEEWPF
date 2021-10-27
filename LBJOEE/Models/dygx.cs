@@ -16,6 +16,7 @@ namespace LBJOEE.Models
         public string colname { get; set; }
         public string sbbh { get; set; }
         public int status { get; set; }
+        public int width { get; set; }
         public int seq { get; set; }
     }
     public class dygx_mapper : ClassMapper<dygx>

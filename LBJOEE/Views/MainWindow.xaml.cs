@@ -26,16 +26,23 @@ namespace LBJOEE.Views
             this.MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
             string path = Process.GetCurrentProcess().MainModule.FileName;
             var list = _sbxxservice.GetDYGX().OrderBy(t=>t.seq);
+            // 右对齐风格
+            Style stylem = new Style(typeof(TextBlock));
+            Setter setm = new Setter(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+            stylem.Setters.Add(setm);
             foreach (var item in list)
             {
                 DataGridTextColumn col = new DataGridTextColumn()
                 {
                     Header = item.txt,
-                    Binding = new Binding(item.colname)
+                    Width = (double)item.width,
+                    MinWidth = (double)50,
+                    MaxWidth = (double)200,
+                    Binding = new Binding(item.colname),
+                    ElementStyle = stylem
                 };
                 DataGrid_His.Columns.Add(col);
             }
-            
         }
 
         private void main_window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

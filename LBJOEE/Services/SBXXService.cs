@@ -188,7 +188,7 @@ namespace LBJOEE.Services
         {
             try
             {
-               return Db.Connection.Query<dygx>("select id, txt, colname, sbbh, status from DYGX ");
+               return Db.Connection.Query<dygx>("select id, txt, colname, sbbh, status,seq,width from DYGX ");
             }
             catch (Exception)
             {
