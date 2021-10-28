@@ -14,7 +14,6 @@ namespace LBJOEE.Models
         public int id { get; set; }
         public string txt { get; set; }
         public string colname { get; set; }
-        public string sbbh { get; set; }
         public int status { get; set; }
         public int width { get; set; }
         public int seq { get; set; }

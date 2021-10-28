@@ -184,11 +184,25 @@ namespace LBJOEE.Services
             }
         }
 
-        public IEnumerable<dygx> GetDYGX()
+        public IEnumerable<dygx> GetDYGX(string sbbh)
         {
             try
             {
-               return Db.Connection.Query<dygx>("select id, txt, colname, sbbh, status,seq,width from DYGX ");
+                var sfcz = Db.Connection.ExecuteScalar<int>("select count(id) FROM sbcsconf where sbbh = :sbbh", new { sbbh = sbbh });
+                if (sfcz == 0)
+                {
+                    return Db.Connection.Query<dygx>("select id, txt, colname, status,seq,width from DYGX where status = 1 ");
+                }
+                else
+                {
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select ta.id, ta.txt, ta.colname, ta.status, ta.seq, ta.width ");
+                    sql.Append(" FROM   dygx ta, sbcsconf tb ");
+                    sql.Append(" where  ta.id = tb.csid ");
+                    sql.Append(" and    ta.status = 1 ");
+                    sql.Append(" and    tb.sbbh = :sbbh");
+                    return Db.Connection.Query<dygx>(sql.ToString(), new { sbbh = sbbh });
+                }
             }
             catch (Exception)
             {

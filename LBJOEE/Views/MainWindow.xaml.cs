@@ -25,7 +25,12 @@ namespace LBJOEE.Views
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             this.MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
             string path = Process.GetCurrentProcess().MainModule.FileName;
-            var list = _sbxxservice.GetDYGX().OrderBy(t=>t.seq);
+            var base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
+            if (base_sbxx == null)
+            {
+                return;
+            }
+            var list = _sbxxservice.GetDYGX(base_sbxx.sbbh).OrderBy(t=>t.seq);
             // 居中对齐风格
             Style stylem = new Style(typeof(TextBlock));
             Setter setm = new Setter(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Center);

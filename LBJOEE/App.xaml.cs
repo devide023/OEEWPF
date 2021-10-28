@@ -21,7 +21,14 @@ namespace LBJOEE
     {
         public App()
         {
-            AppCheckUpdate.InstallUpdateSyncWithInfo();
+            try
+            {
+                AppCheckUpdate.InstallUpdateSyncWithInfo();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             //Task.Run(() =>
             //{
             //    AppCheckUpdate.InstallUpdateSyncWithInfo();

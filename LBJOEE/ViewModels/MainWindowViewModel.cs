@@ -59,14 +59,14 @@ namespace LBJOEE.ViewModels
             get { return _original_data; }
             set { SetProperty(ref _original_data, value); }
         }
-        private int _index=0;
+        private int _index = 0;
         private readonly Timer _clear_errtimer;
         public int comboboxindex
         {
             get { return _index; }
             set { SetProperty(ref _index, value); }
         }
-        private int _tabselectindex=0;
+        private int _tabselectindex = 0;
         public int tabselectindex
         {
             get { return _tabselectindex; }
@@ -77,14 +77,14 @@ namespace LBJOEE.ViewModels
             get { return _title; }
             set { SetProperty(ref _title, value); }
         }
-        
+
         private string _errormsg;
         public string ErrorMsg
         {
             get { return _errormsg; }
             set { SetProperty(ref _errormsg, value); }
         }
-        
+
         private int _socekljzt = 0;
         /// <summary>
         /// socket连接状态
@@ -124,7 +124,7 @@ namespace LBJOEE.ViewModels
         public DelegateCommand<object> WinCloseCMD { get; private set; }
 
         #endregion
-        
+
         private readonly SBXXService _sbxxservice;
         private readonly SBTJService _sbtjservice;
         private readonly SBSJService _sbsjservice;
@@ -133,129 +133,136 @@ namespace LBJOEE.ViewModels
         private readonly IContainerExtension _container;
         private readonly IRegionManager _regionmgr;
         private IEnumerable<dygx> dygxlist;
-        public MainWindowViewModel(SBXXService sBXXService, SBTJService sbtjservice,SBSJService sBSJService,IContainerExtension container)
+        public MainWindowViewModel(SBXXService sBXXService, SBTJService sbtjservice, SBSJService sBSJService, IContainerExtension container)
         {
             Title = Title + AppCheckUpdate.CurrentVersion;
             _container = container;
-            _regionmgr = container.Resolve<IRegionManager>();
-            _hisservice = _container.Resolve<HisService>();
-            _logservice = _container.Resolve<LogService>();
             log = LogManager.GetLogger(this.GetType());
-            var pcip = Tool.GetIpAddress();
-            _sbxxservice = sBXXService;
-            _sbtjservice = sbtjservice;
-            _sbsjservice = sBSJService;
-            _sbxxservice.ErrorAction = new Action<string>(Error_Handel);
-            _sbtjservice.ErrorAction = new Action<string>(Error_Handel);
-            _sbsjservice.ErrorAction = new Action<string>(Error_Handel);
-            WinMinCMD = new DelegateCommand<object>(WinminHandle);
-            WinMaxCMD = new DelegateCommand<object>(WinmaxHandle);
-            WinCloseCMD = new DelegateCommand<object>(WincloseHandle);
-            base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
-            if (base_sbxx == null)
+            _logservice = container.Resolve<LogService>();
+            _regionmgr = container.Resolve<IRegionManager>();
+            _hisservice = container.Resolve<HisService>();
+            try
             {
-                ErrorMsg = $"该IP地址{pcip}未配置";
-                return;
+                var pcip = Tool.GetIpAddress();
+                _sbxxservice = sBXXService;
+                _sbtjservice = sbtjservice;
+                _sbsjservice = sBSJService;
+                _sbxxservice.ErrorAction = new Action<string>(Error_Handel);
+                _sbtjservice.ErrorAction = new Action<string>(Error_Handel);
+                _sbsjservice.ErrorAction = new Action<string>(Error_Handel);
+                WinMinCMD = new DelegateCommand<object>(WinminHandle);
+                WinMaxCMD = new DelegateCommand<object>(WinmaxHandle);
+                WinCloseCMD = new DelegateCommand<object>(WincloseHandle);
+                base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
+                if (base_sbxx == null)
+                {
+                    ErrorMsg = $"该IP地址{pcip}未配置";
+                    return;
+                }
+                base_sbxx.sbzt = base_sbxx.sbzt == "运行" ? "" : base_sbxx.sbzt;
+                InitSocketServer();
+                InitBtnStatus();
+                InitTimer();
+                InitDygx(base_sbxx.sbbh);
+                BTNCMD = new DelegateCommand<BtnStatus>(BtnHandel);
+                ComBoxCMD = new DelegateCommand<object>(ComBoHandle);
+                TabChangeCMD = new DelegateCommand<object>(TabItemChangeHandle);
+                _clear_errtimer = new Timer(ClearErrorHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+                _clear_errtimer.Change(0, 1000 * 30);
+                FreshBtnListState();
             }
-            base_sbxx.sbzt = base_sbxx.sbzt == "运行" ? "" : base_sbxx.sbzt;
-            InitSocketServer();
-            InitBtnStatus();
-            InitTimer();
-            InitDygx();
-            BTNCMD = new DelegateCommand<BtnStatus>(BtnHandel);
-            ComBoxCMD = new DelegateCommand<object>(ComBoHandle);
-            TabChangeCMD = new DelegateCommand<object>(TabItemChangeHandle);
-            
-            _clear_errtimer = new Timer(ClearErrorHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-            _clear_errtimer.Change(0, 1000*30);
-
-            FreshBtnListState();
+            catch (Exception e)
+            {
+                _logservice.Error(e.Message, e.StackTrace);
+                throw;
+            }
         }
 
-        private void InitDygx()
+        private void InitDygx(string sbbh)
         {
             try
             {
-                this.dygxlist = _sbxxservice.GetDYGX();
+                this.dygxlist = _sbxxservice.GetDYGX(sbbh);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                _logservice.Error(e.Message, e.StackTrace);
             }
         }
 
         private void FreshBtnListState()
         {
-            if (ClientList.Count > 0) { 
-            foreach (var btn in BtnStatusList)
+            if (ClientList.Count > 0)
             {
-                btn.sfgz = false;
-                btn.sfhm = false;
-                btn.sfjx = false;
-                btn.sfql = false;
-                btn.sfqt = false;
-                btn.flag = 0;
-                btn.iscjgz = base_sbxx.cjgz == "Y" ? true : false;
-                btn.btnenable = btn.iscjgz && !btn.sfgz ? false : true;
-                btn.btntxt = btn.normaltxt;
-                btn.tjsjvisible = "Collapsed";
-            }
-            base_sbxx.sbzt = base_sbxx.sbzt == "" || base_sbxx.sbzt == "运行" ? "运行" : base_sbxx.sbzt;
-            if (base_sbxx.sfgz == "Y")
-            {
-                var btn = BtnStatusList.Where(t => t.name == "gz").First();
-                btn.sfgz = true;
-                btn.flag = 1;
-                btn.iscjgz = base_sbxx.cjgz == "Y" ? true : false;
-                btn.btnenable = btn.iscjgz ? false : true;
-                btn.btntxt = btn.tjtxt;
-                btn.tjsjvisible = "Visible";
-                EnableOtherBtn(btn, false);
-            }
+                foreach (var btn in BtnStatusList)
+                {
+                    btn.sfgz = false;
+                    btn.sfhm = false;
+                    btn.sfjx = false;
+                    btn.sfql = false;
+                    btn.sfqt = false;
+                    btn.flag = 0;
+                    btn.iscjgz = base_sbxx.cjgz == "Y" ? true : false;
+                    btn.btnenable = btn.iscjgz && !btn.sfgz ? false : true;
+                    btn.btntxt = btn.normaltxt;
+                    btn.tjsjvisible = "Collapsed";
+                }
+                base_sbxx.sbzt = base_sbxx.sbzt == "" || base_sbxx.sbzt == "运行" ? "运行" : base_sbxx.sbzt;
+                if (base_sbxx.sfgz == "Y")
+                {
+                    var btn = BtnStatusList.Where(t => t.name == "gz").First();
+                    btn.sfgz = true;
+                    btn.flag = 1;
+                    btn.iscjgz = base_sbxx.cjgz == "Y" ? true : false;
+                    btn.btnenable = btn.iscjgz ? false : true;
+                    btn.btntxt = btn.tjtxt;
+                    btn.tjsjvisible = "Visible";
+                    EnableOtherBtn(btn, false);
+                }
 
-            if (base_sbxx.sfhm == "Y")
-            {
-                BtnStatus btn = BtnStatusList.Where(t => t.name == "hm").First();
-                btn.sfhm = true;
-                btn.flag = 1;
-                btn.btnenable = true;
-                btn.btntxt = btn.tjtxt;
-                btn.tjsjvisible = "Visible";
-                EnableOtherBtn(btn, false);
-            }
+                if (base_sbxx.sfhm == "Y")
+                {
+                    BtnStatus btn = BtnStatusList.Where(t => t.name == "hm").First();
+                    btn.sfhm = true;
+                    btn.flag = 1;
+                    btn.btnenable = true;
+                    btn.btntxt = btn.tjtxt;
+                    btn.tjsjvisible = "Visible";
+                    EnableOtherBtn(btn, false);
+                }
 
-            if (base_sbxx.sfjx == "Y")
-            {
-                var btn = BtnStatusList.Where(t => t.name == "jx").First();
-                btn.sfjx = true;
-                btn.flag = 1;
-                btn.btnenable = true;
-                btn.btntxt = btn.tjtxt;
-                btn.tjsjvisible = "Visible";
-                EnableOtherBtn(btn, false);
-            }
+                if (base_sbxx.sfjx == "Y")
+                {
+                    var btn = BtnStatusList.Where(t => t.name == "jx").First();
+                    btn.sfjx = true;
+                    btn.flag = 1;
+                    btn.btnenable = true;
+                    btn.btntxt = btn.tjtxt;
+                    btn.tjsjvisible = "Visible";
+                    EnableOtherBtn(btn, false);
+                }
 
-            if (base_sbxx.sfql == "Y")
-            {
-                var btn = BtnStatusList.Where(t => t.name == "ql").First();
-                btn.sfql = true;
-                btn.flag = 1;
-                btn.btnenable = true;
-                btn.btntxt = btn.tjtxt;
-                btn.tjsjvisible = "Visible";
-                EnableOtherBtn(btn, false);
-            }
+                if (base_sbxx.sfql == "Y")
+                {
+                    var btn = BtnStatusList.Where(t => t.name == "ql").First();
+                    btn.sfql = true;
+                    btn.flag = 1;
+                    btn.btnenable = true;
+                    btn.btntxt = btn.tjtxt;
+                    btn.tjsjvisible = "Visible";
+                    EnableOtherBtn(btn, false);
+                }
 
-            if (base_sbxx.sfqttj == "Y")
-            {
-                var btn = BtnStatusList.Where(t => t.name == "qt").First();
-                btn.sfqt = true;
-                btn.flag = 1;
-                btn.btnenable = true;
-                btn.btntxt = btn.tjtxt;
-                btn.tjsjvisible = "Visible";
-                EnableOtherBtn(btn, false);
-            }
+                if (base_sbxx.sfqttj == "Y")
+                {
+                    var btn = BtnStatusList.Where(t => t.name == "qt").First();
+                    btn.sfqt = true;
+                    btn.flag = 1;
+                    btn.btnenable = true;
+                    btn.btntxt = btn.tjtxt;
+                    btn.tjsjvisible = "Visible";
+                    EnableOtherBtn(btn, false);
+                }
 
             }
             else
@@ -280,7 +287,7 @@ namespace LBJOEE.ViewModels
                     {
                         string msg = Encoding.Default.GetString(bytes);
                         original_data = $"{DateTime.Now} {client.remoteip} \r\n{msg}\r\n";
-                        var receivedata = JsonConvert.DeserializeObject<List<itemdata>>(msg);                        
+                        var receivedata = JsonConvert.DeserializeObject<List<itemdata>>(msg);
                         JsonEntity data = new JsonEntity();
                         var yxzt = receivedata.Where(i => i.itemName == "运行状态");
                         var bjzt = receivedata.Where(i => i.itemName == "报警状态");
@@ -296,9 +303,9 @@ namespace LBJOEE.ViewModels
                         data.SJCJ = FanShe(data.devicedata);
                         ShowHisData(data);
                         //接收到设备状态信息
-                        ChangeDeviceStatus(new {status = data.status,errorcode=data.errorcode,errormsg = data.errormsg });
+                        ChangeDeviceStatus(new { status = data.status, errorcode = data.errorcode, errormsg = data.errormsg });
                         //接收到设备数据
-                        if (data.SJCJ != null && base_sbxx.sbzt=="运行")
+                        if (data.SJCJ != null && base_sbxx.sbzt == "运行")
                         {
                             data.SJCJ.sbbh = base_sbxx.sbbh;
                             data.SJCJ.sbip = base_sbxx.ip;
@@ -334,7 +341,7 @@ namespace LBJOEE.ViewModels
                 //处理异常
                 HandleException = new Action<Exception>(ex =>
                 {
-                    _logservice.Error(ex.Message,ex.StackTrace);
+                    _logservice.Error(ex.Message, ex.StackTrace);
                 })
             };
             void Freshdata(LinkedList<SocketConnection> list)
@@ -357,7 +364,7 @@ namespace LBJOEE.ViewModels
                     }
                     comboboxindex = 0;
                     FreshBtnListState();
-                });                
+                });
             }
             void ShowHisData(JsonEntity entity)
             {
@@ -366,7 +373,7 @@ namespace LBJOEE.ViewModels
                     if (HisList.Count > 100)
                     {
                         HisList.Clear();
-                    }                    
+                    }
                     HisList.Insert(0, entity.SJCJ);
                 });
             }
@@ -380,27 +387,35 @@ namespace LBJOEE.ViewModels
         /// <returns></returns>
         private sjcj FanShe(List<itemdata> datas)
         {
-            Type t = Type.GetType("LBJOEE.sjcj");
-            var propertyInfos = t.GetProperties();
             sjcj entity = new sjcj();
-            foreach (var item in datas)
+            try
             {
-                var itemname = item.itemName;
-                var gx = this.dygxlist.Where(i => i.txt == itemname).FirstOrDefault();
-                if (gx == null)
+                Type t = Type.GetType("LBJOEE.sjcj");
+                var propertyInfos = t.GetProperties();
+                foreach (var item in datas)
                 {
-                    continue;
-                }
-                foreach (var p in propertyInfos)
-                {
-                    if (p.Name == gx.colname)
+                    var itemname = item.itemName;
+                    var gx = this.dygxlist.Where(i => i.txt == itemname).FirstOrDefault();
+                    if (gx == null)
                     {
-                        p.SetValue(entity, item.value);
-                        break;
+                        continue;
+                    }
+                    foreach (var p in propertyInfos)
+                    {
+                        if (p.Name == gx.colname)
+                        {
+                            p.SetValue(entity, item.value);
+                            break;
+                        }
                     }
                 }
+                return entity;
             }
-            return entity;
+            catch (Exception e)
+            {
+                _logservice.Error(e.Message, e.StackTrace);
+                return entity;
+            }
         }
 
         /// <summary>
@@ -442,7 +457,7 @@ namespace LBJOEE.ViewModels
         private void ComBoHandle(object parm)
         {
             var arg = parm as SelectionChangedEventArgs;
-            
+
             arg.Handled = true;
         }
         private void BtnHandel(BtnStatus obj)
@@ -504,20 +519,20 @@ namespace LBJOEE.ViewModels
             {
                 name = "ql",
                 sfql = base_sbxx.sfql == "Y",
-                btntxt = base_sbxx.sfql == "Y"? "缺料恢复" : "缺料停机",
-                btnenable = base_sbxx.sbzt=="运行",
+                btntxt = base_sbxx.sfql == "Y" ? "缺料恢复" : "缺料停机",
+                btnenable = base_sbxx.sbzt == "运行",
                 normaltxt = "缺料停机",
                 tjtxt = "缺料恢复",
                 tjlx = "缺料停机",
                 tjms = "缺料"
 
             };
-            BtnStatusList.Add(_qlbtn) ;
+            BtnStatusList.Add(_qlbtn);
             _jxbtn = new BtnStatus()
             {
                 name = "jx",
-                sfjx = base_sbxx.sfjx == "Y" ,
-                btntxt = base_sbxx.sfjx == "Y"? "检修恢复" : "检修停机",
+                sfjx = base_sbxx.sfjx == "Y",
+                btntxt = base_sbxx.sfjx == "Y" ? "检修恢复" : "检修停机",
                 btnenable = base_sbxx.sbzt == "运行",
                 normaltxt = "检修停机",
                 tjtxt = "检修恢复",
@@ -529,8 +544,8 @@ namespace LBJOEE.ViewModels
             _hmbtn = new BtnStatus()
             {
                 name = "hm",
-                sfhm = base_sbxx.sfhm == "Y" ,
-                btntxt = base_sbxx.sfhm == "Y"? "换模恢复" : "换模停机",
+                sfhm = base_sbxx.sfhm == "Y",
+                btntxt = base_sbxx.sfhm == "Y" ? "换模恢复" : "换模停机",
                 btnenable = base_sbxx.sbzt == "运行",
                 normaltxt = "换模停机",
                 tjtxt = "换模恢复",
@@ -541,8 +556,8 @@ namespace LBJOEE.ViewModels
             _gzbtn = new BtnStatus()
             {
                 name = "gz",
-                sfgz = base_sbxx.sfgz == "Y" ,
-                btntxt = base_sbxx.sfgz == "Y"? "故障恢复" : "故障停机",
+                sfgz = base_sbxx.sfgz == "Y",
+                btntxt = base_sbxx.sfgz == "Y" ? "故障恢复" : "故障停机",
                 btnenable = base_sbxx.sbzt == "运行",
                 normaltxt = "故障停机",
                 tjtxt = "故障恢复",
@@ -553,18 +568,18 @@ namespace LBJOEE.ViewModels
             _qtbtn = new BtnStatus()
             {
                 name = "qt",
-                sfqt = base_sbxx.sfqttj == "Y" ,
-                btntxt = base_sbxx.sfqttj == "Y"? "停机恢复" : "其他停机",
+                sfqt = base_sbxx.sfqttj == "Y",
+                btntxt = base_sbxx.sfqttj == "Y" ? "停机恢复" : "其他停机",
                 btnenable = base_sbxx.sbzt == "运行",
                 normaltxt = "其他停机",
                 tjtxt = "停机恢复",
                 tjlx = "其他停机",
-                tjms="其他"
+                tjms = "其他"
             };
             BtnStatusList.Add(_qtbtn);
         }
-             
-        
+
+
         #region 按钮事件处理函数
         /// <summary>
         /// 故障停机处理函数
@@ -816,14 +831,14 @@ namespace LBJOEE.ViewModels
                 _logservice.Error(e.Message, e.StackTrace);
             }
         }
-        private void EnableOtherBtn(BtnStatus obj,bool flag)
+        private void EnableOtherBtn(BtnStatus obj, bool flag)
         {
             int index = BtnStatusList.IndexOf(obj);
             for (int i = 0; i < BtnStatusList.Count; i++)
             {
                 if (i == index) continue;
                 BtnStatusList[i].btnenable = flag;
-                BtnStatusList[i].tjsjvisible = BtnStatusList[i].flag==1? "Visible" : "Collapsed";
+                BtnStatusList[i].tjsjvisible = BtnStatusList[i].flag == 1 ? "Visible" : "Collapsed";
             }
         }
         private void WinminHandle(object o)
@@ -955,5 +970,5 @@ namespace LBJOEE.ViewModels
         #endregion
     }
 
-    
+
 }
