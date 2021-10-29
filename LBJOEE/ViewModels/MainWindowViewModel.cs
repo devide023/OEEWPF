@@ -192,6 +192,7 @@ namespace LBJOEE.ViewModels
 
         private void FreshBtnListState()
         {
+            _logservice.Info("客户端连接数：" + ClientList.Count);
             if (ClientList.Count > 0)
             {
                 foreach (var btn in BtnStatusList)
@@ -207,6 +208,7 @@ namespace LBJOEE.ViewModels
                     btn.btntxt = btn.normaltxt;
                     btn.tjsjvisible = "Collapsed";
                 }
+                _logservice.Info("base_sbxx：" + JsonConvert.SerializeObject(base_sbxx));
                 base_sbxx.sbzt = base_sbxx.sbzt == "" || base_sbxx.sbzt == "运行" ? "运行" : base_sbxx.sbzt;
                 if (base_sbxx.sfgz == "Y")
                 {
@@ -219,8 +221,7 @@ namespace LBJOEE.ViewModels
                     btn.tjsjvisible = "Visible";
                     EnableOtherBtn(btn, false);
                 }
-
-                if (base_sbxx.sfhm == "Y")
+                else if (base_sbxx.sfhm == "Y")
                 {
                     BtnStatus btn = BtnStatusList.Where(t => t.name == "hm").First();
                     btn.sfhm = true;
@@ -231,7 +232,7 @@ namespace LBJOEE.ViewModels
                     EnableOtherBtn(btn, false);
                 }
 
-                if (base_sbxx.sfjx == "Y")
+                else if (base_sbxx.sfjx == "Y")
                 {
                     var btn = BtnStatusList.Where(t => t.name == "jx").First();
                     btn.sfjx = true;
@@ -242,7 +243,7 @@ namespace LBJOEE.ViewModels
                     EnableOtherBtn(btn, false);
                 }
 
-                if (base_sbxx.sfql == "Y")
+                else if (base_sbxx.sfql == "Y")
                 {
                     var btn = BtnStatusList.Where(t => t.name == "ql").First();
                     btn.sfql = true;
@@ -253,7 +254,7 @@ namespace LBJOEE.ViewModels
                     EnableOtherBtn(btn, false);
                 }
 
-                if (base_sbxx.sfqttj == "Y")
+                else if (base_sbxx.sfqttj == "Y")
                 {
                     var btn = BtnStatusList.Where(t => t.name == "qt").First();
                     btn.sfqt = true;
@@ -263,7 +264,10 @@ namespace LBJOEE.ViewModels
                     btn.tjsjvisible = "Visible";
                     EnableOtherBtn(btn, false);
                 }
-
+                else
+                {
+                    BtnStatusList.ToList().ForEach(i => i.btnenable = true);
+                }
             }
             else
             {
