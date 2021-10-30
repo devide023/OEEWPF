@@ -17,7 +17,6 @@ namespace LBJOEE.Tools
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(AppCheckUpdate));
         private static readonly LogService logservice = new LogService();
-        private static readonly SBXXService service = new SBXXService();
         public static string CurrentVersion
         {
             get
@@ -28,13 +27,11 @@ namespace LBJOEE.Tools
         public static void InstallUpdateSyncWithInfo()
         {
             UpdateCheckInfo info = null;
-            base_sbxx config = null;
             if (ApplicationDeployment.IsNetworkDeployed)
             {
                 ApplicationDeployment ad = ApplicationDeployment.CurrentDeployment;
                 try
                 {
-                    config = service.Find_Sbxx_ByIp();
                     info = ad.CheckForDetailedUpdate(false);
                 }
                 catch (DeploymentDownloadException dde)
@@ -61,14 +58,10 @@ namespace LBJOEE.Tools
                 {
                     try
                     {
-                        
-                        if (config.isupdate == "Y")
-                        {
-                            logservice.Info($"有新版本需要更新,原版本号{CurrentVersion}");
-                            ad.Update();
-                            System.Windows.Forms.Application.Restart();
-                            Application.Current.Shutdown();
-                        }
+                        logservice.Info($"有新版本需要更新,原版本号{CurrentVersion}");
+                        ad.Update();
+                        System.Windows.Forms.Application.Restart();
+                        Application.Current.Shutdown();
                     }
                     catch (DeploymentDownloadException dde)
                     {

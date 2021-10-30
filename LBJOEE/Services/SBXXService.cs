@@ -22,6 +22,21 @@ namespace LBJOEE.Services
             string ip = Tool.GetIpAddress();
             return Find_Sbxx_ByIp(ip);
         }
+        public bool IsAppUpdate()
+        {
+            try
+            {
+                string ip = Tool.GetIpAddress();
+                string sql = "select isupdate FROM base_sbxx where ip = :ip ";
+                string sfgx = Db.Connection.ExecuteScalar<string>(sql, new { ip = ip });
+                return sfgx == "Y";
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         public base_sbxx Find_Sbxx_ByIp(string ip)
         {
             try
