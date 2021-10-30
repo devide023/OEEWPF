@@ -60,7 +60,7 @@ namespace LBJOEE.Services
                 q.Add(":cjgz", entity.cjgz, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfgz == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='Y',gzkssj=:xtsj,tjms=:tjms,cjgz=:cjgz where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='Y',gzkssj=sysdate,tjms=:tjms,cjgz=:cjgz where sbbh=:sbbh ");
                 }
                 else
                 {
@@ -87,7 +87,7 @@ namespace LBJOEE.Services
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfjx == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='Y',jxkssj=:xtsj,tjms=:tjms where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='Y',jxkssj=sysdate,tjms=:tjms where sbbh=:sbbh ");
                 }
                 else
                 {
@@ -114,7 +114,7 @@ namespace LBJOEE.Services
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfql == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfql='Y',qlkssj=:xtsj,tjms=:tjms where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfql='Y',qlkssj=sysdate,tjms=:tjms where sbbh=:sbbh ");
                 }
                 else
                 {
@@ -141,7 +141,7 @@ namespace LBJOEE.Services
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfhm == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='Y',hmkssj=:xtsj,tjms=:tjms where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='Y',hmkssj=sysdate,tjms=:tjms where sbbh=:sbbh ");
                 }
                 else
                 {
@@ -168,7 +168,7 @@ namespace LBJOEE.Services
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfqttj == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='Y',qttjkssj=:xtsj,tjms=:tjms where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='Y',qttjkssj=sysdate,tjms=:tjms where sbbh=:sbbh ");
                 }
                 else
                 {
@@ -207,6 +207,29 @@ namespace LBJOEE.Services
             catch (Exception)
             {
 
+                throw;
+            }
+        }
+
+        public DateTime GetServerTime()
+        {
+            try
+            {
+                DateTime result;
+                string sql = "select sysdate from dual";
+                string dt = Db.Connection.ExecuteScalar<string>(sql);
+                if (DateTime.TryParse(dt, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return DateTime.Now;
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorAction?.Invoke("SBXXService.GetServerTime" + e.Message);
                 throw;
             }
         }

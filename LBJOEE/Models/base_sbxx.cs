@@ -212,7 +212,7 @@ namespace LBJOEE
             set { SetProperty(ref _port, value); }
         }
         /// <summary>
-        /// 是否哦日志
+        /// 是否记录日志
         /// </summary>
         public string log { get; set; }
         /// <summary>
@@ -223,6 +223,10 @@ namespace LBJOEE
         /// 是否更新
         /// </summary>
         public string isupdate { get; set; }
+        /// <summary>
+        /// 是否保存原始数据
+        /// </summary>
+        public int issaveyssj { get; set; }
     }
 
     public class base_sbxx_mapper : ClassMapper<base_sbxx>

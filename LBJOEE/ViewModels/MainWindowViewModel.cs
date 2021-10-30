@@ -21,6 +21,7 @@ using LBJOEE.OEESocket;
 using System.Text;
 using LBJOEE.Models;
 using System.Windows.Data;
+using static LBJOEE.Tools.SyncServerTime;
 
 namespace LBJOEE.ViewModels
 {
@@ -30,6 +31,7 @@ namespace LBJOEE.ViewModels
         private string _title = "压铸OEE数据采集";
         private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer;
         private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
+        private originaldata yssj = new originaldata();
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
         public ObservableCollection<string> ClientList { get; set; } = new ObservableCollection<string>();
         private ObservableCollection<dynamic> _datagridcols;
@@ -61,6 +63,7 @@ namespace LBJOEE.ViewModels
         }
         private int _index = 0;
         private readonly Timer _clear_errtimer;
+        private readonly Timer _read_sbxx_timer;//定时更新设备信息计时器
         public int comboboxindex
         {
             get { return _index; }
@@ -157,9 +160,18 @@ namespace LBJOEE.ViewModels
                 if (base_sbxx == null)
                 {
                     ErrorMsg = $"该IP地址{pcip}未配置";
+                    _logservice.Info(ErrorMsg);
                     return;
                 }
                 base_sbxx.sbzt = base_sbxx.sbzt == "运行" ? "" : base_sbxx.sbzt;
+                var serverTime = _sbxxservice.GetServerTime();
+                //转换System.DateTime到SYSTEMTIME
+                SYSTEMTIME st = new SYSTEMTIME();
+                st.FromDateTime(serverTime);
+                //调用Win32 API设置系统时间
+                SyncServerTime.SetLocalTime(ref st);
+                yssj.ip = base_sbxx.ip;
+                yssj.sbbh = base_sbxx.sbbh;
                 InitSocketServer();
                 InitBtnStatus();
                 InitTimer();
@@ -167,9 +179,12 @@ namespace LBJOEE.ViewModels
                 BTNCMD = new DelegateCommand<BtnStatus>(BtnHandel);
                 ComBoxCMD = new DelegateCommand<object>(ComBoHandle);
                 TabChangeCMD = new DelegateCommand<object>(TabItemChangeHandle);
+                FreshBtnListState();
+                //初始化定时器
                 _clear_errtimer = new Timer(ClearErrorHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 _clear_errtimer.Change(0, 1000 * 30);
-                FreshBtnListState();
+                _read_sbxx_timer = new Timer(ReadSbxxHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+                _read_sbxx_timer.Change(0, 1000 * 60 * 3);
             }
             catch (Exception e)
             {
@@ -177,7 +192,10 @@ namespace LBJOEE.ViewModels
                 throw;
             }
         }
-
+        /// <summary>
+        /// 初始化设备要采集的参数，对应数据库字段
+        /// </summary>
+        /// <param name="sbbh"></param>
         private void InitDygx(string sbbh)
         {
             try
@@ -189,10 +207,11 @@ namespace LBJOEE.ViewModels
                 _logservice.Error(e.Message, e.StackTrace);
             }
         }
-
+        /// <summary>
+        /// 刷新按钮状态
+        /// </summary>
         private void FreshBtnListState()
         {
-            _logservice.Info("客户端连接数：" + ClientList.Count);
             if (ClientList.Count > 0)
             {
                 foreach (var btn in BtnStatusList)
@@ -268,7 +287,7 @@ namespace LBJOEE.ViewModels
                 {
                     BtnStatusList.ToList().ForEach(i => i.btnenable = true);
                 }
-            }
+            }//没有客户端连接时，按钮禁止操作
             else
             {
                 foreach (var btn in BtnStatusList)
@@ -278,7 +297,9 @@ namespace LBJOEE.ViewModels
             }
 
         }
-
+        /// <summary>
+        /// 初始化Socket服务
+        /// </summary>
         private void InitSocketServer()
         {
             //创建服务器对象，默认监听本机0.0.0.0，
@@ -290,6 +311,11 @@ namespace LBJOEE.ViewModels
                     try
                     {
                         string msg = Encoding.Default.GetString(bytes);
+                        if (base_sbxx.issaveyssj != 0)
+                        {
+                            yssj.json = msg;
+                            _sbsjservice.SaveOriginalData(yssj);
+                        }
                         original_data = $"{DateTime.Now} {client.remoteip} \r\n{msg}\r\n";
                         var receivedata = JsonConvert.DeserializeObject<List<itemdata>>(msg);
                         JsonEntity data = new JsonEntity();
@@ -301,7 +327,7 @@ namespace LBJOEE.ViewModels
                         }
                         if (bjzt.Count() > 0)
                         {
-                            data.status = bjzt.FirstOrDefault().value == "1" ? "故障" : "";
+                            data.status = bjzt.FirstOrDefault().value == "1" ? "故障" : "运行";
                         }
                         data.devicedata = receivedata;
                         data.SJCJ = FanShe(data.devicedata);
@@ -448,7 +474,21 @@ namespace LBJOEE.ViewModels
             }
             arg.Handled = true;
         }
-
+        private void ReadSbxxHandle(object sbxx)
+        {
+            try
+            {
+                var sbinfo = _sbxxservice.Find_Sbxx_ByIp();
+                base_sbxx.issaveyssj = sbinfo.issaveyssj;
+                base_sbxx.isupdate = sbinfo.isupdate;
+                base_sbxx.log = sbinfo.log;
+                //_logservice.Info("更新设备信息：" + JsonConvert.SerializeObject(base_sbxx));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         private void ClearErrorHandle(object state)
         {
             ErrorMsg = "";
@@ -947,6 +987,7 @@ namespace LBJOEE.ViewModels
                 btn.iscjgz = false;
                 btn.btnenable = true;
                 btn.btntxt = btn.normaltxt;
+                btn.tjsj = 0;
                 btn.tjsjvisible = "Collapsed";
                 EnableOtherBtn(btn, true);
                 DateTime now = DateTime.Now;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using LBJOEE.Models;
 namespace LBJOEE.Services
 {
     /// <summary>
@@ -11,5 +11,9 @@ namespace LBJOEE.Services
     /// </summary>
     public class SBSJService:DBImp<sjcj>
     {
+        public void SaveOriginalData(originaldata entity)
+        {
+            this.Db.Insert(entity);
+        }
     }
 }
