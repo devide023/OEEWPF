@@ -11,11 +11,12 @@ using LBJOEE.Tools;
 using LBJOEE.Services;
 using System.ComponentModel;
 using Prism.Services.Dialogs;
+using System.Diagnostics;
+using System.Threading;
 namespace LBJOEE.Tools
 {
     public static class AppCheckUpdate
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(AppCheckUpdate));
         private static readonly LogService logservice = new LogService();
         public static string CurrentVersion
         {
@@ -59,9 +60,13 @@ namespace LBJOEE.Tools
                     try
                     {
                         logservice.Info($"有新版本需要更新,原版本号{CurrentVersion}");
-                        ad.Update();
-                        System.Windows.Forms.Application.Restart();
-                        Application.Current.Shutdown();
+                        var isok = ad.Update();
+                        if (isok)
+                        {
+                            var v = ApplicationDeployment.CurrentDeployment.UpdatedApplicationFullName;
+                            logservice.Info($"更新成功,版本号{ CurrentVersion},{v}");
+                            Application.Current.Shutdown();
+                        }
                     }
                     catch (DeploymentDownloadException dde)
                     {
