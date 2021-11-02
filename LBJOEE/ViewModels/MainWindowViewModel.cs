@@ -164,12 +164,12 @@ namespace LBJOEE.ViewModels
                     return;
                 }
                 base_sbxx.sbzt = base_sbxx.sbzt == "运行" ? "" : base_sbxx.sbzt;
-                var serverTime = _sbxxservice.GetServerTime();
-                //转换System.DateTime到SYSTEMTIME
-                SYSTEMTIME st = new SYSTEMTIME();
-                st.FromDateTime(serverTime);
-                //调用Win32 API设置系统时间
-                SyncServerTime.SetLocalTime(ref st);
+                //var serverTime = _sbxxservice.GetServerTime();
+                ////转换System.DateTime到SYSTEMTIME
+                //SYSTEMTIME st = new SYSTEMTIME();
+                //st.FromDateTime(serverTime);
+                ////调用Win32 API设置系统时间
+                //SyncServerTime.SetLocalTime(ref st);
                 yssj.ip = base_sbxx.ip;
                 yssj.sbbh = base_sbxx.sbbh;
                 InitSocketServer();
