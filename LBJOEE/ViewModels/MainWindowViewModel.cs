@@ -164,12 +164,12 @@ namespace LBJOEE.ViewModels
                     return;
                 }
                 base_sbxx.sbzt = base_sbxx.sbzt == "运行" ? "" : base_sbxx.sbzt;
-                //var serverTime = _sbxxservice.GetServerTime();
-                ////转换System.DateTime到SYSTEMTIME
-                //SYSTEMTIME st = new SYSTEMTIME();
-                //st.FromDateTime(serverTime);
-                ////调用Win32 API设置系统时间
-                //SyncServerTime.SetLocalTime(ref st);
+                var serverTime = _sbxxservice.GetServerTime();
+                //转换System.DateTime到SYSTEMTIME
+                SYSTEMTIME st = new SYSTEMTIME();
+                st.FromDateTime(serverTime);
+                //调用Win32 API设置系统时间
+                SyncServerTime.SetLocalTime(ref st);
                 yssj.ip = base_sbxx.ip;
                 yssj.sbbh = base_sbxx.sbbh;
                 InitSocketServer();
@@ -189,7 +189,7 @@ namespace LBJOEE.ViewModels
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
-                Application.Current.Shutdown();
+                Environment.Exit(0);
             }
         }
         /// <summary>
@@ -313,6 +313,7 @@ namespace LBJOEE.ViewModels
                         string msg = Encoding.Default.GetString(bytes);
                         if (base_sbxx.issaveyssj != 0)
                         {
+                            yssj.rq = DateTime.Now;
                             yssj.json = msg;
                             _sbsjservice.SaveOriginalData(yssj);
                         }
@@ -486,7 +487,7 @@ namespace LBJOEE.ViewModels
             }
             catch (Exception)
             {
-                Application.Current.Shutdown();
+                return;
             }
         }
         private void ClearErrorHandle(object state)

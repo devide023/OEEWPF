@@ -442,6 +442,7 @@ namespace LBJOEE
     {
         public sjcj_mapper()
         {
+            Map(t => t.cjsj).Ignore();
             AutoMap();
         }
     }
