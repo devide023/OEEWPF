@@ -33,8 +33,7 @@ namespace LBJOEE.Services
             }
             catch (Exception)
             {
-
-                throw;
+                return false;
             }
         }
         public base_sbxx Find_Sbxx_ByIp(string ip)
@@ -221,8 +220,7 @@ namespace LBJOEE.Services
             }
             catch (Exception)
             {
-
-                throw;
+                return new List<dygx>();
             }
         }
 
@@ -245,7 +243,7 @@ namespace LBJOEE.Services
             catch (Exception e)
             {
                 ErrorAction?.Invoke("SBXXService.GetServerTime" + e.Message);
-                throw;
+                return DateTime.Now;
             }
         }
     }

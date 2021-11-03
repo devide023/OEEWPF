@@ -41,7 +41,6 @@ namespace LBJOEE
             catch (Exception e)
             {
                 _logservice.Error(e.Message,e.StackTrace);
-                throw;
             }            
         }
         private void CheckUpdateHandle(object state)
@@ -56,8 +55,7 @@ namespace LBJOEE
             }
             catch (Exception)
             {
-
-                throw;
+                Application.Current.Shutdown();
             }
         }
         public EventWaitHandle ProgramStarted { get; set; }

@@ -9,7 +9,7 @@ namespace LBJOEE.Models
     public class originaldata
     {
         public int id { get; set; }
-        public DateTime? rq { get; set; } = DateTime.Now;
+        public DateTime? rq { get; set; }
         public string sbbh { get; set; }
         public string ip { get; set; }
         public string json { get; set; }

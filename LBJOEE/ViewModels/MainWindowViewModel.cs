@@ -189,7 +189,7 @@ namespace LBJOEE.ViewModels
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
-                throw;
+                Application.Current.Shutdown();
             }
         }
         /// <summary>
@@ -486,7 +486,7 @@ namespace LBJOEE.ViewModels
             }
             catch (Exception)
             {
-                throw;
+                Application.Current.Shutdown();
             }
         }
         private void ClearErrorHandle(object state)

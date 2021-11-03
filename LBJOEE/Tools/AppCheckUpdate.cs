@@ -38,21 +38,21 @@ namespace LBJOEE.Tools
                 catch (DeploymentDownloadException dde)
                 {
                     logservice.Error("此时无法下载应用程序的新版本, 请检查网络连接，或稍后再试。" + dde.Message, dde.StackTrace);
-                    return;
+                    Application.Current.Shutdown();
                 }
                 catch (InvalidDeploymentException ide)
                 {
                     logservice.Error("无法检查应用程序的新版本,ClickOnce部署已损坏。请重新部署应用程序，然后重试。" + ide.Message, ide.StackTrace);
-                    return;
+                    Application.Current.Shutdown();
                 }
                 catch (InvalidOperationException ioe)
                 {
                     logservice.Error("无法更新此应用程序,它可能不是ClickOnce应用程序。" + ioe.Message, ioe.StackTrace);
-                    return;
+                    Application.Current.Shutdown();
                 }
                 catch (Exception e) {
                     logservice.Error(e.Message, e.StackTrace);
-                    return;
+                    Application.Current.Shutdown();
                 }  
                 
                 if (info.UpdateAvailable)
@@ -71,7 +71,7 @@ namespace LBJOEE.Tools
                     catch (DeploymentDownloadException dde)
                     {
                         logservice.Error("无法安装应用程序的最新版本,请检查网络连接，或稍后再试。" + dde.Message, dde.StackTrace);
-                        return;
+                        Application.Current.Shutdown();
                     }
                 }
             }
