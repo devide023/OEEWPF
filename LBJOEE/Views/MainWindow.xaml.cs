@@ -24,7 +24,7 @@ namespace LBJOEE.Views
             _sbxxservice = sBXXService;
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             this.MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
-            string path = Process.GetCurrentProcess().MainModule.FileName;
+            //string path = Process.GetCurrentProcess().MainModule.FileName;
             var base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
             if (base_sbxx == null)
             {

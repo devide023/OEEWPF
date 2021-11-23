@@ -5,7 +5,7 @@ using System.Management;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Net.NetworkInformation;
 namespace LBJOEE.Tools
 {
     public class Tool
@@ -53,5 +53,21 @@ namespace LBJOEE.Tools
             }
 
         }
+
+        public static bool IsPing()
+        {
+            string url = "172.16.201.135";
+            Ping ping = new Ping();
+            PingReply pingReply = ping.Send(url, 3000);
+            if(pingReply.Status == IPStatus.Success)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
     }
 }

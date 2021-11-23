@@ -41,7 +41,7 @@ namespace LBJOEE
             catch (Exception e)
             {
                 _logservice.Error(e.Message,e.StackTrace);
-                Environment.Exit(0);
+                //Environment.Exit(0);
             }            
         }
         private void CheckUpdateHandle(object state)
@@ -56,7 +56,7 @@ namespace LBJOEE
             }
             catch (Exception)
             {
-                Environment.Exit(0);
+                //Environment.Exit(0);
             }
         }
         public EventWaitHandle ProgramStarted { get; set; }
@@ -78,7 +78,7 @@ namespace LBJOEE
             if (!createNew)
             {
                 App.Current.Shutdown();
-                Environment.Exit(0);
+                //Environment.Exit(0);
             }
             base.OnStartup(e);
             updatetimer.Change(0, 1000 * 60);

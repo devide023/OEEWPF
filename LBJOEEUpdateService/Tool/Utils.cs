@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using log4net;
+using System.Net.NetworkInformation;
+using System.Configuration;
 namespace LBJOEEUpdateService.Tool
 {
     public class Utils
@@ -71,6 +73,21 @@ namespace LBJOEEUpdateService.Tool
             catch (Exception ex)
             {
                 log.Error(ex.Message);
+            }
+        }
+
+        public static bool IsPing()
+        {
+            string url = ConfigurationManager.AppSettings["pingip"] != null ? ConfigurationManager.AppSettings["pingip"].ToString() : "172.16.201.135";
+            Ping ping = new Ping();
+            PingReply pingReply = ping.Send(url, 3000);
+            if (pingReply.Status == IPStatus.Success)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }

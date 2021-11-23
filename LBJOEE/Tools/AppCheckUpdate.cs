@@ -28,7 +28,8 @@ namespace LBJOEE.Tools
         public static void InstallUpdateSyncWithInfo()
         {
             UpdateCheckInfo info = null;
-            if (ApplicationDeployment.IsNetworkDeployed)
+            var isnetok = Tool.IsPing();
+            if (ApplicationDeployment.IsNetworkDeployed && isnetok)
             {
                 ApplicationDeployment ad = ApplicationDeployment.CurrentDeployment;
                 try
@@ -38,21 +39,21 @@ namespace LBJOEE.Tools
                 catch (DeploymentDownloadException dde)
                 {
                     logservice.Error("此时无法下载应用程序的新版本, 请检查网络连接，或稍后再试。" + dde.Message, dde.StackTrace);
-                    Environment.Exit(0);
+                    //Environment.Exit(0);
                 }
                 catch (InvalidDeploymentException ide)
                 {
                     logservice.Error("无法检查应用程序的新版本,ClickOnce部署已损坏。请重新部署应用程序，然后重试。" + ide.Message, ide.StackTrace);
-                    Environment.Exit(0);
+                    //Environment.Exit(0);
                 }
                 catch (InvalidOperationException ioe)
                 {
                     logservice.Error("无法更新此应用程序,它可能不是ClickOnce应用程序。" + ioe.Message, ioe.StackTrace);
-                    Environment.Exit(0);
+                    //Environment.Exit(0);
                 }
                 catch (Exception e) {
                     logservice.Error(e.Message, e.StackTrace);
-                    Environment.Exit(0);
+                    //Environment.Exit(0);
                 }  
                 
                 if (info.UpdateAvailable)
@@ -65,13 +66,13 @@ namespace LBJOEE.Tools
                         {
                             var v = ApplicationDeployment.CurrentDeployment.UpdatedApplicationFullName;
                             logservice.Info($"更新成功,版本号{ CurrentVersion},{v}");
-                            Environment.Exit(0);
+                            //Environment.Exit(0);
                         }
                     }
                     catch (DeploymentDownloadException dde)
                     {
                         logservice.Error("无法安装应用程序的最新版本,请检查网络连接，或稍后再试。" + dde.Message, dde.StackTrace);
-                        Environment.Exit(0);
+                        //Environment.Exit(0);
                     }
                 }
             }
@@ -164,7 +165,7 @@ namespace LBJOEE.Tools
             }
             logservice.Info($"完成更新,包大小{sizeOfUpdate}");
             System.Windows.Forms.Application.Restart();
-            Environment.Exit(0);
+            //Environment.Exit(0);
         }
     }
 }

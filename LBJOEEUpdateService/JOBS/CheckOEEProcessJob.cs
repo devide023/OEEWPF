@@ -24,7 +24,7 @@ namespace LBJOEEUpdateService.JOBS
                 string ApplicationURL = ConfigurationManager.AppSettings["appurl"] != null ? ConfigurationManager.AppSettings["appurl"].ToString() : "  http://172.16.201.135:1000/LBJOEE.application";
                 Process[] processes = Process.GetProcesses();
                 var q = processes.Where(t => t.ProcessName == "LBJOEE");
-                if (q.Count() == 0)
+                if (q.Count() == 0 && Tool.Utils.IsPing())
                 {
                     log.Info("重启应用" + ApplicationURL);
                     Tool.Utils.Openlocalexe(iepath, ApplicationURL);

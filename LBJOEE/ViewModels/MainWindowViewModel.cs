@@ -64,6 +64,7 @@ namespace LBJOEE.ViewModels
         private int _index = 0;
         private readonly Timer _clear_errtimer;
         private readonly Timer _read_sbxx_timer;//定时更新设备信息计时器
+        private readonly Timer _databackup_timer;//数据本地存取计时器
         public int comboboxindex
         {
             get { return _index; }
@@ -164,12 +165,12 @@ namespace LBJOEE.ViewModels
                     return;
                 }
                 base_sbxx.sbzt = base_sbxx.sbzt == "运行" ? "" : base_sbxx.sbzt;
-                var serverTime = _sbxxservice.GetServerTime();
-                //转换System.DateTime到SYSTEMTIME
-                SYSTEMTIME st = new SYSTEMTIME();
-                st.FromDateTime(serverTime);
-                //调用Win32 API设置系统时间
-                SyncServerTime.SetLocalTime(ref st);
+                //var serverTime = _sbxxservice.GetServerTime();
+                ////转换System.DateTime到SYSTEMTIME
+                //SYSTEMTIME st = new SYSTEMTIME();
+                //st.FromDateTime(serverTime);
+                ////调用Win32 API设置系统时间
+                //SyncServerTime.SetLocalTime(ref st);
                 yssj.ip = base_sbxx.ip;
                 yssj.sbbh = base_sbxx.sbbh;
                 InitSocketServer();
@@ -184,12 +185,14 @@ namespace LBJOEE.ViewModels
                 _clear_errtimer = new Timer(ClearErrorHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 _clear_errtimer.Change(0, 1000 * 30);
                 _read_sbxx_timer = new Timer(ReadSbxxHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-                _read_sbxx_timer.Change(0, 1000 * 60 * 3);
+                _read_sbxx_timer.Change(0, 1000 * 60 * 1);
+                _databackup_timer = new Timer(DataBackupHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+                _databackup_timer.Change(0, 1000 * 60 * 1);
             }
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
-                Environment.Exit(0);
+                //Environment.Exit(0);
             }
         }
         /// <summary>
@@ -205,6 +208,7 @@ namespace LBJOEE.ViewModels
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
+                //Environment.Exit(0);
             }
         }
         /// <summary>
@@ -347,6 +351,7 @@ namespace LBJOEE.ViewModels
                     {
                         ErrorMsg = e.Message;
                         _logservice.Error(e.Message, e.StackTrace);
+                        //Environment.Exit(0);
                     }
                 }),
 
@@ -445,6 +450,7 @@ namespace LBJOEE.ViewModels
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
+                //Environment.Exit(0);
                 return entity;
             }
         }
@@ -457,11 +463,19 @@ namespace LBJOEE.ViewModels
         {
             try
             {
-                _sbsjservice.Add(data);
+                if (Tool.IsPing())
+                {
+                    _sbsjservice.Add(data);
+                }
+                else
+                {
+                    DataBackUp.SaveDataToLocal(data);
+                }
             }
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
+                //Environment.Exit(0);
             }
         }
 
@@ -475,18 +489,33 @@ namespace LBJOEE.ViewModels
             }
             arg.Handled = true;
         }
+        private void DataBackupHandle(object obj)
+        {
+            try
+            {
+                //上传掉网时的备份数据
+                DataBackUp.ReadDataFromLocal();
+            }
+            catch (Exception)
+            {
+                //Environment.Exit(0);
+            }
+        }
         private void ReadSbxxHandle(object sbxx)
         {
             try
             {
                 var sbinfo = _sbxxservice.Find_Sbxx_ByIp();
-                base_sbxx.issaveyssj = sbinfo.issaveyssj;
-                base_sbxx.isupdate = sbinfo.isupdate;
-                base_sbxx.log = sbinfo.log;
-                //_logservice.Info("更新设备信息：" + JsonConvert.SerializeObject(base_sbxx));
+                if (sbinfo != null)
+                {
+                    base_sbxx.issaveyssj = sbinfo.issaveyssj;
+                    base_sbxx.isupdate = sbinfo.isupdate;
+                    base_sbxx.log = sbinfo.log;
+                }
             }
             catch (Exception)
             {
+                //Environment.Exit(0);
                 return;
             }
         }
@@ -678,6 +707,7 @@ namespace LBJOEE.ViewModels
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
+                //Environment.Exit(0);
             }
         }
         /// <summary>
@@ -727,6 +757,7 @@ namespace LBJOEE.ViewModels
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
+                //Environment.Exit(0);
             }
         }
         /// <summary>
@@ -776,6 +807,7 @@ namespace LBJOEE.ViewModels
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
+                //Environment.Exit(0);
             }
         }
         /// <summary>
@@ -825,6 +857,7 @@ namespace LBJOEE.ViewModels
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
+                //Environment.Exit(0);
             }
         }
         /// <summary>
@@ -874,6 +907,7 @@ namespace LBJOEE.ViewModels
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
+                //Environment.Exit(0);
             }
         }
         private void EnableOtherBtn(BtnStatus obj, bool flag)

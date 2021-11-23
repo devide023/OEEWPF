@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using LBJOEE.Models;
 using Dapper;
 using System.Data;
+using LBJOEE.Tools;
+
 namespace LBJOEE.Services
 {
     /// <summary>
@@ -15,16 +17,30 @@ namespace LBJOEE.Services
     {
         public void SaveOriginalData(originaldata entity)
         {
-            StringBuilder sql = new StringBuilder();
-            sql.Append("insert into receivedata ");
-            sql.Append(" (rq, sbbh, ip, json) ");
-            sql.Append(" values ");
-            sql.Append(" (sysdate, :sbbh, :ip, :json) ");
-            DynamicParameters p = new DynamicParameters();
-            p.Add(":sbbh", entity.sbbh, DbType.String, ParameterDirection.Input);
-            p.Add(":ip", entity.ip, DbType.String, ParameterDirection.Input);
-            p.Add(":json", entity.json, DbType.String, ParameterDirection.Input);
-            Db.Connection.Execute(sql.ToString(), p);
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("insert into receivedata ");
+                sql.Append(" (rq, sbbh, ip, json) ");
+                sql.Append(" values ");
+                sql.Append(" (sysdate, :sbbh, :ip, :json) ");
+                DynamicParameters p = new DynamicParameters();
+                p.Add(":sbbh", entity.sbbh, DbType.String, ParameterDirection.Input);
+                p.Add(":ip", entity.ip, DbType.String, ParameterDirection.Input);
+                p.Add(":json", entity.json, DbType.String, ParameterDirection.Input);
+                if (Tool.IsPing())
+                {
+                    Db.Connection.Execute(sql.ToString(), p);
+                }
+                else
+                {
+                    DataBackUp.SaveOrginalDataToLocal(entity);
+                }
+            }
+            catch (Exception)
+            {
+                //Environment.Exit(0);
+            }
         }
     }
 }
