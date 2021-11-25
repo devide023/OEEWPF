@@ -32,6 +32,7 @@ namespace LBJOEE.ViewModels
         private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer;
         private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
         private originaldata yssj = new originaldata();
+        private Int64 golbal_jgs = 0;
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
         public ObservableCollection<string> ClientList { get; set; } = new ObservableCollection<string>();
         private ObservableCollection<dynamic> _datagridcols;
@@ -133,6 +134,7 @@ namespace LBJOEE.ViewModels
         private readonly SBTJService _sbtjservice;
         private readonly SBSJService _sbsjservice;
         private readonly HisService _hisservice;
+        private readonly SBZTGXService _sbztgxservice;//记录设备状态更新
         private readonly LogService _logservice;
         private readonly IContainerExtension _container;
         private readonly IRegionManager _regionmgr;
@@ -145,6 +147,7 @@ namespace LBJOEE.ViewModels
             _logservice = container.Resolve<LogService>();
             _regionmgr = container.Resolve<IRegionManager>();
             _hisservice = container.Resolve<HisService>();
+            _sbztgxservice = container.Resolve<SBZTGXService>();
             try
             {
                 var pcip = Tool.GetIpAddress();
@@ -326,13 +329,52 @@ namespace LBJOEE.ViewModels
                         JsonEntity data = new JsonEntity();
                         var yxzt = receivedata.Where(i => i.itemName == "运行状态");
                         var bjzt = receivedata.Where(i => i.itemName == "报警状态");
+                        var jgs = receivedata.Where(i => i.itemName == "加工数");
                         if (yxzt.Count() > 0)
                         {
-                            data.status = yxzt.FirstOrDefault().value == "1" ? "运行" : "";
+                            var objyxzt = yxzt.FirstOrDefault();
+                            if (objyxzt.value == "1")
+                            {
+                                data.status = "运行";
+                            }
+                            else if (objyxzt.value.Contains("错误"))
+                            {
+                                data.status = "停机";
+                            }
+                            else
+                            {
+                                data.status = "";
+                            }
                         }
                         if (bjzt.Count() > 0)
                         {
                             data.status = bjzt.FirstOrDefault().value == "1" ? "故障" : "运行";
+                        }
+                        if (jgs.Count() > 0)
+                        {
+                            var local_jgs = System.Convert.ToInt64(jgs.FirstOrDefault().value);
+                            sbztbhb sbztgx_obj = new sbztbhb();
+                            sbztgx_obj.sbbh = base_sbxx.sbbh;
+                            sbztgx_obj.sbqy = base_sbxx.sbqy;
+                            if (base_sbxx.sbzt != "运行")
+                            {
+                                sbztgx_obj.sbzt = base_sbxx.sbzt;
+                            }
+                            else
+                            {
+                                sbztgx_obj.sbzt = data.status;
+                            }
+                            //设备在运行
+                            if (local_jgs != golbal_jgs)
+                            {
+                                golbal_jgs = local_jgs;
+                                _sbztgxservice.Add(sbztgx_obj);
+                            }
+                            else//设备待机
+                            {
+                                sbztgx_obj.sbzt = "待机";
+                                _sbztgxservice.Add(sbztgx_obj);
+                            }
                         }
                         data.devicedata = receivedata;
                         data.SJCJ = FanShe(data.devicedata);
@@ -743,7 +785,7 @@ namespace LBJOEE.ViewModels
                 {
                     obj.tjsj = 0;
                     _qttimer.Change(obj.tjsj, 1000);
-                    base_sbxx.sbzt = "停机";
+                    base_sbxx.sbzt = "待机";
                     base_sbxx.sfqttj = "Y";
                     base_sbxx.qttjkssj = DateTime.Now;
                     obj.flag = 1;
@@ -893,7 +935,7 @@ namespace LBJOEE.ViewModels
                 {
                     obj.tjsj = 0;
                     _qltimer.Change(obj.tjsj, 1000);
-                    base_sbxx.sbzt = "空闲";
+                    base_sbxx.sbzt = "待机";
                     base_sbxx.sfql = "Y";
                     base_sbxx.qlkssj = DateTime.Now;
                     obj.sfql = true;

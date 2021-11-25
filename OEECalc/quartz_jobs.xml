@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<job-scheduling-data xmlns="http://quartznet.sourceforge.net/JobSchedulingData"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ 				version="2.0">
+
+	<processing-directives>
+		<overwrite-existing-data>true</overwrite-existing-data>
+	</processing-directives>
+
+	<schedule>
+
+		<job>
+			<name>SbZTtjJob</name>
+			<group>jobGroup</group>
+			<description>设备状态统计</description>
+			<job-type>OEECalc.JOB.StaticSBZT_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+
+		<trigger>
+			<cron>
+				<name>TjTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>SbZTtjJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 * * * * ?</cron-expression>
+			</cron>
+		</trigger>
+
+		<job>
+			<name>SbCJtjJob</name>
+			<group>jobGroup</group>
+			<description>设备采集统计</description>
+			<job-type>OEECalc.JOB.StaticSBCJ_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+
+		<trigger>
+			<cron>
+				<name>CjTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>SbCJtjJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 */3 * * * ?</cron-expression>
+			</cron>
+		</trigger>
+
+	</schedule>
+
+</job-scheduling-data>

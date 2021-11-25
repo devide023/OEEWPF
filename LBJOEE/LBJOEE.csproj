@@ -34,7 +34,7 @@
     <WebPage>index.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>90</ApplicationRevision>
+    <ApplicationRevision>97</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -123,8 +123,10 @@
     <Compile Include="Models\originaldata.cs" />
     <Compile Include="Models\receive_data.cs" />
     <Compile Include="Models\sbyxtj.cs" />
+    <Compile Include="Models\sbztbhb.cs" />
     <Compile Include="Models\sjcj.cs" />
     <Compile Include="Services\SBYXTJService.cs" />
+    <Compile Include="Services\SBZTGXService.cs" />
     <Compile Include="Tools\AutoStart.cs" />
     <Compile Include="Tools\DataBackUp.cs" />
     <Compile Include="Tools\RegTool.cs" />
