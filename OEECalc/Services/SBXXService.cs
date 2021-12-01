@@ -23,7 +23,7 @@ namespace OEECalc.Services
                 pg.Predicates.Add(Predicates.Field<base_sbxx>(t => t.scbz, Operator.Eq, "N"));
                 return Db.GetList<base_sbxx>(pg);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return new List<base_sbxx>();
             }

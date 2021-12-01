@@ -47,7 +47,58 @@
 				<cron-expression>0 */3 * * * ?</cron-expression>
 			</cron>
 		</trigger>
+		<job>
+			<name>SbCNtjJob</name>
+			<group>jobGroup</group>
+			<description>设备产能统计</description>
+			<job-type>OEECalc.JOB.StaticSBCN_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>CNTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>SbCNtjJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 * * * * ?</cron-expression>
+			</cron>
+		</trigger>
 
+		<job>
+			<name>SbZtSltjJob</name>
+			<group>jobGroup</group>
+			<description>设备状态数量统计</description>
+			<job-type>OEECalc.JOB.SBZTSL_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>ZtSLTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>SbZtSltjJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 */5 * * * ?</cron-expression>
+			</cron>
+		</trigger>
+		<job>
+			<name>SbZXJCJob</name>
+			<group>jobGroup</group>
+			<description>设备是否在线检查</description>
+			<job-type>OEECalc.JOB.SBZX_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>SBZXJCTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>SbZXJCJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>*/30 * * * * ?</cron-expression>
+			</cron>
+		</trigger>
 	</schedule>
 
 </job-scheduling-data>

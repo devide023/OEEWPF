@@ -3,30 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Dapper;
 using DapperExtensions.Mapper;
 namespace OEECalc.Model
 {
     /// <summary>
-    /// 设备运行统计
+    /// 统计设备状态数量
     /// </summary>
-    public class sbyxtj
+    public class sbztsltj
     {
-        public int id { get; set; }
+        public long id { get; set; }
         public DateTime sj { get; set; }
-        public string sbbh { get; set; }
-        public string sbip { get; set; }
-        public string sbzt { get; set; }
-        public string sbqy { get; set; }
         /// <summary>
-        /// 时长
+        /// 设备状态
         /// </summary>
-        public double sc { get; set; }
+        public string sbzt { get; set; }
+        /// <summary>
+        /// 状态设备数量
+        /// </summary>
+        public int sl { get; set; }
     }
 
-    public class sbyxtj_mapper : ClassMapper<sbyxtj>
+    public class sbztsltj_mapper : ClassMapper<sbztsltj>
     {
-        public sbyxtj_mapper()
+        public sbztsltj_mapper()
         {
             Map(t => t.id).Key(KeyType.Assigned);
             AutoMap();

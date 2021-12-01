@@ -128,11 +128,11 @@ namespace LBJOEE.Services
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfql == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfql='Y',qlkssj=sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfql='Y',qlkssj=sysdate,djkssj=sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh ");
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfql='N',tjms='',gxsj=sysdate where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfql='N',tjms='',djkssj = NULL,gxsj=sysdate where sbbh=:sbbh ");
                 }
                 var ret = Db.Connection.Execute(sql.ToString(), q);
                 return ret > 0 ? true : false;
@@ -182,11 +182,11 @@ namespace LBJOEE.Services
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfqttj == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='Y',qttjkssj=sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='Y',qttjkssj=sysdate,djkssj = sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh ");
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='N',tjms='',gxsj=sysdate where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='N',tjms='',djkssj =NULL,gxsj=sysdate where sbbh=:sbbh ");
                 }
                 var ret = Db.Connection.Execute(sql.ToString(), q);
                 return ret > 0 ? true : false;

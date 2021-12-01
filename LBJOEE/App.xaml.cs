@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Security.Principal;
 using System.Reflection;
 using log4net;
+using System.Linq;
 namespace LBJOEE
 {
     /// <summary>
@@ -23,16 +24,22 @@ namespace LBJOEE
     {
         private SBXXService service = null;
         private LogService _logservice = null;
+        private SBYXZTService _sbyxztservice = null;
         private bool appupdate = true;
         private Timer updatetimer = null;
+        private Timer yxzttimer = null;//运行状态计时器
+        private string _global_sbyxzt = string.Empty;//设备运行状态
+        private int _global_js = 0;//计数器
         public App()
         {
             try
             {
                 _logservice = new LogService();
                 service = new SBXXService();
+                _sbyxztservice = new SBYXZTService();
                 appupdate = service.IsAppUpdate();
                 updatetimer = new Timer(CheckUpdateHandle, null, Timeout.Infinite, Timeout.Infinite);
+                yxzttimer = new Timer(SbYXhZTHandle, null, Timeout.Infinite, Timeout.Infinite);
                 if (appupdate)
                 {
                     AppCheckUpdate.InstallUpdateSyncWithInfo();
@@ -43,6 +50,53 @@ namespace LBJOEE
                 _logservice.Error(e.Message,e.StackTrace);
                 //Environment.Exit(0);
             }            
+        }
+        private void SbYXhZTHandle(object state)
+        {
+            try
+            {
+                //开机，没有数据上传
+                if (Tool.IsPing())
+                {
+                    var sbxx = service.Find_Sbxx_ByIp();
+                    var list = _sbyxztservice.Get_ZTBH_List(sbxx.sbbh);
+                    //5分钟内没有数据上传
+                    if (list.Count() == 0)
+                    {
+                        //没有手动停机情况下更新设备待机时间
+                        if (sbxx.sfgz =="N" && sbxx.sfhm=="N" && sbxx.sfjx=="N" && sbxx.sfql=="N" && sbxx.sfqttj == "N" && _global_js == 0)
+                        {
+                            _sbyxztservice.Set_SbDj_SJ(sbxx.sbbh);
+                            _global_js++;
+                        }
+                    }
+                    else//有数据上传
+                    {
+                        _global_js = 0;
+                        var firstzx = list.OrderByDescending(t => t.sj).FirstOrDefault();//最新一条数据
+                        if (_global_sbyxzt != firstzx.sbzt)
+                        {
+                            if (firstzx.sbzt == "待机")
+                            {
+                                //没有手动停机情况下更新设备待机时间
+                                if (sbxx.sfgz == "N" && sbxx.sfhm == "N" && sbxx.sfjx == "N" && sbxx.sfql == "N" && sbxx.sfqttj == "N")
+                                {
+                                    _sbyxztservice.Set_SbDj_SJ(sbxx.sbbh, firstzx.sj);
+                                }
+                            }
+                            else
+                            {
+                                _sbyxztservice.UnSet_SbDj_SJ(sbxx.sbbh);
+                            }
+                            _global_sbyxzt = firstzx.sbzt;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
         }
         private void CheckUpdateHandle(object state)
         {
@@ -82,6 +136,7 @@ namespace LBJOEE
             }
             base.OnStartup(e);
             updatetimer.Change(0, 1000 * 60);
+            yxzttimer.Change(0, 1000 * 60);
         }
 
     }

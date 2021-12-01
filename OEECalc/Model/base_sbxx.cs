@@ -54,23 +54,23 @@ namespace OEECalc.Model
         /// <summary>
         ///检修开始时间
         ///</summary>
-        public DateTime jxkssj { get; set; }
+        public DateTime? jxkssj { get; set; }
         /// <summary>
         ///换模开始时间
         ///</summary>
-        public DateTime hmkssj { get; set; }
+        public DateTime? hmkssj { get; set; }
         /// <summary>
         ///故障开始时间
         ///</summary>
-        public DateTime gzkssj { get; set; }
+        public DateTime? gzkssj { get; set; }
         /// <summary>
         ///缺料开始时间
         ///</summary>
-        public DateTime qlkssj { get; set; }
+        public DateTime? qlkssj { get; set; }
         /// <summary>
         ///其他停机开始时间
         ///</summary>
-        public DateTime qttjkssj { get; set; }
+        public DateTime? qttjkssj { get; set; }
         /// <summary>
         ///设备区域
         ///</summary>
@@ -119,6 +119,14 @@ namespace OEECalc.Model
         ///删除标志
         ///</summary>
         public string scbz { get; set; }
+        /// <summary>
+        /// 待机开始时间
+        /// </summary>
+        public DateTime? djkssj { get; set; }
+        /// <summary>
+        /// 停机开始时间
+        /// </summary>
+        public DateTime? tjkssj { get; set; }
 
     }
 

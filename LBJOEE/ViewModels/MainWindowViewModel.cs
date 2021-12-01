@@ -32,7 +32,8 @@ namespace LBJOEE.ViewModels
         private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer;
         private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn;
         private originaldata yssj = new originaldata();
-        private Int64 golbal_jgs = 0;
+        private Int64 golbal_jgs = 0;//设备加工数
+        private string golbal_yxzt = string.Empty;//运行状态
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
         public ObservableCollection<string> ClientList { get; set; } = new ObservableCollection<string>();
         private ObservableCollection<dynamic> _datagridcols;
@@ -341,9 +342,21 @@ namespace LBJOEE.ViewModels
                             {
                                 data.status = "停机";
                             }
+                            else if(objyxzt.value == "0")
+                            {
+                                var temp = jgs.FirstOrDefault();
+                                var s = temp != null ? System.Convert.ToInt64(temp.value) : 0;
+                                if (s >0){
+                                    data.status = "运行";
+                                }
+                                else
+                                {
+                                    data.status = "待机";
+                                }
+                            }
                             else
                             {
-                                data.status = "";
+                                data.status = "待机";
                             }
                         }
                         if (bjzt.Count() > 0)
@@ -375,7 +388,17 @@ namespace LBJOEE.ViewModels
                                 sbztgx_obj.sbzt = "待机";
                                 _sbztgxservice.Add(sbztgx_obj);
                             }
-                        }
+                            //
+                            if (golbal_yxzt != sbztgx_obj.sbzt)
+                            {
+                                //设置待机时间
+                                if (golbal_yxzt=="待机" && (base_sbxx.sbzt == "运行" || base_sbxx.sbzt == ""))
+                                {
+                                    _sbztgxservice.Set_Djsj(base_sbxx.sbbh);
+                                }
+                                golbal_yxzt = sbztgx_obj.sbzt;
+                            }
+                        }                        
                         data.devicedata = receivedata;
                         data.SJCJ = FanShe(data.devicedata);
                         ShowHisData(data);
@@ -613,6 +636,7 @@ namespace LBJOEE.ViewModels
             }
             if (_gzbtn.sfgz)
             {
+                _gzbtn.tjsjvisible = "Visible";
                 _gztimer.Change(_gzbtn.tjsj, 1000);
             }
             if (_hmbtn.sfhm)
@@ -623,7 +647,7 @@ namespace LBJOEE.ViewModels
             {
                 _qltimer.Change(_qlbtn.tjsj, 1000);
             }
-            if (_qtbtn.sfql)
+            if (_qtbtn.sfqt)
             {
                 _qttimer.Change(_qtbtn.tjsj, 1000);
             }
@@ -1036,7 +1060,6 @@ namespace LBJOEE.ViewModels
         #region 更新设备状态
         private void ChangeDeviceStatus(dynamic stateinfo)
         {
-            var btn = BtnStatusList.Where(t => t.name == "gz").First();
             if (stateinfo.status == "故障" && base_sbxx.sbzt != stateinfo.status)
             {
                 _gztimer.Change(0, 1000);
@@ -1045,37 +1068,46 @@ namespace LBJOEE.ViewModels
                 base_sbxx.sbzt = "故障";
                 base_sbxx.tjms = "采集到的故障信息";
                 base_sbxx.gzkssj = DateTime.Now;
-                btn.btnenable = false;
-                btn.sfgz = true;
-                btn.iscjgz = true;
-                btn.flag = 1;
-                btn.tjsjvisible = "Visible";
-                btn.btntxt = btn.tjtxt;
+                _gzbtn.btnenable = false;
+                _gzbtn.sfgz = true;
+                _gzbtn.iscjgz = true;
+                _gzbtn.flag = 1;
+                _gzbtn.tjsjvisible = "Visible";
+                _gzbtn.btntxt = _gzbtn.tjtxt;
                 _sbxxservice.SetGZtj(base_sbxx);
-                EnableOtherBtn(btn, false);
+                EnableOtherBtn(_gzbtn, false);
             }
-            if (stateinfo.status == "运行" && base_sbxx.sbzt == "故障" && btn.iscjgz)
+            else
+            {
+                if (_gzbtn.sfgz)
+                {
+                    _gzbtn.tjsjvisible = "Visible";
+                    _gztimer.Change(_gzbtn.tjsj, 1000);
+                }
+            }
+
+            if (stateinfo.status == "运行" && base_sbxx.sbzt == "故障" && _gzbtn.iscjgz)
             {
                 base_sbxx.sbzt = "运行";
                 base_sbxx.sfgz = "N";
                 base_sbxx.cjgz = "N";
-                btn.flag = 0;
-                btn.sfgz = false;
-                btn.iscjgz = false;
-                btn.btnenable = true;
-                btn.btntxt = btn.normaltxt;
-                btn.tjsj = 0;
-                btn.tjsjvisible = "Collapsed";
-                EnableOtherBtn(btn, true);
+                _gzbtn.flag = 0;
+                _gzbtn.sfgz = false;
+                _gzbtn.iscjgz = false;
+                _gzbtn.btnenable = true;
+                _gzbtn.btntxt = _gzbtn.normaltxt;
+                _gzbtn.tjsj = 0;
+                _gzbtn.tjsjvisible = "Collapsed";
+                EnableOtherBtn(_gzbtn, true);
                 DateTime now = DateTime.Now;
                 _sbtjservice.Add(new sbtj()
                 {
                     sbbh = base_sbxx.sbbh,
                     tjjssj = now,
                     tjkssj = base_sbxx.gzkssj,
-                    tjlx = btn.tjlx,
+                    tjlx = _gzbtn.tjlx,
                     tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
-                    tjms = btn.tjms
+                    tjms = _gzbtn.tjms
                 });
                 _sbxxservice.SetGZtj(base_sbxx);
             }
@@ -1085,7 +1117,7 @@ namespace LBJOEE.ViewModels
                 foreach (var item in BtnStatusList)
                 {
                     item.btnenable = true;
-                    item.tjsj = 0;
+                    //item.tjsj = 0;
                 }
             }
         }

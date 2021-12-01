@@ -55,8 +55,9 @@ namespace OEECalc.Services
                     return false;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                log.Error(e.Message);
                 return false;
             }
         }
@@ -92,9 +93,9 @@ namespace OEECalc.Services
                     });
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                log.Error(e.Message);
             }
         }
     }

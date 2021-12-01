@@ -12,7 +12,6 @@ using System.Configuration;
 using OEECalc.Tool;
 using log4net;
 using DapperExtensions.Predicate;
-using OEECalc.Tool;
 namespace OEECalc.Services
 {
     /// <summary>
@@ -98,8 +97,9 @@ namespace OEECalc.Services
                     return false;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                log.Error(e.Message);
                 return false;
             }
         }
@@ -145,13 +145,13 @@ namespace OEECalc.Services
                     if (DateTime.Compare(current_time, d2) < 0 && DateTime.Compare(current_time, d1) >= 0)
                     {
                         cur_time_cnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt=="运行").Count();
-                        cur_time_tjcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt.Contains("停机")).Count();
+                        cur_time_tjcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt=="停机").Count();
                         sj = d1;
                     }
                     if (DateTime.Compare(current_time, d2) >= 0 && DateTime.Compare(current_time, d3) < 0)
                     {
                         cur_time_cnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt == "运行").Count();
-                        cur_time_tjcnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt.Contains("停机")).Count();
+                        cur_time_tjcnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt=="停机").Count();
                         sj = d2;
                     }
                     if (cur_time_cnt >= jsfz)
@@ -177,26 +177,66 @@ namespace OEECalc.Services
                         }
                         else
                         {
-                            var sbentity = Db.GetList<base_sbxx>(Predicates.Field<base_sbxx>(f => f.sbbh, Operator.Eq, item.sbbh)).FirstOrDefault();
-                            if (sbentity != null)
-                            {
-                                switch (sbentity.sbzt)
+                            
+                                switch (item.sbzt)
                                 {
                                     case "故障":
                                     case "换模":
                                     case "检修":
-                                        yxzt = sbentity.sbzt;
+                                        yxzt = item.sbzt;
                                         break;
                                     default:
                                         break;
                                 }
-                            }
                         }
                     }
                     pg.Predicates.Clear();
                     pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sbbh, Operator.Eq, item.sbbh));
                     pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sj, Operator.Eq, sj));
                     //log.Info($"{item.sbbh},{sj}");
+                    double totalsj = 0;
+                    //var sbtjsjinfo = Db.Connection.Query<base_sbxx>("select jxkssj,hmkssj,gzkssj,qlkssj,qttjkssj,djkssj,tjkssj from base_sbxx where sbbh = :sbbh", new { sbbh = item.sbbh }).FirstOrDefault() ;
+                    
+                    switch (yxzt)
+                    {
+                        case "检修":
+                            var tsjx = new TimeUtil().ServerTime() - item.jxkssj;
+                            if (tsjx.HasValue)
+                            {
+                                totalsj = tsjx.Value.TotalSeconds;
+                            }
+                            break;
+                        case "换模":
+                            var tshm = new TimeUtil().ServerTime() - item.hmkssj;
+                            if (tshm.HasValue)
+                            {
+                                totalsj = tshm.Value.TotalSeconds;
+                            }
+                            break;
+                        case "故障":
+                            var tsgz = new TimeUtil().ServerTime() - item.gzkssj;
+                            if (tsgz.HasValue)
+                            {
+                                totalsj = tsgz.Value.TotalSeconds;
+                            }
+                            break;
+                        case "待机":
+                            var djgz = new TimeUtil().ServerTime() - item.djkssj;
+                            if (djgz.HasValue)
+                            {
+                                totalsj = djgz.Value.TotalSeconds;
+                            }
+                            break;
+                        case "停机":
+                            var tjgz = new TimeUtil().ServerTime() - item.tjkssj;
+                            if (tjgz.HasValue)
+                            {
+                                totalsj = tjgz.Value.TotalSeconds;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                     var qlist = Db.GetList<sbyxtj>(pg);
                     if (qlist.Count() == 0)
                     {
@@ -205,21 +245,23 @@ namespace OEECalc.Services
                             sbbh = item.sbbh,
                             sbqy = item.sbqy,
                             sbzt = yxzt,
-                            sj = sj
+                            sj = sj,
+                            sc = totalsj
                         });
                     }
                     else
                     {
                         sbyxtj first = qlist.FirstOrDefault();
                         first.sbzt = yxzt;
+                        first.sc = totalsj;
                         //log.Info(JsonConvert.SerializeObject(first));
                         edit_sbzt(first);
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                log.Error(e.Message+e.StackTrace);
             }
         }
         

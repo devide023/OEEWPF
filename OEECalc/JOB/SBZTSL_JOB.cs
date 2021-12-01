@@ -1,24 +1,24 @@
-﻿using OEECalc.Services;
-using Quartz;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using OEECalc.Services;
+using Quartz;
+using Quartz.Job;
 namespace OEECalc.JOB
 {
     /// <summary>
-    /// 设备是否有数据采集
+    /// 设备运行状态数量统计
     /// </summary>
-    public class StaticSBCJ_JOB : IJob
+    public class SBZTSL_JOB : IJob
     {
         public Task Execute(IJobExecutionContext context)
         {
             return Task.Run(() =>
             {
-                SbcjtjService service = SbcjtjService.Instance;
-                service.sbcjtj();
+                SBZTSLTJService service = SBZTSLTJService.Instance;
+                service.ZTSL_Static();
             });
         }
     }
