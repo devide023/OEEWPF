@@ -359,6 +359,11 @@ namespace LBJOEE.ViewModels
                                 data.status = "待机";
                             }
                         }
+                        else
+                        {
+                            data.status = "运行";
+                        }
+
                         if (bjzt.Count() > 0)
                         {
                             data.status = bjzt.FirstOrDefault().value == "1" ? "故障" : "运行";
