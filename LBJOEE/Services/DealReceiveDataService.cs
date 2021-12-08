@@ -79,11 +79,15 @@ namespace LBJOEE.Services
                 var bjzt = receivedata.Where(i => i.itemName == "报警状态");
                 var jgs = receivedata.Where(i => i.itemName == "加工数");
                 var zt = (bool)yxzt.FirstOrDefault()?.value.Contains("错误");
+                data.status = _base_sbxx.sbzt;
                 if (zt)
                 {
                     data.status = "停机";
                 }
-                data.status = bjzt.FirstOrDefault()?.value == "1" ? "故障" : "运行";
+                if(bjzt.FirstOrDefault()?.value == "1")
+                {
+                    data.status = "故障";
+                }
                 if (jgs.Count() > 0)
                 {
                     var local_jgs = System.Convert.ToInt64(jgs.FirstOrDefault().value);

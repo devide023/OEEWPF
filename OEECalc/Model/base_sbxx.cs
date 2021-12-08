@@ -128,6 +128,11 @@ namespace OEECalc.Model
         /// </summary>
         public DateTime? tjkssj { get; set; }
 
+        public string sfxm { get; set; }
+        public string sfts { get; set; }
+        public DateTime xmkssj { get; set; }
+        public DateTime tskssj { get; set; }
+
     }
 
     public class base_sbxx_mapper : ClassMapper<base_sbxx>

@@ -57,6 +57,7 @@ namespace LBJOEE.Tools
                 }
                 catch (Exception e) {
                     logservice.Error(e.Message, e.StackTrace);
+                    LogManager.GetLogger("LBJOEE.Tools.AppCheckUpdate").Error(e.Message);
                 }  
                 
                 if (isnewversion)

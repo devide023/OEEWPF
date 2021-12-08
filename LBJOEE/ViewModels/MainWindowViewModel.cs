@@ -445,31 +445,6 @@ namespace LBJOEE.ViewModels
                 return entity;
             }
         }
-
-        /// <summary>
-        /// 设备数据处理
-        /// </summary>
-        /// <param name="devicedata"></param>
-        private void DealDeviceData(sjcj data)
-        {
-            try
-            {
-                if (Tool.IsPing())
-                {
-                    _sbsjservice.Add(data);
-                }
-                else
-                {
-                    DataBackUp.SaveDataToLocal(data);
-                }
-            }
-            catch (Exception e)
-            {
-                _logservice.Error(e.Message, e.StackTrace);
-                log.Error(e.Message);
-            }
-        }
-
         private void TabItemChangeHandle(object parm)
         {
             var arg = parm as SelectionChangedEventArgs;

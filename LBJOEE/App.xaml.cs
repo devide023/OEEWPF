@@ -30,10 +30,12 @@ namespace LBJOEE
         private Timer yxzttimer = null;//运行状态计时器
         private string _global_sbyxzt = string.Empty;//设备运行状态
         private int _global_js = 0;//计数器
+        private ILog log;
         public App()
         {
             try
             {
+                log = LogManager.GetLogger(this.GetType());
                 _logservice = new LogService();
                 service = SBXXService.Instance;
                 _sbyxztservice = new SBYXZTService();
@@ -48,7 +50,7 @@ namespace LBJOEE
             catch (Exception e)
             {
                 _logservice.Error(e.Message,e.StackTrace);
-                //Environment.Exit(0);
+                log.Error(e.Message);
             }            
         }
         private void SbYXhZTHandle(object state)
@@ -108,9 +110,9 @@ namespace LBJOEE
                     AppCheckUpdate.InstallUpdateSyncWithInfo();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //Environment.Exit(0);
+                log.Error(e.Message);
             }
         }
         public EventWaitHandle ProgramStarted { get; set; }
@@ -135,7 +137,7 @@ namespace LBJOEE
                 //Environment.Exit(0);
             }
             base.OnStartup(e);
-            updatetimer.Change(0, 1000 * 60);
+            updatetimer.Change(0, 1000 * 60 * 5);
             yxzttimer.Change(0, 1000 * 60);
         }
 
