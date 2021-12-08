@@ -35,7 +35,7 @@ namespace LBJOEE
             try
             {
                 _logservice = new LogService();
-                service = new SBXXService();
+                service = SBXXService.Instance;
                 _sbyxztservice = new SBYXZTService();
                 appupdate = service.IsAppUpdate();
                 updatetimer = new Timer(CheckUpdateHandle, null, Timeout.Infinite, Timeout.Infinite);
@@ -93,9 +93,9 @@ namespace LBJOEE
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                _logservice.Error(e.Message, e.StackTrace);
             }
         }
         private void CheckUpdateHandle(object state)

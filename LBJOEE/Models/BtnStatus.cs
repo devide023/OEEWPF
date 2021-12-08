@@ -97,5 +97,13 @@ namespace LBJOEE
             get { return _iscjgz; }
             set { SetProperty(ref _iscjgz, value); }
         }
+        /// <summary>
+        /// 是否调试
+        /// </summary>
+        public bool sfts { get; set; } 
+        /// <summary>
+        /// 是否修模
+        /// </summary>
+        public bool sfxm { get; set; }
     }
 }

@@ -227,6 +227,16 @@ namespace LBJOEE
         /// 是否保存原始数据
         /// </summary>
         public int issaveyssj { get; set; }
+        /// <summary>
+        /// 是否修模
+        /// </summary>
+        public string sfxm { get; set; }
+        public DateTime xmkssj { get; set; }
+        /// <summary>
+        /// 是否调试
+        /// </summary>
+        public string sfts { get; set; }
+        public DateTime tskssj { get; set; }
     }
 
     public class base_sbxx_mapper : ClassMapper<base_sbxx>

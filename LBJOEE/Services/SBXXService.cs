@@ -17,6 +17,31 @@ namespace LBJOEE.Services
     /// </summary>
     public class SBXXService : DBImp<base_sbxx>
     {
+        private static SBXXService instance = null;
+        private static readonly object padlock = new object();
+        private SBXXService()
+        {
+
+        }
+
+        public static SBXXService Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    lock (padlock)
+                    {
+                        if (instance == null)
+                        {
+                            instance = new SBXXService();
+                        }
+                    }
+                }
+                return instance;
+            }
+        }
+
         public base_sbxx Find_Sbxx_ByIp()
         {
             string ip = Tool.GetIpAddress();
@@ -40,9 +65,19 @@ namespace LBJOEE.Services
         {
             try
             {
-                var predicate = Predicates.Field<base_sbxx>(f => f.ip, Operator.Eq, ip);
-                base_sbxx sbxx = Db.GetList<base_sbxx>(predicate).FirstOrDefault();
-                return sbxx;
+                StringBuilder sql = new StringBuilder();
+                sql.Append("select sbbh, sbmc, sbxh, sbpp, sbzt, sfjx, sfhm, sfgz, sfql, sfqttj, jxkssj, hmkssj, gzkssj, qlkssj, qttjkssj, sbqy, ip, tjms, port, cjgz, log, isupdate, issaveyssj,sfxm,sfts,xmkssj,tskssj FROM   base_sbxx where ip = :ip");
+                DynamicParameters p = new DynamicParameters();
+                p.Add(":ip", ip, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                var q = Db.Connection.Query<base_sbxx>(sql.ToString(),p);
+                if (q.Count() > 0)
+                {
+                    return q.First();
+                }
+                else
+                {
+                    return new base_sbxx();
+                }
             }
             catch (Exception e)
             {
@@ -52,9 +87,25 @@ namespace LBJOEE.Services
         }
         public base_sbxx Find_Sbxx_ByBh(string sbbh)
         {
-            var predicate = Predicates.Field<base_sbxx>(f => f.sbbh, Operator.Eq, sbbh);
-            base_sbxx sbxx = Db.GetList<base_sbxx>(predicate).FirstOrDefault();
-            return sbxx;
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("select sbbh, sbmc, sbxh, sbpp, sbzt, sfjx, sfhm, sfgz, sfql, sfqttj, jxkssj, hmkssj, gzkssj, qlkssj, qttjkssj, sbqy, ip, lrr, lrsj, tjms, port, cjgz, log, isupdate, issaveyssj, gxsj, scbz, djkssj, tjkssj FROM   base_sbxx where sbbh = :sbbh");
+                var q = Db.Connection.Query<base_sbxx>(sql.ToString(), new { sbbh = sbbh });
+                if (q.Count() > 0)
+                {
+                    return q.First();
+                }
+                else
+                {
+                    return new base_sbxx();
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorAction?.Invoke(e.Message);
+                return new base_sbxx();
+            }
         }
         /// <summary>
         /// 设置故障停机描述及时间
@@ -67,18 +118,17 @@ namespace LBJOEE.Services
             {
                 StringBuilder sql = new StringBuilder();
                 OracleDynamicParameters q = new OracleDynamicParameters();
-                q.Add(":xtsj", DateTime.Now, OracleMappingType.Date, System.Data.ParameterDirection.Input);
                 q.Add(":sbbh", entity.sbbh, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":tjms", entity.tjms ?? "", OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":cjgz", entity.cjgz, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfgz == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='Y',gzkssj=sysdate,tjms=:tjms,cjgz=:cjgz,gxsj=sysdate where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='Y',gzkssj=sysdate,tjms=:tjms,cjgz=:cjgz,gxsj=sysdate,tjkssj=sysdate where sbbh=:sbbh ");
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='N',tjms='',cjgz=:cjgz,gxsj=sysdate where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='N',tjms='',cjgz=:cjgz,gxsj=sysdate,tjkssj=NULL where sbbh=:sbbh ");
                 }
                 var ret = Db.Connection.Execute(sql.ToString(), q);
                 return ret > 0 ? true : false;
@@ -95,17 +145,16 @@ namespace LBJOEE.Services
             {
                 StringBuilder sql = new StringBuilder();
                 OracleDynamicParameters q = new OracleDynamicParameters();
-                q.Add(":xtsj", DateTime.Now, OracleMappingType.Date, System.Data.ParameterDirection.Input);
                 q.Add(":sbbh", entity.sbbh, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":tjms", entity.tjms ?? "", OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfjx == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='Y',jxkssj=sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='Y',jxkssj=sysdate,tjms=:tjms,gxsj=sysdate,tjkssj=sysdate where sbbh=:sbbh ");
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='N',tjms='',gxsj=sysdate where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='N',tjms='',gxsj=sysdate,tjkssj=NULL where sbbh=:sbbh ");
                 }
                 var ret = Db.Connection.Execute(sql.ToString(), q);
                 return ret > 0 ? true : false;
@@ -122,7 +171,6 @@ namespace LBJOEE.Services
             {
                 StringBuilder sql = new StringBuilder();
                 OracleDynamicParameters q = new OracleDynamicParameters();
-                q.Add(":xtsj", DateTime.Now, OracleMappingType.Date, System.Data.ParameterDirection.Input);
                 q.Add(":sbbh", entity.sbbh, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":tjms", entity.tjms ?? "", OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
@@ -149,17 +197,16 @@ namespace LBJOEE.Services
             {
                 StringBuilder sql = new StringBuilder();
                 OracleDynamicParameters q = new OracleDynamicParameters();
-                q.Add(":xtsj", DateTime.Now, OracleMappingType.Date, System.Data.ParameterDirection.Input);
                 q.Add(":sbbh", entity.sbbh, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":tjms", entity.tjms ?? "", OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 if (entity.sfhm == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='Y',hmkssj=sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='Y',hmkssj=sysdate,tjms=:tjms,gxsj=sysdate,tjkssj=sysdate where sbbh=:sbbh ");
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='N',tjms='',gxsj=sysdate where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='N',tjms='',gxsj=sysdate,tjkssj=NULL where sbbh=:sbbh ");
                 }
                 var ret = Db.Connection.Execute(sql.ToString(), q);
                 return ret > 0 ? true : false;
@@ -170,13 +217,64 @@ namespace LBJOEE.Services
                 return false;
             }
         }
+        public bool SetXMtj(base_sbxx entity)
+        {
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                OracleDynamicParameters q = new OracleDynamicParameters();
+                q.Add(":sbbh", entity.sbbh, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
+                q.Add(":tjms", entity.tjms ?? "", OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
+                q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
+                if (entity.sfxm == "Y")
+                {
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfxm='Y',xmkssj=sysdate,tjms=:tjms,gxsj=sysdate,tjkssj=sysdate where sbbh=:sbbh ");
+                }
+                else
+                {
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfxm='N',tjms='',gxsj=sysdate,tjkssj=NULL where sbbh=:sbbh ");
+                }
+                var ret = Db.Connection.Execute(sql.ToString(), q);
+                return ret > 0 ? true : false;
+            }
+            catch (Exception e)
+            {
+                ErrorAction?.Invoke("SBXXService.SetXMtj" + e.Message);
+                return false;
+            }
+        }
+        public bool SetTStj(base_sbxx entity)
+        {
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                OracleDynamicParameters q = new OracleDynamicParameters();
+                q.Add(":sbbh", entity.sbbh, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
+                q.Add(":tjms", entity.tjms ?? "", OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
+                q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
+                if (entity.sfts == "Y")
+                {
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfts='Y',tskssj=sysdate,tjms=:tjms,gxsj=sysdate,tjkssj=sysdate where sbbh=:sbbh ");
+                }
+                else
+                {
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfts='N',tjms='',gxsj=sysdate,tjkssj=NULL where sbbh=:sbbh ");
+                }
+                var ret = Db.Connection.Execute(sql.ToString(), q);
+                return ret > 0 ? true : false;
+            }
+            catch (Exception e)
+            {
+                ErrorAction?.Invoke("SBXXService.SetTStj" + e.Message);
+                return false;
+            }
+        }
         public bool SetQTtj(base_sbxx entity)
         {
             try
             {
                 StringBuilder sql = new StringBuilder();
                 OracleDynamicParameters q = new OracleDynamicParameters();
-                q.Add(":xtsj", DateTime.Now, OracleMappingType.Date, System.Data.ParameterDirection.Input);
                 q.Add(":sbbh", entity.sbbh, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":tjms", entity.tjms ?? "", OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
                 q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);

@@ -88,13 +88,13 @@ namespace OEECalc.Services
             try
             {
                 StringBuilder sqlmax = new StringBuilder();
-                sqlmax.Append("select max(to_number(jgs)) maxjgs ");
+                sqlmax.Append("select nvl(max(to_number(jgs)),0) maxjgs ");
                 sqlmax.Append(" from sjcj ");
                 sqlmax.Append(" where trunc(cjsj) = trunc(sysdate) ");
                 sqlmax.Append(" and    trim(translate(jgs, '0123456789', ' ')) is NULL ");
                 sqlmax.Append(" and sbbh = :sbbh ");
                 StringBuilder sqlmin = new StringBuilder();
-                sqlmin.Append("select min(to_number(jgs)) maxjgs ");
+                sqlmin.Append("select nvl(min(to_number(jgs)),0) minjgs ");
                 sqlmin.Append(" from sjcj ");
                 sqlmin.Append(" where trunc(cjsj) = trunc(sysdate) ");
                 sqlmin.Append(" and    trim(translate(jgs, '0123456789', ' ')) is NULL ");

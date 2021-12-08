@@ -21,8 +21,8 @@
                     </ControlTemplate.Resources>
                     <Grid>
                         <Border x:Name="bg"
-                                Width="200"
-                                Height="150"
+                                Width="270"
+                                Height="170"
                                 CornerRadius="8">
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="8"

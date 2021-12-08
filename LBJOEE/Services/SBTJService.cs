@@ -26,7 +26,7 @@ namespace LBJOEE.Services
         /// <returns></returns>
         public bool CalcTjsj()
         {
-            SBXXService sbxxservice = new SBXXService();
+            SBXXService sbxxservice = SBXXService.Instance;
             base_sbxx sbxx = sbxxservice.Find_Sbxx_ByIp();
             sbtj entity = new sbtj();
             entity.sbbh = sbxx.sbbh;

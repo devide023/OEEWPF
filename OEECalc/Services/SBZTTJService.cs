@@ -177,17 +177,16 @@ namespace OEECalc.Services
                         }
                         else
                         {
-                            
-                                switch (item.sbzt)
-                                {
-                                    case "故障":
-                                    case "换模":
-                                    case "检修":
-                                        yxzt = item.sbzt;
-                                        break;
-                                    default:
-                                        break;
-                                }
+                            switch (item.sbzt)
+                            {
+                                case "故障":
+                                case "换模":
+                                case "检修":
+                                    yxzt = item.sbzt;
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                     pg.Predicates.Clear();
@@ -224,6 +223,7 @@ namespace OEECalc.Services
                             var djgz = new TimeUtil().ServerTime() - item.djkssj;
                             if (djgz.HasValue)
                             {
+                                
                                 totalsj = djgz.Value.TotalSeconds;
                             }
                             break;
@@ -255,7 +255,7 @@ namespace OEECalc.Services
                         first.sbzt = yxzt;
                         first.sc = totalsj;
                         //log.Info(JsonConvert.SerializeObject(first));
-                        edit_sbzt(first);
+                        var r = edit_sbzt(first);
                     }
                 }
             }

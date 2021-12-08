@@ -112,7 +112,7 @@ namespace OEECalc.Services
                         }
                     }
                 }
-                log.Info(JsonConvert.SerializeObject(_sbzx_list));
+                //log.Info(JsonConvert.SerializeObject(_sbzx_list));
 
             }
             catch (Exception e)
