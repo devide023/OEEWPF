@@ -68,7 +68,7 @@ namespace LBJOEE.Tools
         {
             try
             {
-                SBSJService service = new SBSJService();
+                SBSJService service = SBSJService.Instance;
                 sjcj entity = new sjcj();
                 DirectoryInfo diinfo = new DirectoryInfo(path);
                 FileInfo[] finfos = diinfo.GetFiles();

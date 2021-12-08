@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using log4net;
 using Newtonsoft.Json;
+using LBJOEE.Tools;
 
 namespace LBJOEE.Services
 {
@@ -28,7 +29,7 @@ namespace LBJOEE.Services
         {
             _logservice = new LogService();
             _sbxxservice = SBXXService.Instance;
-            _sbsjservide = new SBSJService();
+            _sbsjservide = SBSJService.Instance;
             _sbztgxservice = new SBZTGXService();
             log = LogManager.GetLogger(this.GetType());
             _base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
@@ -41,7 +42,6 @@ namespace LBJOEE.Services
                 this._base_sbxx = value;
             }
         }
-
         public static DealReceiveDataService Instance
         {
             get
@@ -124,6 +124,27 @@ namespace LBJOEE.Services
                 _logservice.Error(e.Message, e.StackTrace);
             }
         }        
-
+        /// <summary>
+        /// 保存设备数据到数据库
+        /// </summary>
+        /// <param name="data"></param>
+        public void SaveSJCJ(sjcj data)
+        {
+            try
+            {
+                if (Tool.IsPing())
+                {
+                    _sbsjservide.Add(data);
+                }
+                else
+                {
+                    DataBackUp.SaveDataToLocal(data);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
     }
 }

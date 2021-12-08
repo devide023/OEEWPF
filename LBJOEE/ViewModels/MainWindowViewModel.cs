@@ -161,7 +161,7 @@ namespace LBJOEE.ViewModels
                 base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
                 if (base_sbxx == null)
                 {
-                    ErrorMsg = $"该IP地址{pcip}未配置";
+                    ErrorMsg = $"IP地址{pcip}未配置";
                     _logservice.Info(ErrorMsg);
                     return;
                 }
@@ -178,14 +178,13 @@ namespace LBJOEE.ViewModels
                 _clear_errtimer = new Timer(ClearErrorHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 _clear_errtimer.Change(0, 1000 * 30);
                 _read_sbxx_timer = new Timer(ReadSbxxHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-                _read_sbxx_timer.Change(0, 1000 * 60 * 1);
+                _read_sbxx_timer.Change(0, 1000 * 60 * 2);
                 _databackup_timer = new Timer(DataBackupHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 _databackup_timer.Change(0, 1000 * 60 * 1);
             }
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
-                //Environment.Exit(0);
             }
         }
         /// <summary>
@@ -209,8 +208,6 @@ namespace LBJOEE.ViewModels
         /// </summary>
         private void FreshBtnListState()
         {
-
-
             foreach (var btn in BtnStatusList)
             {
                 btn.sfgz = false;
@@ -319,12 +316,6 @@ namespace LBJOEE.ViewModels
                     try
                     {
                         string msg = Encoding.Default.GetString(bytes);
-                        Task.Run(() =>
-                        {
-                            DealReceiveDataService dealservice = DealReceiveDataService.Instance;
-                            dealservice.SetSBXXInfo = base_sbxx;
-                            dealservice.DealData(msg);
-                        });
                         original_data = $"{DateTime.Now} {client.remoteip} \r\n{msg}\r\n";
                         var receivedata = JsonConvert.DeserializeObject<List<itemdata>>(msg);
                         JsonEntity data = new JsonEntity();
@@ -333,13 +324,19 @@ namespace LBJOEE.ViewModels
                         ShowHisData(data);
                         //接收到设备状态信息
                         ChangeDeviceStatus(new { status = data.status, errorcode = data.errorcode, errormsg = data.errormsg });
-                        //接收到设备数据
-                        if (data.SJCJ != null && base_sbxx.sbzt == "运行")
+                        Task.Run(() =>
                         {
-                            data.SJCJ.sbbh = base_sbxx.sbbh;
-                            data.SJCJ.sbip = base_sbxx.ip;
-                            DealDeviceData(data.SJCJ);
-                        }
+                            DealReceiveDataService dealservice = DealReceiveDataService.Instance;
+                            dealservice.SetSBXXInfo = base_sbxx;
+                            dealservice.DealData(msg);
+                            //接收到设备数据
+                            if (data.SJCJ != null && base_sbxx.sbzt == "运行")
+                            {
+                                data.SJCJ.sbbh = base_sbxx.sbbh;
+                                data.SJCJ.sbip = base_sbxx.ip;
+                                dealservice.SaveSJCJ(data.SJCJ);
+                            }
+                        });
                     }
                     catch (Exception e)
                     {
@@ -469,7 +466,7 @@ namespace LBJOEE.ViewModels
             catch (Exception e)
             {
                 _logservice.Error(e.Message, e.StackTrace);
-                //Environment.Exit(0);
+                log.Error(e.Message);
             }
         }
 

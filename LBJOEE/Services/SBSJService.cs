@@ -15,6 +15,32 @@ namespace LBJOEE.Services
     /// </summary>
     public class SBSJService:DBImp<sjcj>
     {
+        private static SBSJService instance = null;
+        private static readonly object padlock = new object();
+
+        private SBSJService()
+        {
+
+        }
+
+        public static SBSJService Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    lock (padlock)
+                    {
+                        if (instance == null)
+                        {
+                            instance = new SBSJService();
+                        }
+                    }
+                }
+                return instance;
+            }
+        }
+
         public void SaveOriginalData(originaldata entity)
         {
             try
