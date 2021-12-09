@@ -11,6 +11,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OEECalc", "OEECalc\OEECalc.csproj", "{D04B1722-CE74-46C0-8D1C-5A7C0A05DE8E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{E9E93D0F-A915-4F80-8234-AA38DE32A9AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{D04B1722-CE74-46C0-8D1C-5A7C0A05DE8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D04B1722-CE74-46C0-8D1C-5A7C0A05DE8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D04B1722-CE74-46C0-8D1C-5A7C0A05DE8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9E93D0F-A915-4F80-8234-AA38DE32A9AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9E93D0F-A915-4F80-8234-AA38DE32A9AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9E93D0F-A915-4F80-8234-AA38DE32A9AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9E93D0F-A915-4F80-8234-AA38DE32A9AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

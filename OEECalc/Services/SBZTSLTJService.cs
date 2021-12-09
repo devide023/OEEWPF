@@ -93,7 +93,7 @@ namespace OEECalc.Services
                     querysj = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:30:00"));
                 }
                 DynamicParameters p = new DynamicParameters();
-                p.Add(":sj", querysj, System.Data.DbType.Date, System.Data.ParameterDirection.Input);
+                p.Add(":sj", querysj, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
                 var list = Db.Connection.Query<sbztsltj>(sql.ToString(), p);
                 foreach (var item in sbztlist)
                 {

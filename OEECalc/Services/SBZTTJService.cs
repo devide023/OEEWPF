@@ -26,7 +26,6 @@ namespace OEECalc.Services
         private SBXXService _sbxxservice;
         private TimeUtil _timeutil;
         private List<sys_sbtjsj> sbtjsjlist;//脱机时间表
-        private bool _sftj = false;//是否脱机
         private SBZTTJService()
         {
             _sbxxservice = new SBXXService();
@@ -135,12 +134,26 @@ namespace OEECalc.Services
                 //log.Info(JsonConvert.SerializeObject(sbtjsjlist));
                 var jsfzlist = JSFZ();
                 DateTime current_time = _timeutil.ServerTime();
+                var d1 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:00:00"));
+                var d2 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:30:00"));
+                var d3 = d1.AddHours(1);
+                DateTime sj = d1;
+                //前半点
+                if (DateTime.Compare(current_time, d2) < 0 && DateTime.Compare(current_time, d1) >= 0)
+                {
+                    sj = d1;
+                }
+                //后半点
+                if (DateTime.Compare(current_time, d2) >= 0 && DateTime.Compare(current_time, d3) < 0)
+                {
+                    sj = d2;
+                }
                 var sblist = _sbxxservice.Get_SBXX_List().OrderBy(t => t.sbqy).ToList();
                 StringBuilder sql = new StringBuilder();
                 sql.Append("select id, sj, sbbh, sbzt, sbqy,sftj ");
                 sql.Append(" FROM   sbztbhb ");
                 sql.Append(" where  sbbh = :sbbh ");
-                sql.Append(" and    sj between trunc(sysdate, 'hh') and sysdate ");
+                sql.Append(" and    sj between :kssj and sysdate ");
                 sql.Append(" order  by sj desc");
                 //查询条件
                 PredicateGroup pg = new PredicateGroup()
@@ -148,8 +161,14 @@ namespace OEECalc.Services
                     Operator = GroupOperator.And,
                     Predicates = new List<IPredicate>()
                 };
+                DynamicParameters dypar = new DynamicParameters();
                 foreach (var item in sblist)
                 {
+                    int cur_time_cnt = 0;//正常运行数量
+                    int cur_time_tjcnt = 0;//停机数量
+                    int cur_time_djcnt = 0;//待机数量
+                    int cur_time_sbztcnt = 0;//设备状态数量
+                    string yxzt = string.Empty;
                     var jsquery = jsfzlist.Where(t => t.sbbh == item.sbbh);
                     //计数阀值
                     int jsfz = 0;
@@ -158,50 +177,45 @@ namespace OEECalc.Services
                         jsfz = jsquery.FirstOrDefault().jsfz;
                     }
                     //查询整点数据
-                    var ztlist = Db.Connection.Query<sbztbhb>(sql.ToString(), new { sbbh = item.sbbh });
-                    var d1 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:00:00"));
-                    var d2 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:30:00"));
-                    var d3 = d1.AddHours(1);
-                    int cur_time_cnt = 0;//正常运行数量
-                    int cur_time_tjcnt = 0;//停机数量
-                    int cur_time_djcnt = 0;//待机数量
-                    int cur_time_sbztcnt = 0;//设备状态数量
-                    DateTime sj = d1;
-                    string yxzt = string.Empty;
-                    //前半点
-                    if (DateTime.Compare(current_time, d2) < 0 && DateTime.Compare(current_time, d1) >= 0)
+                    dypar.Add(":kssj", sj, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                    dypar.Add(":sbbh", item.sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                    var ztlist = Db.Connection.Query<sbztbhb>(sql.ToString(), dypar);
+                    if (ztlist.Count() > 0)
                     {
-                        cur_time_cnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt=="运行").Count();
-                        cur_time_tjcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt=="停机").Count(); 
-                        cur_time_djcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == "待机").Count();
-                        cur_time_sbztcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == item.sbzt).Count();
-                        sj = d1;
-                    }
-                    //后半点
-                    if (DateTime.Compare(current_time, d2) >= 0 && DateTime.Compare(current_time, d3) < 0)
-                    {
-                        cur_time_cnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt == "运行").Count();
-                        cur_time_tjcnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt=="停机").Count();
-                        cur_time_djcnt = ztlist.Where(t => t.sj > d2 && t.sj <= d3 && t.sbzt == "待机").Count();
-                        cur_time_sbztcnt = ztlist.Where(t => t.sj >= d2 && t.sj <= d3 && t.sbzt == item.sbzt).Count();
-                        sj = d2;
-                    }
-                    
-                    if (cur_time_cnt >= jsfz)
-                    {
-                        yxzt = "运行";
-                    }
-                    else if (cur_time_djcnt > 0 || ztlist.Count() == 0)
-                    {
-                        yxzt = "待机";
-                    }
-                    else if (cur_time_tjcnt > 0)
-                    {
-                        yxzt = "停机";
-                    }
-                    else if (cur_time_sbztcnt > 0)
-                    {
-                        yxzt = item.sbzt;
+                        //前半点
+                        if (DateTime.Compare(current_time, d2) < 0 && DateTime.Compare(current_time, d1) >= 0)
+                        {
+                            cur_time_cnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == "运行").Count();
+                            cur_time_tjcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == "停机").Count();
+                            cur_time_djcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == "待机").Count();
+                            cur_time_sbztcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == item.sbzt).Count();
+                            
+                        }
+                        //后半点
+                        if (DateTime.Compare(current_time, d2) >= 0 && DateTime.Compare(current_time, d3) < 0)
+                        {
+                            cur_time_cnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt == "运行").Count();
+                            cur_time_tjcnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt == "停机").Count();
+                            cur_time_djcnt = ztlist.Where(t => t.sj > d2 && t.sj <= d3 && t.sbzt == "待机").Count();
+                            cur_time_sbztcnt = ztlist.Where(t => t.sj >= d2 && t.sj <= d3 && t.sbzt == item.sbzt).Count();
+                            
+                        }
+                        if (cur_time_sbztcnt > 0)
+                        {
+                            yxzt = item.sbzt;
+                        }
+                        else if (cur_time_cnt >= jsfz)
+                        {
+                            yxzt = "运行";
+                        }
+                        else if (cur_time_djcnt > 0)
+                        {
+                            yxzt = "待机";
+                        }
+                        else if (cur_time_tjcnt > 0)
+                        {
+                            yxzt = "停机";
+                        }
                     }
                     else
                     {
@@ -211,29 +225,20 @@ namespace OEECalc.Services
                     if (!NetCheck.IsPing(item.ip))
                     {
                         yxzt = "脱机";
-                        if (!_sftj)
+                        var tempq = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
+                        if (tempq.Count() == 0)
                         {
-                            var tempq = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
-                            if (tempq.Count() == 0)
+                            sbtjsjlist.Add(new sys_sbtjsj()
                             {
-                                sbtjsjlist.Add(new sys_sbtjsj()
-                                {
-                                    sbbh = item.sbbh,
-                                    tjkssj = DateTime.Now
-                                });
-                            }
+                                sbbh = item.sbbh,
+                                tjkssj = DateTime.Now
+                            });
                         }
-                        _sftj = true;
                     }
                     else
                     {
-                        _sftj = false;
                         Remove_SBTJItem(item.sbbh);
                     }
-
-                    pg.Predicates.Clear();
-                    pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sbbh, Operator.Eq, item.sbbh));
-                    pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sj, Operator.Eq, sj));
                     double totalsj = 0;
                     switch (yxzt)
                     {
@@ -305,6 +310,9 @@ namespace OEECalc.Services
                         default:
                             break;
                     }
+                    pg.Predicates.Clear();
+                    pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sbbh, Operator.Eq, item.sbbh));
+                    pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sj, Operator.Eq, sj));
                     var qlist = Db.GetList<sbyxtj>(pg);
                     if (qlist.Count() == 0)
                     {
