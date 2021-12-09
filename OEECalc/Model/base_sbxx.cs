@@ -130,8 +130,8 @@ namespace OEECalc.Model
 
         public string sfxm { get; set; }
         public string sfts { get; set; }
-        public DateTime xmkssj { get; set; }
-        public DateTime tskssj { get; set; }
+        public DateTime? xmkssj { get; set; }
+        public DateTime? tskssj { get; set; }
 
     }
 

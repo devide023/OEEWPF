@@ -134,68 +134,59 @@ namespace OEECalc.Services
                     {
                         jsfz = jsquery.FirstOrDefault().jsfz;
                     }
+                    //查询整点数据
                     var ztlist = Db.Connection.Query<sbztbhb>(sql.ToString(), new { sbbh = item.sbbh });
                     var d1 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:00:00"));
                     var d2 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:30:00"));
                     var d3 = d1.AddHours(1);
-                    int cur_time_cnt = 0;
-                    int cur_time_tjcnt = 0;
+                    int cur_time_cnt = 0;//正常运行数量
+                    int cur_time_tjcnt = 0;//停机数量
+                    int cur_time_djcnt = 0;//待机数量
+                    int cur_time_sbztcnt = 0;//设备状态数量
                     DateTime sj = d1;
                     string yxzt = string.Empty;
+                    //前半点
                     if (DateTime.Compare(current_time, d2) < 0 && DateTime.Compare(current_time, d1) >= 0)
                     {
                         cur_time_cnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt=="运行").Count();
-                        cur_time_tjcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt=="停机").Count();
+                        cur_time_tjcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt=="停机").Count(); 
+                        cur_time_djcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == "待机").Count();
+                        cur_time_sbztcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == item.sbzt).Count();
                         sj = d1;
                     }
+                    //后半点
                     if (DateTime.Compare(current_time, d2) >= 0 && DateTime.Compare(current_time, d3) < 0)
                     {
                         cur_time_cnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt == "运行").Count();
                         cur_time_tjcnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt=="停机").Count();
+                        cur_time_djcnt = ztlist.Where(t => t.sj > d2 && t.sj <= d3 && t.sbzt == "待机").Count();
+                        cur_time_sbztcnt = ztlist.Where(t => t.sj >= d2 && t.sj <= d3 && t.sbzt == item.sbzt).Count();
                         sj = d2;
                     }
                     if (cur_time_cnt >= jsfz)
                     {
                         yxzt = "运行";
                     }
+                    else if (cur_time_djcnt > 0 || ztlist.Count() == 0)
+                    {
+                        yxzt = "待机";
+                    }
+                    else if (cur_time_tjcnt > 0 || !NetCheck.IsPing(item.ip))
+                    {
+                        yxzt = "停机";
+                    }
+                    else if (cur_time_sbztcnt > 0)
+                    {
+                        yxzt = item.sbzt;
+                    }
                     else
                     {
                         yxzt = "待机";
                     }
-
-                    if (cur_time_tjcnt > 0)
-                    {
-                        yxzt = "停机";
-                    }
-                    //没有采集数据上传
-                    if (ztlist.Count() == 0)
-                    {
-                        bool isnetok = NetCheck.IsPing(item.ip);
-                        if (!isnetok)
-                        {
-                            yxzt = "停机";
-                        }
-                        else
-                        {
-                            switch (item.sbzt)
-                            {
-                                case "故障":
-                                case "换模":
-                                case "检修":
-                                    yxzt = item.sbzt;
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
                     pg.Predicates.Clear();
                     pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sbbh, Operator.Eq, item.sbbh));
                     pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sj, Operator.Eq, sj));
-                    //log.Info($"{item.sbbh},{sj}");
                     double totalsj = 0;
-                    //var sbtjsjinfo = Db.Connection.Query<base_sbxx>("select jxkssj,hmkssj,gzkssj,qlkssj,qttjkssj,djkssj,tjkssj from base_sbxx where sbbh = :sbbh", new { sbbh = item.sbbh }).FirstOrDefault() ;
-                    
                     switch (yxzt)
                     {
                         case "检修":
@@ -223,7 +214,6 @@ namespace OEECalc.Services
                             var djgz = new TimeUtil().ServerTime() - item.djkssj;
                             if (djgz.HasValue)
                             {
-                                
                                 totalsj = djgz.Value.TotalSeconds;
                             }
                             break;
@@ -232,6 +222,20 @@ namespace OEECalc.Services
                             if (tjgz.HasValue)
                             {
                                 totalsj = tjgz.Value.TotalSeconds;
+                            }
+                            break;
+                        case "修模":
+                            var tsxm = new TimeUtil().ServerTime() - item.xmkssj;
+                            if (tsxm.HasValue)
+                            {
+                                totalsj = tsxm.Value.TotalSeconds;
+                            }
+                            break;
+                        case "调试":
+                            var tsts = new TimeUtil().ServerTime() - item.tskssj;
+                            if (tsts.HasValue)
+                            {
+                                totalsj = tsts.Value.TotalSeconds;
                             }
                             break;
                         default:
@@ -254,7 +258,6 @@ namespace OEECalc.Services
                         sbyxtj first = qlist.FirstOrDefault();
                         first.sbzt = yxzt;
                         first.sc = totalsj;
-                        //log.Info(JsonConvert.SerializeObject(first));
                         var r = edit_sbzt(first);
                     }
                 }
