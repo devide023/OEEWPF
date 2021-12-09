@@ -136,6 +136,7 @@
     <Compile Include="Model\sbztbhb.cs" />
     <Compile Include="Model\sbztsltj.cs" />
     <Compile Include="Model\sbzx.cs" />
+    <Compile Include="Model\sys_sbtjsj.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>

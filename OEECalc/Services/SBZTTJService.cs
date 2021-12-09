@@ -25,10 +25,13 @@ namespace OEECalc.Services
         private ILog log;
         private SBXXService _sbxxservice;
         private TimeUtil _timeutil;
+        private List<sys_sbtjsj> sbtjsjlist;//脱机时间表
+        private bool _sftj = false;//是否脱机
         private SBZTTJService()
         {
             _sbxxservice = new SBXXService();
             _timeutil = new TimeUtil();
+            sbtjsjlist = new List<sys_sbtjsj>();
             log = LogManager.GetLogger(this.GetType());
         }
 
@@ -104,12 +107,32 @@ namespace OEECalc.Services
             }
         }
         /// <summary>
+        /// 移除设备脱机记录
+        /// </summary>
+        /// <param name="sbbh"></param>
+        private void Remove_SBTJItem(string sbbh)
+        {
+            try
+            {
+               var q = this.sbtjsjlist.Where(t => t.sbbh == sbbh);
+                if (q.Count() > 0)
+                {
+                    this.sbtjsjlist.Remove(q.First());
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
+        /// <summary>
         /// 设备状态统计
         /// </summary>
         public void sbzttj()
         {
             try
             {
+                //log.Info(JsonConvert.SerializeObject(sbtjsjlist));
                 var jsfzlist = JSFZ();
                 DateTime current_time = _timeutil.ServerTime();
                 var sblist = _sbxxservice.Get_SBXX_List().OrderBy(t => t.sbqy).ToList();
@@ -163,26 +186,56 @@ namespace OEECalc.Services
                         cur_time_sbztcnt = ztlist.Where(t => t.sj >= d2 && t.sj <= d3 && t.sbzt == item.sbzt).Count();
                         sj = d2;
                     }
+                    
                     if (cur_time_cnt >= jsfz)
                     {
                         yxzt = "运行";
+                        _sftj = false;
+                        Remove_SBTJItem(item.sbbh);
                     }
                     else if (cur_time_djcnt > 0 || ztlist.Count() == 0)
                     {
                         yxzt = "待机";
+                        _sftj = false;
+                        Remove_SBTJItem(item.sbbh);
                     }
-                    else if (cur_time_tjcnt > 0 || !NetCheck.IsPing(item.ip))
+                    else if (cur_time_tjcnt > 0)
                     {
                         yxzt = "停机";
+                        _sftj = false;
+                        Remove_SBTJItem(item.sbbh);
                     }
                     else if (cur_time_sbztcnt > 0)
                     {
                         yxzt = item.sbzt;
+                        _sftj = false;
+                        Remove_SBTJItem(item.sbbh);
                     }
                     else
                     {
                         yxzt = "待机";
+                        _sftj = false;
+                        Remove_SBTJItem(item.sbbh);
                     }
+
+                    if (!NetCheck.IsPing(item.ip))
+                    {
+                        yxzt = "脱机";
+                        if (!_sftj)
+                        {
+                            var tempq = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
+                            if (tempq.Count() == 0)
+                            {
+                                sbtjsjlist.Add(new sys_sbtjsj()
+                                {
+                                    sbbh = item.sbbh,
+                                    tjkssj = DateTime.Now
+                                });
+                            }
+                        }
+                        _sftj = true;
+                    }
+
                     pg.Predicates.Clear();
                     pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sbbh, Operator.Eq, item.sbbh));
                     pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sj, Operator.Eq, sj));
@@ -236,6 +289,22 @@ namespace OEECalc.Services
                             if (tsts.HasValue)
                             {
                                 totalsj = tsts.Value.TotalSeconds;
+                            }
+                            break;
+                        case "脱机":
+                            var query = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
+                            if (query.Count() > 0)
+                            {
+                                var tjkssj = query.First().tjkssj;
+                                var tstj = DateTime.Now - tjkssj;
+                                if (tstj.HasValue)
+                                {
+                                    totalsj = tstj.Value.TotalSeconds;
+                                }
+                            }
+                            else
+                            {
+                                totalsj = 0;
                             }
                             break;
                         default:
