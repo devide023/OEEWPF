@@ -190,34 +190,24 @@ namespace OEECalc.Services
                     if (cur_time_cnt >= jsfz)
                     {
                         yxzt = "运行";
-                        _sftj = false;
-                        Remove_SBTJItem(item.sbbh);
                     }
                     else if (cur_time_djcnt > 0 || ztlist.Count() == 0)
                     {
                         yxzt = "待机";
-                        _sftj = false;
-                        Remove_SBTJItem(item.sbbh);
                     }
                     else if (cur_time_tjcnt > 0)
                     {
                         yxzt = "停机";
-                        _sftj = false;
-                        Remove_SBTJItem(item.sbbh);
                     }
                     else if (cur_time_sbztcnt > 0)
                     {
                         yxzt = item.sbzt;
-                        _sftj = false;
-                        Remove_SBTJItem(item.sbbh);
                     }
                     else
                     {
                         yxzt = "待机";
-                        _sftj = false;
-                        Remove_SBTJItem(item.sbbh);
                     }
-
+                    //判断是否脱机
                     if (!NetCheck.IsPing(item.ip))
                     {
                         yxzt = "脱机";
@@ -234,6 +224,11 @@ namespace OEECalc.Services
                             }
                         }
                         _sftj = true;
+                    }
+                    else
+                    {
+                        _sftj = false;
+                        Remove_SBTJItem(item.sbbh);
                     }
 
                     pg.Predicates.Clear();
