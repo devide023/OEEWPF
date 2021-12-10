@@ -25,6 +25,7 @@ namespace LBJOEE.Services
         private ILog log;
         private long _global_jgs = 0;
         private string _global_sbzt = string.Empty;
+        private string _yxzt = string.Empty;
         private DealReceiveDataService()
         {
             _logservice = new LogService();
@@ -40,6 +41,13 @@ namespace LBJOEE.Services
             set
             {
                 this._base_sbxx = value;
+            }
+        }
+        public string YXZT
+        {
+            get
+            {
+                return _yxzt;
             }
         }
         public static DealReceiveDataService Instance
@@ -64,7 +72,6 @@ namespace LBJOEE.Services
         {
             try
             {
-                JsonEntity data = new JsonEntity();
                 if (_base_sbxx.issaveyssj != 0)
                 {
                     originaldata yssj = new originaldata();
@@ -79,14 +86,21 @@ namespace LBJOEE.Services
                 var bjzt = receivedata.Where(i => i.itemName == "报警状态");
                 var jgs = receivedata.Where(i => i.itemName == "加工数");
                 var zt = (bool)yxzt.FirstOrDefault()?.value.Contains("错误");
-                data.status = _base_sbxx.sbzt;
-                if (zt)
-                {
-                    data.status = "停机";
-                }
+                _yxzt = _base_sbxx.sbzt;
                 if(bjzt.FirstOrDefault()?.value == "1")
                 {
-                    data.status = "故障";
+                    _yxzt = "故障";
+                }
+                else
+                {
+                    if (_base_sbxx.sbzt == "运行")
+                    {
+                        _yxzt = "运行";
+                    }
+                }
+                if (zt)
+                {
+                    _yxzt = "停机";
                 }
                 if (jgs.Count() > 0)
                 {
@@ -94,7 +108,7 @@ namespace LBJOEE.Services
                     sbztbhb sbztgx_obj = new sbztbhb();
                     sbztgx_obj.sbbh = _base_sbxx.sbbh;
                     sbztgx_obj.sbqy = _base_sbxx.sbqy;
-                    sbztgx_obj.sbzt = data.status;
+                    sbztgx_obj.sbzt = _yxzt;
                     //设备在运行
                     if (local_jgs != _global_jgs)
                     {

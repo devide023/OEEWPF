@@ -322,10 +322,8 @@ namespace LBJOEE.ViewModels
                         data.devicedata = receivedata;
                         data.SJCJ = FanShe(data.devicedata);
                         ShowHisData(data);
-                        //接收到设备状态信息
-                        ChangeDeviceStatus(new { status = data.status, errorcode = data.errorcode, errormsg = data.errormsg });
-                        Task.Run(() =>
-                        {
+                        //Task.Run(() =>
+                        //{
                             DealReceiveDataService dealservice = DealReceiveDataService.Instance;
                             dealservice.SetSBXXInfo = base_sbxx;
                             dealservice.DealData(msg);
@@ -336,7 +334,9 @@ namespace LBJOEE.ViewModels
                                 data.SJCJ.sbip = base_sbxx.ip;
                                 dealservice.SaveSJCJ(data.SJCJ);
                             }
-                        });
+                        //});
+                        //接收到设备状态信息
+                        ChangeDeviceStatus(new { status = dealservice.YXZT, errorcode = data.errorcode, errormsg = data.errormsg });
                     }
                     catch (Exception e)
                     {

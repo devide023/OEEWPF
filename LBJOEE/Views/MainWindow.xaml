@@ -15,7 +15,6 @@
         AllowsTransparency="True"
         Background="Transparent"
         MouseLeftButtonDown="main_window_MouseLeftButtonDown"
-        Topmost="True"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         mc:Ignorable="d">

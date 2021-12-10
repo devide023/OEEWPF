@@ -132,7 +132,7 @@ namespace OEECalc.Services
             try
             {
                 //log.Info(JsonConvert.SerializeObject(sbtjsjlist));
-                var jsfzlist = JSFZ();
+                //var jsfzlist = JSFZ();
                 DateTime current_time = _timeutil.ServerTime();
                 var d1 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:00:00"));
                 var d2 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:30:00"));
@@ -164,58 +164,68 @@ namespace OEECalc.Services
                 DynamicParameters dypar = new DynamicParameters();
                 foreach (var item in sblist)
                 {
-                    int cur_time_cnt = 0;//正常运行数量
-                    int cur_time_tjcnt = 0;//停机数量
-                    int cur_time_djcnt = 0;//待机数量
-                    int cur_time_sbztcnt = 0;//设备状态数量
                     string yxzt = string.Empty;
-                    var jsquery = jsfzlist.Where(t => t.sbbh == item.sbbh);
-                    //计数阀值
-                    int jsfz = 0;
-                    if (jsquery.Count() > 0)
-                    {
-                        jsfz = jsquery.FirstOrDefault().jsfz;
-                    }
+                    #region 计算阀值
+                    //int cur_time_cnt = 0;//正常运行数量
+                    //int cur_time_tjcnt = 0;//停机数量
+                    //int cur_time_djcnt = 0;//待机数量
+                    //int cur_time_sbztcnt = 0;//设备状态数量
+                    //var jsquery = jsfzlist.Where(t => t.sbbh == item.sbbh);
+                    ////计数阀值
+                    //int jsfz = 0;
+                    //if (jsquery.Count() > 0)
+                    //{
+                    //    jsfz = jsquery.FirstOrDefault().jsfz;
+                    //} 
+                    #endregion
                     //查询整点数据
                     dypar.Add(":kssj", sj, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
                     dypar.Add(":sbbh", item.sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
                     var ztlist = Db.Connection.Query<sbztbhb>(sql.ToString(), dypar);
                     if (ztlist.Count() > 0)
                     {
+                        yxzt = ztlist.First().sbzt;
+                        #region 原始状态判断
+
                         //前半点
-                        if (DateTime.Compare(current_time, d2) < 0 && DateTime.Compare(current_time, d1) >= 0)
-                        {
-                            cur_time_cnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == "运行").Count();
-                            cur_time_tjcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == "停机").Count();
-                            cur_time_djcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == "待机").Count();
-                            cur_time_sbztcnt = ztlist.Where(t => t.sj >= d1 && t.sj <= d2 && t.sbzt == item.sbzt).Count();
-                            
-                        }
-                        //后半点
-                        if (DateTime.Compare(current_time, d2) >= 0 && DateTime.Compare(current_time, d3) < 0)
-                        {
-                            cur_time_cnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt == "运行").Count();
-                            cur_time_tjcnt = ztlist.Where(t => t.sj > d2 && t.sj < d3 && t.sbzt == "停机").Count();
-                            cur_time_djcnt = ztlist.Where(t => t.sj > d2 && t.sj <= d3 && t.sbzt == "待机").Count();
-                            cur_time_sbztcnt = ztlist.Where(t => t.sj >= d2 && t.sj <= d3 && t.sbzt == item.sbzt).Count();
-                            
-                        }
-                        if (cur_time_sbztcnt > 0)
-                        {
-                            yxzt = item.sbzt;
-                        }
-                        else if (cur_time_cnt >= jsfz)
-                        {
-                            yxzt = "运行";
-                        }
-                        else if (cur_time_djcnt > 0)
-                        {
-                            yxzt = "待机";
-                        }
-                        else if (cur_time_tjcnt > 0)
-                        {
-                            yxzt = "停机";
-                        }
+                        //if (DateTime.Compare(current_time, d2) < 0 && DateTime.Compare(current_time, d1) >= 0)
+                        //{
+                        //    cur_time_cnt = ztlist.Where(t => t.sj >= d1 && t.sj < d2 && t.sbzt == "运行").Count();
+                        //    cur_time_tjcnt = ztlist.Where(t => t.sj >= d1 && t.sj < d2 && t.sbzt == "停机").Count();
+                        //    cur_time_djcnt = ztlist.Where(t => t.sj >= d1 && t.sj < d2 && t.sbzt == "待机").Count();
+                        //    cur_time_sbztcnt = ztlist.Where(t => t.sj >= d1 && t.sj < d2 && t.sbzt == item.sbzt).Count();
+
+                        //}
+                        ////后半点
+                        //if (DateTime.Compare(current_time, d2) >= 0 && DateTime.Compare(current_time, d3) < 0)
+                        //{
+                        //    cur_time_cnt = ztlist.Where(t => t.sj >= d2 && t.sj < d3 && t.sbzt == "运行").Count();
+                        //    cur_time_tjcnt = ztlist.Where(t => t.sj >= d2 && t.sj < d3 && t.sbzt == "停机").Count();
+                        //    cur_time_djcnt = ztlist.Where(t => t.sj >= d2 && t.sj < d3 && t.sbzt == "待机").Count();
+                        //    cur_time_sbztcnt = ztlist.Where(t => t.sj >= d2 && t.sj < d3 && t.sbzt == item.sbzt).Count();
+
+                        //}
+                        //if (cur_time_sbztcnt > 0)
+                        //{
+                        //    yxzt = item.sbzt;
+                        //    if(yxzt=="运行" && cur_time_cnt >= jsfz)
+                        //    {
+                        //        yxzt = "运行";
+                        //    }
+                        //    else
+                        //    {
+                        //        yxzt = "待机";
+                        //    }
+                        //}
+                        //if (cur_time_djcnt > 0)
+                        //{
+                        //    yxzt = "待机";
+                        //}
+                        //if (cur_time_tjcnt > 0)
+                        //{
+                        //    yxzt = "停机";
+                        //} 
+                        #endregion
                     }
                     else
                     {
@@ -243,49 +253,49 @@ namespace OEECalc.Services
                     switch (yxzt)
                     {
                         case "检修":
-                            var tsjx = new TimeUtil().ServerTime() - item.jxkssj;
+                            var tsjx = current_time - item.jxkssj;
                             if (tsjx.HasValue)
                             {
                                 totalsj = tsjx.Value.TotalSeconds;
                             }
                             break;
                         case "换模":
-                            var tshm = new TimeUtil().ServerTime() - item.hmkssj;
+                            var tshm = current_time - item.hmkssj;
                             if (tshm.HasValue)
                             {
                                 totalsj = tshm.Value.TotalSeconds;
                             }
                             break;
                         case "故障":
-                            var tsgz = new TimeUtil().ServerTime() - item.gzkssj;
+                            var tsgz = current_time - item.gzkssj;
                             if (tsgz.HasValue)
                             {
                                 totalsj = tsgz.Value.TotalSeconds;
                             }
                             break;
                         case "待机":
-                            var djgz = new TimeUtil().ServerTime() - item.djkssj;
+                            var djgz = current_time - item.djkssj;
                             if (djgz.HasValue)
                             {
                                 totalsj = djgz.Value.TotalSeconds;
                             }
                             break;
                         case "停机":
-                            var tjgz = new TimeUtil().ServerTime() - item.tjkssj;
+                            var tjgz = current_time - item.tjkssj;
                             if (tjgz.HasValue)
                             {
                                 totalsj = tjgz.Value.TotalSeconds;
                             }
                             break;
                         case "修模":
-                            var tsxm = new TimeUtil().ServerTime() - item.xmkssj;
+                            var tsxm = current_time - item.xmkssj;
                             if (tsxm.HasValue)
                             {
                                 totalsj = tsxm.Value.TotalSeconds;
                             }
                             break;
                         case "调试":
-                            var tsts = new TimeUtil().ServerTime() - item.tskssj;
+                            var tsts = current_time - item.tskssj;
                             if (tsts.HasValue)
                             {
                                 totalsj = tsts.Value.TotalSeconds;
@@ -299,7 +309,7 @@ namespace OEECalc.Services
                                 var tstj = DateTime.Now - tjkssj;
                                 if (tstj.HasValue)
                                 {
-                                    totalsj = tstj.Value.TotalSeconds;
+                                    totalsj = Math.Round(tstj.Value.TotalSeconds,0);
                                 }
                             }
                             else
