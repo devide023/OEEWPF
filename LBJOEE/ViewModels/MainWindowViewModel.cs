@@ -621,8 +621,8 @@ namespace LBJOEE.ViewModels
                 btnenable = base_sbxx.sbzt == "运行",
                 normaltxt = "修机停机",
                 tjtxt = "修机恢复",
-                tjlx = "修机",
-                tjms = "修机停机"
+                tjlx = "修机停机",
+                tjms = "修机"
             };
             BtnStatusList.Add(_gzbtn);
             _debugbtn = new BtnStatus()
@@ -683,7 +683,7 @@ namespace LBJOEE.ViewModels
                     obj.btntxt = obj.normaltxt;
                     obj.tjsjvisible = "Collapsed";
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
@@ -699,7 +699,7 @@ namespace LBJOEE.ViewModels
                     _gztimer.Change(0, 1000);
                     base_sbxx.sbzt = "修机";
                     base_sbxx.sfgz = "Y";
-                    base_sbxx.gzkssj = DateTime.Now;
+                    base_sbxx.gzkssj = _sbxxservice.GetServerTime();
                     obj.flag = 1;
                     obj.sfgz = true;
                     obj.btnenable = true;
@@ -734,7 +734,7 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
@@ -750,7 +750,7 @@ namespace LBJOEE.ViewModels
                     _tstimer.Change(0, 1000);
                     base_sbxx.sbzt = "调试";
                     base_sbxx.sfts = "Y";
-                    base_sbxx.tskssj = DateTime.Now;
+                    base_sbxx.tskssj = _sbxxservice.GetServerTime();
                     obj.flag = 1;
                     obj.sfts = true;
                     obj.tjsjvisible = "Visible";
@@ -783,7 +783,7 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
@@ -799,7 +799,7 @@ namespace LBJOEE.ViewModels
                     _xmtimer.Change(0, 1000);
                     base_sbxx.sbzt = "修模";
                     base_sbxx.sfxm = "Y";
-                    base_sbxx.xmkssj = DateTime.Now;
+                    base_sbxx.xmkssj = _sbxxservice.GetServerTime();
                     obj.flag = 1;
                     obj.sfxm = true;
                     obj.tjsjvisible = "Visible";
@@ -831,7 +831,7 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
@@ -847,7 +847,7 @@ namespace LBJOEE.ViewModels
                     _qttimer.Change(0, 1000);
                     base_sbxx.sbzt = "待机";
                     base_sbxx.sfqttj = "Y";
-                    base_sbxx.qttjkssj = DateTime.Now;
+                    base_sbxx.qttjkssj = _sbxxservice.GetServerTime();
                     obj.flag = 1;
                     obj.sfqt = true;
                     obj.tjsjvisible = "Visible";
@@ -880,7 +880,7 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
@@ -896,7 +896,7 @@ namespace LBJOEE.ViewModels
                     _hmtimer.Change(0, 1000);
                     base_sbxx.sbzt = "换模";
                     base_sbxx.sfhm = "Y";
-                    base_sbxx.hmkssj = DateTime.Now;
+                    base_sbxx.hmkssj = _sbxxservice.GetServerTime();
                     obj.sfhm = true;
                     obj.flag = 1;
                     obj.tjsjvisible = "Visible";
@@ -929,7 +929,7 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
@@ -945,7 +945,7 @@ namespace LBJOEE.ViewModels
                     _jxtimer.Change(0, 1000);
                     base_sbxx.sbzt = "检修";
                     base_sbxx.sfjx = "Y";
-                    base_sbxx.jxkssj = DateTime.Now;
+                    base_sbxx.jxkssj = _sbxxservice.GetServerTime();
                     obj.sfjx = true;
                     obj.flag = 1;
                     obj.tjsjvisible = "Visible";
@@ -978,7 +978,7 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
@@ -994,7 +994,7 @@ namespace LBJOEE.ViewModels
                     _qltimer.Change(0, 1000);
                     base_sbxx.sbzt = "待料";
                     base_sbxx.sfql = "Y";
-                    base_sbxx.qlkssj = DateTime.Now;
+                    base_sbxx.qlkssj = _sbxxservice.GetServerTime();
                     obj.sfql = true;
                     obj.flag = 1;
                     obj.tjsjvisible = "Visible";
@@ -1059,45 +1059,45 @@ namespace LBJOEE.ViewModels
         private void CalcQLtjsj(object state)
         {
             var obj = state as BtnStatus;
-            var ts = DateTime.Now - base_sbxx.qlkssj;
+            var ts = _sbxxservice.GetServerTime() - base_sbxx.qlkssj;
             obj.tjsj = (int)ts.TotalSeconds;
         }
         private void CalcQTtjsj(object state)
         {
             var obj = state as BtnStatus;
-            var ts = DateTime.Now - base_sbxx.qttjkssj;
+            var ts = _sbxxservice.GetServerTime() - base_sbxx.qttjkssj;
             obj.tjsj = (int)ts.TotalSeconds;
         }
         private void CalcHMtjsj(object state)
         {
             var obj = state as BtnStatus;
-            var ts = DateTime.Now - base_sbxx.hmkssj;
+            var ts = _sbxxservice.GetServerTime() - base_sbxx.hmkssj;
             obj.tjsj = (int)ts.TotalSeconds;
         }
 
         private void CalcGZtjsj(object state)
         {
             var obj = state as BtnStatus;
-            var ts = DateTime.Now - base_sbxx.gzkssj;
+            var ts = _sbxxservice.GetServerTime() - base_sbxx.gzkssj;
             obj.tjsj = (int)ts.TotalSeconds;
         }
 
         private void CalcJXtjsj(object state)
         {
             var obj = state as BtnStatus;
-            var ts = DateTime.Now - base_sbxx.jxkssj;
+            var ts = _sbxxservice.GetServerTime() - base_sbxx.jxkssj;
             obj.tjsj = (int)ts.TotalSeconds;
         }
         private void CalcTStjsj(object state)
         {
             var obj = state as BtnStatus;
-            var ts = DateTime.Now - base_sbxx.tskssj;
+            var ts = _sbxxservice.GetServerTime() - base_sbxx.tskssj;
             obj.tjsj = (int)ts.TotalSeconds;
         }
         private void CalcXMtjsj(object state)
         {
             var obj = state as BtnStatus;
-            var ts = DateTime.Now - base_sbxx.xmkssj;
+            var ts = _sbxxservice.GetServerTime() - base_sbxx.xmkssj;
             obj.tjsj = (int)ts.TotalSeconds;
         }
         #endregion
