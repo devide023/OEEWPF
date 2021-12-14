@@ -1,0 +1,52 @@
+﻿@model IEnumerable<WebOEE.Models.base_sbxx>
+@{
+    ViewBag.Title = "设备标准节拍设置";
+}
+<div class="page_header">
+    <div class="page_header_txt">设置标准节拍</div>
+</div>
+
+@{ foreach (var item in ViewBag.list)
+    {
+        <fieldset>
+            <legend>@(item+"线")</legend>
+            <ul>
+                @{ foreach (var sitem in Model.Where(t => t.sbqy.StartsWith(item)))
+                    {
+                        <li><label>@(sitem.sbqy+"：") </label><input name="@sitem.sbbh" type="number" value="@sitem.bzjp" /></li>
+                    }}
+            </ul>
+        </fieldset>
+    }}
+
+<div class="btn_bar">
+    <button class="btn btn-primary btn_save" id="btn_save_bzjp">保存</button>
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        $("#btn_save_bzjp").click(function () {
+            var list = $("input[type='number']");
+            var postdata = [];
+            $.each(list, function (i, item) {
+                var key = $(item).attr("name");
+                var val = $(item).val();
+                postdata.push({ sbbh: key, bzjp: val });
+            });
+            
+            $.ajax({
+                url: 'Save',
+                type: 'POST',
+                data: JSON.stringify(postdata),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (res) {
+                    alert(res.msg);
+                }
+            });
+        });
+    })
+</script>
+
+

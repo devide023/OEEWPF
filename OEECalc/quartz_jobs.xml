@@ -99,6 +99,23 @@
 				<cron-expression>*/30 * * * * ?</cron-expression>
 			</cron>
 		</trigger>
+		<job>
+			<name>SbJPGXJob</name>
+			<group>jobGroup</group>
+			<description>硬采设备节拍更新</description>
+			<job-type>OEECalc.JOB.CalcJp_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>SBJPGXTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>SbJPGXJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 */10 * * * ?</cron-expression>
+			</cron>
+		</trigger>
 	</schedule>
 
 </job-scheduling-data>

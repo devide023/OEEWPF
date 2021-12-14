@@ -12,8 +12,8 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod1()
         {
-            SBZTTJService service = SBZTTJService.Instance;
-            service.sbzttj();
+            CalcJpService service = CalcJpService.Instance;
+            service.Update_SBJP_Force("D004");
         }
         
     }

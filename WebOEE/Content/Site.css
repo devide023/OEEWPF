@@ -1,0 +1,90 @@
+﻿*{
+    margin:0px;
+    padding:0px;
+    font-size:12px;
+}
+
+body {
+    background-image: url('../Image/bg/bj.png');
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-width: 1000px;
+    z-index: -10;
+    zoom: 1;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    background-position: center 0;
+}
+
+input{
+    background-color:transparent;
+    border:none;
+}
+
+.page_header {
+    width:100%;
+    height:110px;
+    line-height:110px;
+    background-image: url(../Image/bg/tt.png);
+    background-repeat: no-repeat;
+    background-position-x:center;
+    background-position-y:center;
+}
+.page_header_txt{
+    font-size:25pt;
+    margin:0px auto;
+    height:90px;
+    line-height:90px;
+    width:100%;
+    font-family:"微软雅黑";
+    text-align:center;
+}
+
+fieldset {
+    padding-bottom: 10px;
+}
+
+fieldset legend {
+    color: white;
+    font-size: 20pt;
+    padding-left: 20px;
+}
+fieldset ul {
+    padding-left: 20px;
+}
+fieldset ul li {
+    list-style:none;
+    float: left;
+    margin:10px 30px 10px 0px;
+}
+fieldset ul li label{
+    font-size:15pt;
+    margin-right:5px;
+}
+fieldset ul li input{
+    border:1px solid white;
+    height:30px;
+    line-height:30px;
+    text-align:center;
+    width:80px;
+    font-size:15pt;
+}
+.btn_bar {
+    margin-top: 20px;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-align: right;
+    padding-right: 10px;
+}
+.btn_save{
+    width:150px;
+    height:50px;
+    font-size:13pt;
+}
