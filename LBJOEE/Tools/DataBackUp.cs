@@ -13,9 +13,11 @@ namespace LBJOEE.Tools
     public static class DataBackUp
     {
         private static string path = @"d:\backup\cjsj";
+        private static string tjpath = @"d:\backup\tjcjsj";
         private static string path1 = @"d:\backup\yssj";
+        private static ILog log = LogManager.GetLogger("LBJOEE.Tools.DataBackUp");
         /// <summary>
-        /// 保存数据到本地磁盘
+        /// 运行状态，保存数据到本地磁盘
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
@@ -34,9 +36,33 @@ namespace LBJOEE.Tools
                     sw.WriteLine(JsonConvert.SerializeObject(entity));
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //Environment.Exit(0);
+                log.Error(e.Message);
+            }
+        }
+        /// <summary>
+        /// 停机状态接收到的数据本地存储
+        /// </summary>
+        /// <param name="entity"></param>
+        public static void SaveTJDataToLocal(sjcj entity)
+        {
+            try
+            {
+                if (!Directory.Exists(tjpath))
+                {
+                    Directory.CreateDirectory(tjpath);
+                }
+                string filepath = tjpath + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".json";
+                using (StreamWriter sw = new StreamWriter(filepath))
+                {
+                    entity.cjsj = DateTime.Now;
+                    sw.WriteLine(JsonConvert.SerializeObject(entity));
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
             }
         }
         public static void SaveOrginalDataToLocal(originaldata yssj)
@@ -54,10 +80,9 @@ namespace LBJOEE.Tools
                     sw.WriteLine(JsonConvert.SerializeObject(yssj));
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
-                throw;
+                log.Error(e.Message);
             }
         }
         /// <summary>
@@ -91,9 +116,38 @@ namespace LBJOEE.Tools
             }
             catch (Exception e)
             {
-                //var log = LogManager.GetLogger(typeof(DataBackUp));
-                //log.Error(e.Message);
-                //Environment.Exit(0);
+                log.Error(e.Message);
+            }
+        }
+
+        public static void ReadTJDataFromLocal()
+        {
+            try
+            {
+                SBSJService service = SBSJService.Instance;
+                sjcj entity = new sjcj();
+                DirectoryInfo diinfo = new DirectoryInfo(tjpath);
+                FileInfo[] finfos = diinfo.GetFiles();
+                foreach (FileInfo item in finfos.Where(t => t.Extension == ".json"))
+                {
+                    string filepath = item.FullName;
+                    StreamReader sr = new StreamReader(filepath);
+                    string json = sr.ReadToEnd();
+                    entity = JsonConvert.DeserializeObject<sjcj>(json);
+                    if (Tool.IsPing())
+                    {
+                        var ret = service.TJSJCJ(entity);
+                        if (ret>0)
+                        {
+                            sr.Close();
+                            item.Delete();
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {                  
+                log.Error(e.Message);
             }
         }
     }

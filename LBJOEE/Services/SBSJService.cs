@@ -7,7 +7,7 @@ using LBJOEE.Models;
 using Dapper;
 using System.Data;
 using LBJOEE.Tools;
-
+using log4net;
 namespace LBJOEE.Services
 {
     /// <summary>
@@ -17,10 +17,10 @@ namespace LBJOEE.Services
     {
         private static SBSJService instance = null;
         private static readonly object padlock = new object();
-
+        private ILog log = null;
         private SBSJService()
         {
-
+            log = LogManager.GetLogger(this.GetType());
         }
 
         public static SBSJService Instance
@@ -66,6 +66,24 @@ namespace LBJOEE.Services
             catch (Exception)
             {
                 //Environment.Exit(0);
+            }
+        }
+
+        public int TJSJCJ(sjcj entity)
+        {
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("insert into tjsjcj ");
+                sql.Append("(cjsj, sbbh, sbip, jp, jgs, yssd, cnyl, ysqx, mc, scsj, myssd, kyssd, jysj, jssj, mjwd, lbhd, sml, xtyl, zyyl, dqpyl, slsd, lqsj, eksd, ekwz, zyll, jzwd, ysys, pwdw, dhyh, ysjl, ctzj, rhcs, yxzt, bjzt, xhsj, sdzt, zdzt, jt, ljkjsj, dzcdqwz, dqyl, dqll, ksyl, essd, sssd, sdqd, tqxc, tcsj, lbwz, gswz, mysd, gssd, zzyl, ysyl, ysll, zltx, hml, jzsyhd, ysxc, xqctsj, zzysj, sscnylsjz, zycnylsjz, smqdyl, smqdll, smqdwz, smksyl, smksll, smkswz, skdyyl, skdyll, smdywz, smgyyl, smgyll, smgywz, kssmsd, mssmsd, kmhcyl, kmhcll, kmhcwz, kmkyyl, kmksll, kmkswz, kmgyyl, kmgyll, kmgywz, mskmsd, kskmsd, cx1jryl, cx1jrll, cx1htyl, cx1htll, cx2jryl, cx2jrll, cx2htyl, cx2htll, cxrys, cxcys, cxcndqyl, cxcnyltlz, cxcnylsdz, kyyswz, kyeswz, kysswz, kyzywz, kygcwz, dqylsd, dqllsd, dqyssd, dhylsd, dhllsd, dhyssd, dzcs, kscnyl, zycnyl, hchcwz, kmzzwz, mjwz, yw, mswz, mjtcjs, yasxc, jzhs, zhls, gsks, gsqj, sysj, rmjcs) ");
+                sql.Append(" values ");
+                sql.Append(" (sysdate, :sbbh, :sbip, :jp, :jgs, :yssd, :cnyl, :ysqx, :mc, :scsj, :myssd, :kyssd, :jysj, :jssj, :mjwd, :lbhd, :sml, :xtyl, :zyyl, :dqpyl, :slsd, :lqsj, :eksd, :ekwz, :zyll, :jzwd, :ysys, :pwdw, :dhyh, :ysjl, :ctzj, :rhcs, :yxzt, :bjzt, :xhsj, :sdzt, :zdzt, :jt, :ljkjsj, :dzcdqwz, :dqyl, :dqll, :ksyl, :essd, :sssd, :sdqd, :tqxc, :tcsj, :lbwz, :gswz, :mysd, :gssd, :zzyl, :ysyl, :ysll, :zltx, :hml, :jzsyhd, :ysxc, :xqctsj, :zzysj, :sscnylsjz, :zycnylsjz, :smqdyl, :smqdll, :smqdwz, :smksyl, :smksll, :smkswz, :skdyyl, :skdyll, :smdywz, :smgyyl, :smgyll, :smgywz, :kssmsd, :mssmsd, :kmhcyl, :kmhcll, :kmhcwz, :kmkyyl, :kmksll, :kmkswz, :kmgyyl, :kmgyll, :kmgywz, :mskmsd, :kskmsd, :cx1jryl, :cx1jrll, :cx1htyl, :cx1htll, :cx2jryl, :cx2jrll, :cx2htyl, :cx2htll, :cxrys, :cxcys, :cxcndqyl, :cxcnyltlz, :cxcnylsdz, :kyyswz, :kyeswz, :kysswz, :kyzywz, :kygcwz, :dqylsd, :dqllsd, :dqyssd, :dhylsd, :dhllsd, :dhyssd, :dzcs, :kscnyl, :zycnyl, :hchcwz, :kmzzwz, :mjwz, :yw, :mswz, :mjtcjs, :yasxc, :jzhs, :zhls, :gsks, :gsqj, :sysj, :rmjcs)");
+                return Db.Connection.Execute(sql.ToString(),entity);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                return 0;
             }
         }
     }

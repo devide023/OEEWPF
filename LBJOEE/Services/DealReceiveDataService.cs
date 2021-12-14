@@ -25,6 +25,7 @@ namespace LBJOEE.Services
         private ILog log;
         private long _global_jgs = 0;
         private string _global_sbzt = string.Empty;
+        private DateTime _golbal_receive_time = DateTime.Now;
         private string _yxzt = string.Empty;
         private DealReceiveDataService()
         {
@@ -35,6 +36,8 @@ namespace LBJOEE.Services
             log = LogManager.GetLogger(this.GetType());
             _base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
         }
+
+        public Action SBRun { get; set; }
 
         public base_sbxx SetSBXXInfo
         {
@@ -114,6 +117,7 @@ namespace LBJOEE.Services
                     {
                         _global_jgs = local_jgs;
                         _sbztgxservice.Add(sbztgx_obj);
+                        SBRun?.Invoke();
                     }
                     else//设备待机
                     {
@@ -164,5 +168,25 @@ namespace LBJOEE.Services
                 log.Error(e.Message);
             }
         }
+
+        public void SaveSJCJ_NoRun(sjcj data)
+        {
+            try
+            {
+                if (Tool.IsPing())
+                {
+                    _sbsjservide.TJSJCJ(data);
+                }
+                else
+                {
+                    DataBackUp.SaveTJDataToLocal(data);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
+        
     }
 }

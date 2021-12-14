@@ -83,7 +83,7 @@ namespace LBJOEE.Services
                 p.Add(":jsrq", jsrq, OracleMappingType.Date, System.Data.ParameterDirection.Input);
                 sql.Append(" select sbbh, tjlx, tjsj, tjkssj, tjjssj, tjms ");
                 sql.Append(" from SBTJ ");
-                sql.Append(" where trunc(tjkssj) between trunc(:ksrq) and trunc(:jsrq) ");
+                sql.Append(" where trunc(tjjssj) between trunc(:ksrq) and trunc(:jsrq) ");
                 sql.Append(" and sbbh = :sbbh");
                 return Db.Connection.Query<sbtj>(sql.ToString(), p);
             }

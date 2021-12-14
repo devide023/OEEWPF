@@ -89,15 +89,6 @@ namespace LBJOEE
             set { SetProperty(ref _tjsjvisibale, value); }
         }
         /// <summary>
-        /// 是否数据采集发过来的故障状态
-        /// </summary>
-        private bool _iscjgz = true;
-        public bool iscjgz
-        {
-            get { return _iscjgz; }
-            set { SetProperty(ref _iscjgz, value); }
-        }
-        /// <summary>
         /// 是否调试
         /// </summary>
         public bool sfts { get; set; } 

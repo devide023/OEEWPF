@@ -41,7 +41,7 @@ namespace LBJOEE
                 _sbyxztservice = new SBYXZTService();
                 appupdate = service.IsAppUpdate();
                 updatetimer = new Timer(CheckUpdateHandle, null, Timeout.Infinite, Timeout.Infinite);
-                yxzttimer = new Timer(SbYXhZTHandle, null, Timeout.Infinite, Timeout.Infinite);
+                //yxzttimer = new Timer(SbYXhZTHandle, null, Timeout.Infinite, Timeout.Infinite);
                 if (appupdate)
                 {
                     AppCheckUpdate.InstallUpdateSyncWithInfo();
@@ -81,7 +81,7 @@ namespace LBJOEE
                             if (firstzx.sbzt == "待机")
                             {
                                 //没有手动停机情况下更新设备待机时间
-                                if (sbxx.sfgz == "N" && sbxx.sfhm == "N" && sbxx.sfjx == "N" && sbxx.sfql == "N" && sbxx.sfqttj == "N")
+                                if (sbxx.sfgz == "N" && sbxx.sfhm == "N" && sbxx.sfjx == "N" && sbxx.sfql == "N" && sbxx.sfqttj == "N" && sbxx.sfxm=="N" && sbxx.sfts=="N")
                                 {
                                     _sbyxztservice.Set_SbDj_SJ(sbxx.sbbh, firstzx.sj);
                                 }
@@ -138,7 +138,7 @@ namespace LBJOEE
             }
             base.OnStartup(e);
             updatetimer.Change(0, 1000 * 60 * 5);
-            yxzttimer.Change(0, 1000 * 60);
+            //yxzttimer.Change(0, 1000 * 60);
         }
 
     }
