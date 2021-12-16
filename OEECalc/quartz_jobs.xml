@@ -116,6 +116,40 @@
 				<cron-expression>0 */10 * * * ?</cron-expression>
 			</cron>
 		</trigger>
+		<job>
+			<name>CalcOEEJob</name>
+			<group>jobGroup</group>
+			<description>OEE计算</description>
+			<job-type>OEECalc.JOB.CalcOEE_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>CalcOEETrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>CalcOEEJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 0 1,9,13,21 * * ?</cron-expression>
+			</cron>
+		</trigger>
+		<job>
+			<name>HasDataJob</name>
+			<group>jobGroup</group>
+			<description>检查5分钟内是否有数据上传</description>
+			<job-type>OEECalc.JOB.CheckHasData_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>HasDataTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>HasDataJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 */2 * * * ?</cron-expression>
+			</cron>
+		</trigger>
 	</schedule>
 
 </job-scheduling-data>

@@ -127,10 +127,21 @@ namespace OEECalc.Model
         /// 停机开始时间
         /// </summary>
         public DateTime? tjkssj { get; set; }
-
+        /// <summary>
+        /// 是否修模
+        /// </summary>
         public string sfxm { get; set; }
+        /// <summary>
+        /// 是否调试
+        /// </summary>
         public string sfts { get; set; }
+        /// <summary>
+        /// 修模开始时间
+        /// </summary>
         public DateTime? xmkssj { get; set; }
+        /// <summary>
+        /// 调试开始时间
+        /// </summary>
         public DateTime? tskssj { get; set; }
 
     }

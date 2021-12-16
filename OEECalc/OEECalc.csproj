@@ -123,6 +123,8 @@
     </Compile>
     <Compile Include="DAO\OracleBaseFixture.cs" />
     <Compile Include="JOB\CalcJp_JOB.cs" />
+    <Compile Include="JOB\CalcOEE_JOB.cs" />
+    <Compile Include="JOB\CheckHasData_JOB.cs" />
     <Compile Include="JOB\SBZTSL_JOB.cs" />
     <Compile Include="JOB\SBZX_JOB.cs" />
     <Compile Include="JOB\StaticSBCJ_JOB.cs" />
@@ -131,8 +133,11 @@
     <Compile Include="Model\base_sbxx.cs" />
     <Compile Include="Model\sbcjtj.cs" />
     <Compile Include="Model\sbcntj.cs" />
+    <Compile Include="Model\sbjhtjsj.cs" />
     <Compile Include="Model\sbjpgxb.cs" />
     <Compile Include="Model\sbjsfz.cs" />
+    <Compile Include="Model\sboee.cs" />
+    <Compile Include="Model\sbtj.cs" />
     <Compile Include="Model\sbyxtj.cs" />
     <Compile Include="Model\sbztitem.cs" />
     <Compile Include="Model\sbztbhb.cs" />
@@ -141,6 +146,7 @@
     <Compile Include="Model\sys_cjsj.cs" />
     <Compile Include="Model\sys_jpcnf.cs" />
     <Compile Include="Model\sys_sbtjsj.cs" />
+    <Compile Include="Model\sys_zpjh.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
@@ -150,7 +156,10 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CalcJpService.cs" />
+    <Compile Include="Services\CalcOEEService.cs" />
     <Compile Include="Services\CheckSBOnLineService.cs" />
+    <Compile Include="Services\Check_DataUploadService.cs" />
+    <Compile Include="Services\LBJMesService.cs" />
     <Compile Include="Services\SbcjtjService.cs" />
     <Compile Include="Services\SBCNService.cs" />
     <Compile Include="Services\SBXXService.cs" />
