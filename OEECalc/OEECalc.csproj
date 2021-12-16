@@ -146,6 +146,7 @@
     <Compile Include="Model\sys_cjsj.cs" />
     <Compile Include="Model\sys_jpcnf.cs" />
     <Compile Include="Model\sys_sbtjsj.cs" />
+    <Compile Include="Model\sys_sjsc.cs" />
     <Compile Include="Model\sys_zpjh.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">

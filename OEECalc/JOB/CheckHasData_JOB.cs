@@ -13,11 +13,11 @@ namespace OEECalc.JOB
     /// </summary>
     public class CheckHasData_JOB : IJob
     {
+        private Check_DataUploadService service = Check_DataUploadService.Instance;
         public Task Execute(IJobExecutionContext context)
         {
             return Task.Run(() =>
             {
-                Check_DataUploadService service = Check_DataUploadService.Instance;
                 service.Check();
             });
         }

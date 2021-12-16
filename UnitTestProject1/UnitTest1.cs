@@ -15,6 +15,12 @@ namespace UnitTestProject1
             CalcOEEService service = CalcOEEService.Instance;
             service.SaveOEE();
         }
-        
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            Check_DataUploadService service = Check_DataUploadService.Instance;
+            service.Check();
+        }
     }
 }

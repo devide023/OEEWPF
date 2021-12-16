@@ -12,11 +12,11 @@ namespace OEECalc.JOB
     /// </summary>
     public class StaticSBZT_JOB : IJob
     {
+        private SBZTTJService service = SBZTTJService.Instance;
         public Task Execute(IJobExecutionContext context)
         {
             return Task.Run(() =>
-            {
-                SBZTTJService service = SBZTTJService.Instance;
+            {  
                 //设备状态统计
                 service.sbzttj();
             });

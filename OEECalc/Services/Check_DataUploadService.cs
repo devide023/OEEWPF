@@ -8,19 +8,19 @@ using Dapper;
 using DapperExtensions;
 using OEECalc.Tool;
 using OEECalc.Model;
-
+using Newtonsoft.Json;
 namespace OEECalc.Services
 {
     public class Check_DataUploadService:OracleBaseFixture
     {
         private static Check_DataUploadService instance = null;
         private static readonly object padlock = new object();
-        private decimal _global_js =0;
-        private string _global_yxzt = string.Empty;
+        private List<sys_sjsc> _global_cnf = null;
         private ILog log;
         private Check_DataUploadService()
         {
             log = LogManager.GetLogger(this.GetType());
+            _global_cnf = new List<sys_sjsc>();
         }
         public static Check_DataUploadService Instance
         {
@@ -67,7 +67,7 @@ namespace OEECalc.Services
                 sql.Append("select id, sj, sbbh, sbzt, sbqy ");
                 sql.Append(" from sbztbhb ");
                 sql.Append(" where sbbh = :sbbh ");
-                sql.Append(" and    sj between sysdate - (1 / 24 / 60) * 5 and sysdate");
+                sql.Append(" and    sj between sysdate - (1 / 24 / 60) * 5 and sysdate order by sj desc");
                 var list = Db.Connection.Query<sbztbhb>(sql.ToString(), new { sbbh = sbbh });
                 return list;
             }
@@ -142,11 +142,26 @@ namespace OEECalc.Services
 
         public void Check()
         {
+            log.Info(JsonConvert.SerializeObject(_global_cnf) + "\r\n");
             try
             {
                 var sbxxlist = Get_SBXX_List();
+                sys_sjsc conf = null;
                 foreach (var item in sbxxlist)
                 {
+                    var q = _global_cnf.Where(t => t.sbbh == item.sbbh);
+                    if (q.Count() > 0)
+                    {
+                        conf = q.First();
+                    }
+                    else
+                    {
+                        conf = new sys_sjsc();
+                        conf.sbbh = item.sbbh;
+                        conf.js = 0;
+                        conf.sbzt = string.Empty;
+                        _global_cnf.Add(conf);
+                    }
                     var datalist = Get_ZTBH_List(item.sbbh);
                     var isok = NetCheck.IsPing(item.ip);
                     if (isok)
@@ -154,30 +169,32 @@ namespace OEECalc.Services
                         if (datalist.Count() == 0)
                         {
                             //没有手动停机情况下更新设备待机时间
-                            if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && _global_js == 0)
+                            if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && conf.js == 0)
                             {
                                 Set_SbDj_SJ(item.sbbh);
-                                _global_js++;
+                                conf.js++;
+                                conf.sbzt = "待机";
                             }
                         }
                         else//有数据上传
                         {
-                            _global_js = 0;
+                            conf.js = 0;
                             var firstzx = datalist.OrderByDescending(t => t.sj).FirstOrDefault();//最新一条数据
                             if (firstzx.sbzt == "运行")
                             {
                                 UnSet_SbDj_SJ(item.sbbh);
+                                conf.sbzt = firstzx.sbzt;
                             }
                             else
                             {
-                                if (_global_yxzt != firstzx.sbzt)
+                                if (conf.sbzt != firstzx.sbzt)
                                 {
                                     //没有手动停机情况下更新设备待机时间
                                     if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N")
                                     {
                                         Set_SbDj_SJ(item.sbbh);
                                     }
-                                    _global_yxzt = firstzx.sbzt;
+                                    conf.sbzt = firstzx.sbzt;
                                 }
                             }
                         }
