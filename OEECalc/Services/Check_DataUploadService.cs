@@ -147,20 +147,24 @@ namespace OEECalc.Services
             {
                 var sbxxlist = Get_SBXX_List();
                 sys_sjsc conf = null;
+                int pos = -1;
                 foreach (var item in sbxxlist)
                 {
                     var q = _global_cnf.Where(t => t.sbbh == item.sbbh);
                     if (q.Count() > 0)
                     {
-                        conf = q.First();
+                        pos = _global_cnf.FindIndex(t => t.sbbh == item.sbbh);
+                        conf = _global_cnf[pos];
                     }
                     else
                     {
-                        conf = new sys_sjsc();
-                        conf.sbbh = item.sbbh;
-                        conf.js = 0;
-                        conf.sbzt = string.Empty;
-                        _global_cnf.Add(conf);
+                        var e = new sys_sjsc();
+                        e.sbbh = item.sbbh;
+                        e.js = 0;
+                        e.sbzt = string.Empty;
+                        _global_cnf.Add(e);
+                        pos = _global_cnf.FindIndex(t => t.sbbh == item.sbbh);
+                        conf = _global_cnf[pos];
                     }
                     var datalist = Get_ZTBH_List(item.sbbh);
                     var isok = NetCheck.IsPing(item.ip);
@@ -172,8 +176,9 @@ namespace OEECalc.Services
                             if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && conf.js == 0)
                             {
                                 Set_SbDj_SJ(item.sbbh);
-                                conf.js++;
+                                conf.js = conf.js++;
                                 conf.sbzt = "待机";
+                                _global_cnf[pos] = conf;
                             }
                         }
                         else//有数据上传
@@ -184,6 +189,7 @@ namespace OEECalc.Services
                             {
                                 UnSet_SbDj_SJ(item.sbbh);
                                 conf.sbzt = firstzx.sbzt;
+                                _global_cnf[pos] = conf;
                             }
                             else
                             {
@@ -195,6 +201,7 @@ namespace OEECalc.Services
                                         Set_SbDj_SJ(item.sbbh);
                                     }
                                     conf.sbzt = firstzx.sbzt;
+                                    _global_cnf[pos] = conf;
                                 }
                             }
                         }
