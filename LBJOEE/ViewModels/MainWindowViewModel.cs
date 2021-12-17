@@ -321,6 +321,7 @@ namespace LBJOEE.ViewModels
                         data.devicedata = receivedata;
                         data.SJCJ = FanShe(data.devicedata);
                         ShowHisData(data);
+                        dealservice.SetReceiveData = receivedata;
                         dealservice.DealData(msg);
                         if (data.SJCJ != null)
                         {
@@ -645,7 +646,7 @@ namespace LBJOEE.ViewModels
                 btnenable = base_sbxx.sfxm == "运行",
                 normaltxt = "修模停机",
                 tjtxt = "修模恢复",
-                tjlx = "修模",
+                tjlx = "修模停机",
                 tjms = "修模"
             };
             BtnStatusList.Add(_xmbtn);

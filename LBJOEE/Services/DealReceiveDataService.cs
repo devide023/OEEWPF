@@ -27,8 +27,10 @@ namespace LBJOEE.Services
         private string _global_sbzt = string.Empty;
         private DateTime _golbal_receive_time = DateTime.Now;
         private string _yxzt = string.Empty;
+        private List<itemdata> _receive_data = null;
         private DealReceiveDataService()
         {
+            _receive_data = new List<itemdata>();
             _logservice = new LogService();
             _sbxxservice = SBXXService.Instance;
             _sbsjservide = SBSJService.Instance;
@@ -46,11 +48,12 @@ namespace LBJOEE.Services
                 this._base_sbxx = value;
             }
         }
-        public string YXZT
+        
+        public List<itemdata> SetReceiveData
         {
-            get
+            set
             {
-                return _yxzt;
+                _receive_data = value;
             }
         }
         public static DealReceiveDataService Instance
@@ -84,60 +87,68 @@ namespace LBJOEE.Services
                     yssj.json = msg;
                     _sbsjservide.SaveOriginalData(yssj);
                 }
-                var receivedata = JsonConvert.DeserializeObject<List<itemdata>>(msg);
-                var yxzt = receivedata.Where(i => i.itemName == "运行状态");
-                var bjzt = receivedata.Where(i => i.itemName == "报警状态");
-                var jgs = receivedata.Where(i => i.itemName == "加工数");
-                var zt = (bool)yxzt.FirstOrDefault()?.value.Contains("错误");
                 _yxzt = _base_sbxx.sbzt;
-                if(bjzt.FirstOrDefault()?.value == "1")
-                {
-                    _yxzt = "故障";
-                }
-                else
-                {
-                    if (_base_sbxx.sbzt == "运行")
-                    {
-                        _yxzt = "运行";
-                    }
-                }
-                if (zt)
-                {
-                    _yxzt = "停机";
-                }
+                var jgs = _receive_data.Where(i => i.itemName == "加工数");
+                //var yxzt = receivedata.Where(i => i.itemName == "运行状态");
+                //var bjzt = receivedata.Where(i => i.itemName == "报警状态");
+                //var zt = (bool)yxzt.FirstOrDefault()?.value.Contains("错误");
+                //if(bjzt.FirstOrDefault()?.value == "1")
+                //{
+                //    _yxzt = "故障";
+                //}
+                //else
+                //{
+                //    if (_base_sbxx.sbzt == "运行")
+                //    {
+                //        _yxzt = "运行";
+                //    }
+                //}
+                //if (zt)
+                //{
+                //    _yxzt = "停机";
+                //}
                 if (jgs.Count() > 0)
                 {
-                    var local_jgs = System.Convert.ToInt64(jgs.FirstOrDefault().value);
-                    sbztbhb sbztgx_obj = new sbztbhb();
-                    sbztgx_obj.sbbh = _base_sbxx.sbbh;
-                    sbztgx_obj.sbqy = _base_sbxx.sbqy;
-                    sbztgx_obj.sbzt = _yxzt;
-                    //设备在运行
-                    if (local_jgs != _global_jgs)
+                    long local_jgs = 0;
+                    if(long.TryParse(jgs.FirstOrDefault().value,out local_jgs))
                     {
-                        _global_jgs = local_jgs;
-                        _sbztgxservice.Add(sbztgx_obj);
-                        SBRun?.Invoke();
+                        if (local_jgs > 0)
+                        {
+                            //保存设备运行状态
+                            sbztbhb sbztgx_obj = new sbztbhb();
+                            sbztgx_obj.sbbh = _base_sbxx.sbbh;
+                            sbztgx_obj.sbqy = _base_sbxx.sbqy;
+                            sbztgx_obj.sbzt = _base_sbxx.sbzt;
+                            _sbztgxservice.Add(sbztgx_obj);
+                            SBRun?.Invoke();
+                        }
                     }
-                    else//设备待机
-                    {
-                        sbztgx_obj.sbzt = "待机";
-                        _sbztgxservice.Add(sbztgx_obj);
-                    }
+                    
+                    //if (local_jgs != _global_jgs)
+                    //{
+                    //    _global_jgs = local_jgs;
+                    //    _sbztgxservice.Add(sbztgx_obj);
+                    //    SBRun?.Invoke();
+                    //}
+                    //else//设备待机
+                    //{
+                    //    sbztgx_obj.sbzt = "待机";
+                    //    _sbztgxservice.Add(sbztgx_obj);
+                    //}
                     //更新基础表待机时间
-                    if (_global_sbzt != sbztgx_obj.sbzt)
-                    {
-                        //设置待机时间
-                        if (sbztgx_obj.sbzt == "待机" && _base_sbxx.sbzt == "运行")
-                        {
-                            _sbztgxservice.Set_Djsj(_base_sbxx.sbbh);
-                        }
-                        else
-                        {
-                            _sbztgxservice.UnSet_Djsj(_base_sbxx.sbbh);
-                        }
-                        _global_sbzt = sbztgx_obj.sbzt;
-                    }
+                    //if (_global_sbzt != sbztgx_obj.sbzt)
+                    //{
+                    //    //设置待机时间
+                    //    if (sbztgx_obj.sbzt == "待机" && _base_sbxx.sbzt == "运行")
+                    //    {
+                    //        _sbztgxservice.Set_Djsj(_base_sbxx.sbbh);
+                    //    }
+                    //    else
+                    //    {
+                    //        _sbztgxservice.UnSet_Djsj(_base_sbxx.sbbh);
+                    //    }
+                    //    _global_sbzt = sbztgx_obj.sbzt;
+                    //}
                 }
 
             }
