@@ -29,7 +29,7 @@ namespace LBJOEE.Tools
                 {
                     Directory.CreateDirectory(path);
                 }
-                string filepath = path + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".json";
+                string filepath = path + "\\" + Guid.NewGuid().ToString() + ".json";
                 using (StreamWriter sw = new StreamWriter(filepath))
                 {
                     entity.cjsj = DateTime.Now;
@@ -53,7 +53,7 @@ namespace LBJOEE.Tools
                 {
                     Directory.CreateDirectory(tjpath);
                 }
-                string filepath = tjpath + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".json";
+                string filepath = tjpath + "\\" + Guid.NewGuid().ToString() + ".json";
                 using (StreamWriter sw = new StreamWriter(filepath))
                 {
                     entity.cjsj = DateTime.Now;
@@ -73,7 +73,7 @@ namespace LBJOEE.Tools
                 {
                     Directory.CreateDirectory(path1);
                 }
-                string filepath = path1 + "\\" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".json";
+                string filepath = path1 + "\\" + Guid.NewGuid().ToString() + ".json";
                 using (StreamWriter sw = new StreamWriter(filepath))
                 {
                     yssj.rq = DateTime.Now;
@@ -95,6 +95,10 @@ namespace LBJOEE.Tools
             {
                 SBSJService service = SBSJService.Instance;
                 sjcj entity = new sjcj();
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
                 DirectoryInfo diinfo = new DirectoryInfo(path);
                 FileInfo[] finfos = diinfo.GetFiles();
                 foreach (FileInfo item in finfos.Where(t=>t.Extension==".json"))
@@ -126,6 +130,10 @@ namespace LBJOEE.Tools
             {
                 SBSJService service = SBSJService.Instance;
                 sjcj entity = new sjcj();
+                if (!Directory.Exists(tjpath))
+                {
+                    Directory.CreateDirectory(tjpath);
+                }
                 DirectoryInfo diinfo = new DirectoryInfo(tjpath);
                 FileInfo[] finfos = diinfo.GetFiles();
                 foreach (FileInfo item in finfos.Where(t => t.Extension == ".json"))
