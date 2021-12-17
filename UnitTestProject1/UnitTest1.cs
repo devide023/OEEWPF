@@ -22,5 +22,19 @@ namespace UnitTestProject1
             Check_DataUploadService service = Check_DataUploadService.Instance;
             service.Check();
         }
+        [TestMethod]
+        public void TestMethod3()
+        {
+            CalcJpService service = CalcJpService.Instance;
+            service.Update_SBJP_Force("A006");
+        }
+        [TestMethod]
+        public void TestMethod4()
+        {
+            SBCNService service = SBCNService.Instance;
+            service.RiCn();
+        }
+        
+
     }
 }

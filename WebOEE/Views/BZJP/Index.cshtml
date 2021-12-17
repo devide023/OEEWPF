@@ -36,13 +36,16 @@
             });
             
             $.ajax({
-                url: 'Save',
+                url: '/BZJP/Save',
                 type: 'POST',
                 data: JSON.stringify(postdata),
                 dataType: 'json',
                 contentType: 'application/json',
                 success: function (res) {
                     alert(res.msg);
+                    if (res.code === 1) {
+                        window.location.href = "http://172.16.201.166/decision/view/form?viewlet=/LBJ/OEE/OEE_ZL.frm";
+                    }
                 }
             });
         });

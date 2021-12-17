@@ -147,7 +147,7 @@
 				<group>TriggerGroup</group>
 				<job-name>HasDataJob</job-name>
 				<job-group>jobGroup</job-group>
-				<cron-expression>0 */2 * * * ?</cron-expression>
+				<cron-expression>*/20 * * * * ?</cron-expression>
 			</cron>
 		</trigger>
 	</schedule>

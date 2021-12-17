@@ -142,19 +142,17 @@ namespace OEECalc.Services
 
         public void Check()
         {
-            log.Info(JsonConvert.SerializeObject(_global_cnf) + "\r\n");
+            //log.Info(JsonConvert.SerializeObject(_global_cnf) + "\r\n");
             try
             {
                 var sbxxlist = Get_SBXX_List();
-                sys_sjsc conf = null;
-                int pos = -1;
                 foreach (var item in sbxxlist)
                 {
+                    int pos = -1;
                     var q = _global_cnf.Where(t => t.sbbh == item.sbbh);
                     if (q.Count() > 0)
                     {
                         pos = _global_cnf.FindIndex(t => t.sbbh == item.sbbh);
-                        conf = _global_cnf[pos];
                     }
                     else
                     {
@@ -164,7 +162,6 @@ namespace OEECalc.Services
                         e.sbzt = string.Empty;
                         _global_cnf.Add(e);
                         pos = _global_cnf.FindIndex(t => t.sbbh == item.sbbh);
-                        conf = _global_cnf[pos];
                     }
                     var datalist = Get_ZTBH_List(item.sbbh);
                     var isok = NetCheck.IsPing(item.ip);
@@ -173,35 +170,32 @@ namespace OEECalc.Services
                         if (datalist.Count() == 0)
                         {
                             //没有手动停机情况下更新设备待机时间
-                            if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && conf.js == 0)
+                            if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && _global_cnf[pos].js == 0)
                             {
                                 Set_SbDj_SJ(item.sbbh);
-                                conf.js = conf.js++;
-                                conf.sbzt = "待机";
-                                _global_cnf[pos] = conf;
+                                _global_cnf[pos].js = _global_cnf[pos].js + 0.1m;
+                                _global_cnf[pos].sbzt = "待机";
                             }
                         }
                         else//有数据上传
                         {
-                            conf.js = 0;
+                            _global_cnf[pos].js = 0m;
                             var firstzx = datalist.OrderByDescending(t => t.sj).FirstOrDefault();//最新一条数据
                             if (firstzx.sbzt == "运行")
                             {
                                 UnSet_SbDj_SJ(item.sbbh);
-                                conf.sbzt = firstzx.sbzt;
-                                _global_cnf[pos] = conf;
+                                _global_cnf[pos].sbzt = firstzx.sbzt;
                             }
                             else
                             {
-                                if (conf.sbzt != firstzx.sbzt)
+                                if (_global_cnf[pos].sbzt != firstzx.sbzt && firstzx.sbzt=="待机")
                                 {
                                     //没有手动停机情况下更新设备待机时间
                                     if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N")
                                     {
                                         Set_SbDj_SJ(item.sbbh);
                                     }
-                                    conf.sbzt = firstzx.sbzt;
-                                    _global_cnf[pos] = conf;
+                                    _global_cnf[pos].sbzt = firstzx.sbzt;
                                 }
                             }
                         }

@@ -62,8 +62,8 @@ namespace OEECalc.Services
                 sql.Append("select id, sbbh, tjlx, tjsj, tjkssj, tjjssj, tjms from SBTJ where sbbh = :sbbh and tjjssj between :rq1 and :rq2 ");
                 DynamicParameters p = new DynamicParameters();
                 p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-                p.Add(":rq1", sbbh, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
-                p.Add(":rq2", sbbh, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                p.Add(":rq1", ksrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                p.Add(":rq2", jsrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
                 return Db.Connection.Query<sbtj>(sql.ToString(), p);
             }
             catch (Exception e)
@@ -199,7 +199,7 @@ namespace OEECalc.Services
                         dlsj = tjlist.Where(t => t.tjlx.Contains("待料")).Sum(t => t.tjsj);
                         qtsj = tjlist.Where(t => t.tjlx.Contains("其他")).Sum(t => t.tjsj);
                         hmsj = tjlist.Where(t => t.tjlx.Contains("换模")).Sum(t => t.tjsj);
-                        fjhtjsj = jxsj + tssj + xjsj + xmsj + dlsj + qtsj + hmsj;
+                        fjhtjsj = Convert.ToDecimal(jxsj + tssj + xjsj + xmsj + dlsj + qtsj + hmsj);
                     }
                     int jhtjsj = 0; //计划停机时间,休息时间等
                     if (jhtjlist.Count() > 0)

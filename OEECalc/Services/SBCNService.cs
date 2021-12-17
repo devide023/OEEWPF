@@ -66,8 +66,9 @@ namespace OEECalc.Services
                     pg.Predicates.Add(Predicates.Field<sbcntj>(f => f.sbbh, Operator.Eq, item.sbbh));
                     pg.Predicates.Add(Predicates.Field<sbcntj>(f => f.sj, Operator.Eq, cntj.sj));
                     var q = Db.GetList<sbcntj>(pg);
-                    if (q.Count() == 0) { 
-                    Db.Insert<sbcntj>(cntj);
+                    if (q.Count() == 0)
+                    {
+                        Db.Insert<sbcntj>(cntj);
                     }
                     else
                     {
@@ -88,16 +89,14 @@ namespace OEECalc.Services
             try
             {
                 StringBuilder sqlmax = new StringBuilder();
-                sqlmax.Append("select nvl(max(to_number(jgs)),0) maxjgs ");
+                sqlmax.Append("select nvl(max(to_number(REGEXP_REPLACE(jgs, '[^-0-9.]', ''))),0) maxjgs ");
                 sqlmax.Append(" from sjcj ");
                 sqlmax.Append(" where trunc(cjsj) = trunc(sysdate) ");
-                sqlmax.Append(" and    trim(translate(jgs, '0123456789', ' ')) is NULL ");
                 sqlmax.Append(" and sbbh = :sbbh ");
                 StringBuilder sqlmin = new StringBuilder();
-                sqlmin.Append("select nvl(min(to_number(jgs)),0) minjgs ");
+                sqlmin.Append("select nvl(min(to_number(REGEXP_REPLACE(jgs, '[^-0-9.]', ''))),0) minjgs ");
                 sqlmin.Append(" from sjcj ");
                 sqlmin.Append(" where trunc(cjsj) = trunc(sysdate) ");
-                sqlmin.Append(" and    trim(translate(jgs, '0123456789', ' ')) is NULL ");
                 sqlmin.Append(" and sbbh = :sbbh ");
                 if (Tool.NetCheck.IsPing("172.16.201.175"))
                 {

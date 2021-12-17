@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OEECalc.Services;
 using Quartz;
 using Quartz.Job;
+using log4net;
 namespace OEECalc.JOB
 {
     /// <summary>
@@ -14,10 +15,16 @@ namespace OEECalc.JOB
     public class CheckHasData_JOB : IJob
     {
         private Check_DataUploadService service = Check_DataUploadService.Instance;
+        private ILog log;
+        public CheckHasData_JOB()
+        {
+            log = LogManager.GetLogger(this.GetType());
+        }
         public Task Execute(IJobExecutionContext context)
         {
             return Task.Run(() =>
             {
+                //log.Info($"HashCode:{service.GetHashCode()}\r");
                 service.Check();
             });
         }

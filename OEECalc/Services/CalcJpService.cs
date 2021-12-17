@@ -73,13 +73,36 @@ namespace OEECalc.Services
                     }
                     if (i  == list.Count - 2)
                     {
-                        rowid = list[i+1].rowid;
-                        Db.Insert<sbjpgxb>(new sbjpgxb()
+                        StringBuilder tsql = new StringBuilder();
+                        tsql.Append("select * FROM ( ");
+                        tsql.Append(" select rowid, cjsj ");
+                        tsql.Append(" from sjcj ");
+                        tsql.Append(" where sbbh = :sbbh ");
+                        tsql.Append(" and    cjsj > trunc(sysdate) and cjsj < :rq ");
+                        tsql.Append(" order  by cjsj desc) tm where rownum < 2 ");
+                        DynamicParameters dyp = new DynamicParameters();
+                        dyp.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                        dyp.Add(":rq", list[i + 1].cjsj, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                        var q = Db.Connection.Query<sys_cjsj>(tsql.ToString(), dyp);
+                        if (q.Count() > 0)
                         {
-                            rid = rowid,
-                            sbbh = sbbh,
-                            sj = DateTime.Now
-                        });
+                            var td2 = q.FirstOrDefault().cjsj;
+                            var sjjg = list[i + 1].cjsj - td2;
+                            jp = Math.Round(sjjg.TotalSeconds, 2) * 10;
+                            rowid = list[i + 1].rowid;
+                            dp.Add(":rid", rowid, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                            dp.Add(":jp", jp, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                            res = Db.Connection.Execute(sql1.ToString(), dp);
+                            if (res > 0)
+                            {
+                                Db.Insert<sbjpgxb>(new sbjpgxb()
+                                {
+                                    rid = rowid,
+                                    sbbh = sbbh,
+                                    sj = DateTime.Now
+                                });
+                            }
+                        }                        
                     }
                 }
             }

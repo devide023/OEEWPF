@@ -153,7 +153,7 @@ namespace OEECalc.Services
                 sql.Append("select id, sj, sbbh, sbzt, sbqy,sftj ");
                 sql.Append(" FROM   sbztbhb ");
                 sql.Append(" where  sbbh = :sbbh ");
-                sql.Append(" and    sj between :kssj and sysdate ");
+                sql.Append(" and    sj between sysdate - (1 / 24 / 60) * 5 and sysdate ");
                 sql.Append(" order  by sj desc");
                 //查询条件
                 PredicateGroup pg = new PredicateGroup()
@@ -179,53 +179,11 @@ namespace OEECalc.Services
                     //} 
                     #endregion
                     //查询整点数据
-                    dypar.Add(":kssj", sj, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
                     dypar.Add(":sbbh", item.sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
                     var ztlist = Db.Connection.Query<sbztbhb>(sql.ToString(), dypar);
                     if (ztlist.Count() > 0)
                     {
                         yxzt = ztlist.First().sbzt;
-                        #region 原始状态判断
-
-                        //前半点
-                        //if (DateTime.Compare(current_time, d2) < 0 && DateTime.Compare(current_time, d1) >= 0)
-                        //{
-                        //    cur_time_cnt = ztlist.Where(t => t.sj >= d1 && t.sj < d2 && t.sbzt == "运行").Count();
-                        //    cur_time_tjcnt = ztlist.Where(t => t.sj >= d1 && t.sj < d2 && t.sbzt == "停机").Count();
-                        //    cur_time_djcnt = ztlist.Where(t => t.sj >= d1 && t.sj < d2 && t.sbzt == "待机").Count();
-                        //    cur_time_sbztcnt = ztlist.Where(t => t.sj >= d1 && t.sj < d2 && t.sbzt == item.sbzt).Count();
-
-                        //}
-                        ////后半点
-                        //if (DateTime.Compare(current_time, d2) >= 0 && DateTime.Compare(current_time, d3) < 0)
-                        //{
-                        //    cur_time_cnt = ztlist.Where(t => t.sj >= d2 && t.sj < d3 && t.sbzt == "运行").Count();
-                        //    cur_time_tjcnt = ztlist.Where(t => t.sj >= d2 && t.sj < d3 && t.sbzt == "停机").Count();
-                        //    cur_time_djcnt = ztlist.Where(t => t.sj >= d2 && t.sj < d3 && t.sbzt == "待机").Count();
-                        //    cur_time_sbztcnt = ztlist.Where(t => t.sj >= d2 && t.sj < d3 && t.sbzt == item.sbzt).Count();
-
-                        //}
-                        //if (cur_time_sbztcnt > 0)
-                        //{
-                        //    yxzt = item.sbzt;
-                        //    if(yxzt=="运行" && cur_time_cnt >= jsfz)
-                        //    {
-                        //        yxzt = "运行";
-                        //    }
-                        //    else
-                        //    {
-                        //        yxzt = "待机";
-                        //    }
-                        //}
-                        //if (cur_time_djcnt > 0)
-                        //{
-                        //    yxzt = "待机";
-                        //}
-                        //if (cur_time_tjcnt > 0)
-                        //{
-                        //    yxzt = "停机";
-                        //} 
-                        #endregion
                     }
                     else
                     {
