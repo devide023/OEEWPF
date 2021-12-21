@@ -187,20 +187,35 @@ namespace OEECalc.Services
                     }
                     else
                     {
-                        yxzt = "待机";
+                        if(item.sfgz=="N" && item.sfjx=="N" && item.sfhm=="N" && item.sfxm=="N" && item.sfts=="N" && item.sfqttj=="N" && item.sfql == "N")
+                        {
+                            yxzt = "待机";
+                        }
+                        else
+                        {
+                            yxzt = item.sbzt;
+                        }
+                        
                     }
                     //判断是否脱机
                     if (!NetCheck.IsPing(item.ip))
                     {
-                        yxzt = "脱机";
-                        var tempq = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
-                        if (tempq.Count() == 0)
+                        if (item.sfgz == "N" && item.sfjx == "N" && item.sfhm == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfqttj == "N" && item.sfql == "N")
                         {
-                            sbtjsjlist.Add(new sys_sbtjsj()
+                            yxzt = "脱机"; 
+                            var tempq = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
+                            if (tempq.Count() == 0)
                             {
-                                sbbh = item.sbbh,
-                                tjkssj = DateTime.Now
-                            });
+                                sbtjsjlist.Add(new sys_sbtjsj()
+                                {
+                                    sbbh = item.sbbh,
+                                    tjkssj = DateTime.Now
+                                });
+                            }
+                        }
+                        else
+                        {
+                            yxzt = item.sbzt;
                         }
                     }
                     else

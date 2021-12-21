@@ -109,7 +109,7 @@ namespace LBJOEE.Tools
                     entity = JsonConvert.DeserializeObject<sjcj>(json);
                     if (Tool.IsPing())
                     {
-                        dynamic ret = service.Add(entity);
+                        dynamic ret = service.AddByDate(entity);
                         if (!string.IsNullOrEmpty(ret.ToString()))
                         {
                             sr.Close();

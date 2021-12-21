@@ -31,8 +31,10 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod4()
         {
-            SBCNService service = SBCNService.Instance;
-            service.RiCn();
+            //SBCNService service = SBCNService.Instance;
+            //service.RiCn();
+            var t = Guid.NewGuid().ToString();
+            Console.WriteLine(t);
         }
         
 

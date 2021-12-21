@@ -55,43 +55,43 @@ namespace OEECalc.Model
         /// <summary>
         ///检修时间
         ///</summary>
-        public int jxsj { get; set; }
+        public decimal jxsj { get; set; }
         /// <summary>
         ///调试时间
         ///</summary>
-        public int tssj { get; set; }
+        public decimal tssj { get; set; }
         /// <summary>
         ///换模时间
         ///</summary>
-        public int hmsj { get; set; }
+        public decimal hmsj { get; set; }
         /// <summary>
         ///修模
         ///</summary>
-        public int xmsj { get; set; }
+        public decimal xmsj { get; set; }
         /// <summary>
         ///修机时间
         ///</summary>
-        public int xjsj { get; set; }
+        public decimal xjsj { get; set; }
         /// <summary>
         ///待料时间
         ///</summary>
-        public int dlsj { get; set; }
+        public decimal dlsj { get; set; }
         /// <summary>
         ///其它时间
         ///</summary>
-        public int qtsj { get; set; }
+        public decimal qtsj { get; set; }
         /// <summary>
         ///休息时间
         ///</summary>
-        public int xxsj { get; set; }
+        public decimal xxsj { get; set; }
         /// <summary>
         ///工作时间
         ///</summary>
-        public int gzsj { get; set; }
+        public decimal gzsj { get; set; }
         /// <summary>
         ///运行时间
         ///</summary>
-        public int yxsj { get; set; }
+        public decimal yxsj { get; set; }
         /// <summary>
         ///计划数量
         ///</summary>
