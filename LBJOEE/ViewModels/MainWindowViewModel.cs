@@ -293,13 +293,13 @@ namespace LBJOEE.ViewModels
                 BtnStatusList.ToList().ForEach(i => i.btnenable = true);
             }
             //没有客户端连接时，按钮禁止操作
-            if (ClientList.Count == 0)
-            {
-                foreach (var btn in BtnStatusList)
-                {
-                    btn.btnenable = false;
-                }
-            }
+            //if (ClientList.Count == 0)
+            //{
+            //    foreach (var btn in BtnStatusList)
+            //    {
+            //        btn.btnenable = false;
+            //    }
+            //}
         }
         /// <summary>
         /// 初始化Socket服务
@@ -393,7 +393,7 @@ namespace LBJOEE.ViewModels
                         ClientList.Add(item.remoteip);
                     }
                     comboboxindex = 0;
-                    FreshBtnListState();
+                    //FreshBtnListState();
                 });
             }
             void ShowHisData(JsonEntity entity)
