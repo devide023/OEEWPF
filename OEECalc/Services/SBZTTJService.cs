@@ -26,11 +26,13 @@ namespace OEECalc.Services
         private SBXXService _sbxxservice;
         private TimeUtil _timeutil;
         private List<sys_sbtjsj> sbtjsjlist;//脱机时间表
+        private List<sys_sbyxsj> sbyxsjlist;//设备运行时间表
         private SBZTTJService()
         {
             _sbxxservice = new SBXXService();
             _timeutil = new TimeUtil();
             sbtjsjlist = new List<sys_sbtjsj>();
+            sbyxsjlist = new List<sys_sbyxsj>();
             log = LogManager.GetLogger(this.GetType());
         }
 
@@ -51,27 +53,26 @@ namespace OEECalc.Services
                 return instance;
             }
         }
-
         /// <summary>
-        /// 计数阀值
+        /// 上传时间配置
         /// </summary>
         /// <returns></returns>
-        public List<sbjsfz> JSFZ()
+        public List<sys_scsjconf> SCSJConf()
         {
             try
             {
                 string path = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-                string fullpath = path + "\\" + "fz.json";
+                string fullpath = path + "\\" + "scsjconf.json";
                 using (StreamReader sr = new StreamReader(fullpath))
                 {
                     string json = sr.ReadToEnd();
-                    List<sbjsfz> list = JsonConvert.DeserializeObject<List<sbjsfz>>(json);
+                    List<sys_scsjconf> list = JsonConvert.DeserializeObject<List<sys_scsjconf>>(json);
                     return list;
                 }
             }
             catch (Exception)
             {
-                return new List<sbjsfz>();
+                return new List<sys_scsjconf>();
             }
         }
         public bool edit_sbzt(sbyxtj entity)
@@ -125,14 +126,33 @@ namespace OEECalc.Services
             }
         }
         /// <summary>
+        /// 移除设备运行时间记录
+        /// </summary>
+        /// <param name="sbbh"></param>
+        private void Remove_SBYXSJItem(string sbbh)
+        {
+            try
+            {
+                var q = this.sbyxsjlist.Where(t => t.sbbh == sbbh);
+                if (q.Count() > 0)
+                {
+                    this.sbyxsjlist.Remove(q.First());
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
+        /// <summary>
         /// 设备状态统计
         /// </summary>
         public void sbzttj()
         {
             try
             {
-                //log.Info(JsonConvert.SerializeObject(sbtjsjlist));
-                //var jsfzlist = JSFZ();
+                //时间间隔配置
+                var sjjgconf = SCSJConf();
                 DateTime current_time = _timeutil.ServerTime();
                 var d1 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:00:00"));
                 var d2 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:30:00"));
@@ -153,7 +173,7 @@ namespace OEECalc.Services
                 sql.Append("select id, sj, sbbh, sbzt, sbqy,sftj ");
                 sql.Append(" FROM   sbztbhb ");
                 sql.Append(" where  sbbh = :sbbh ");
-                sql.Append(" and    sj between sysdate - (1 / 24 / 60) * 5 and sysdate ");
+                sql.Append(" and    sj between sysdate - (1 / 24 / 60) * :sjjg and sysdate ");
                 sql.Append(" order  by sj desc");
                 //查询条件
                 PredicateGroup pg = new PredicateGroup()
@@ -165,25 +185,39 @@ namespace OEECalc.Services
                 foreach (var item in sblist)
                 {
                     string yxzt = string.Empty;
-                    #region 计算阀值
-                    //int cur_time_cnt = 0;//正常运行数量
-                    //int cur_time_tjcnt = 0;//停机数量
-                    //int cur_time_djcnt = 0;//待机数量
-                    //int cur_time_sbztcnt = 0;//设备状态数量
-                    //var jsquery = jsfzlist.Where(t => t.sbbh == item.sbbh);
-                    ////计数阀值
-                    //int jsfz = 0;
-                    //if (jsquery.Count() > 0)
-                    //{
-                    //    jsfz = jsquery.FirstOrDefault().jsfz;
-                    //} 
-                    #endregion
-                    //查询整点数据
+                    var qyx = sbyxsjlist.Where(t => t.sbbh == item.sbbh);
+                    var pos = -1;
+                    if (qyx.Count() == 0)
+                    {
+                        sys_sbyxsj yxsj = new sys_sbyxsj();
+                        yxsj.sbbh = item.sbbh;
+                        yxsj.yxkssj = DateTime.Now;
+                        sbyxsjlist.Add(yxsj);
+                    }
+                    pos = sbyxsjlist.FindIndex(t => t.sbbh == item.sbbh);
+                    sys_sbyxsj sbyxsj_entity = new sys_sbyxsj();
+                    if (pos != -1)
+                    {
+                        sbyxsj_entity = sbyxsjlist[pos];
+                    }
+                    //查询5分钟内是否有数据上传
+                    Int32 sbsjjg = 5;
+                    var sjjg_query = sjjgconf.Where(t => t.sbbh == item.sbbh);
+                    if (sjjg_query.Count() > 0)
+                    {
+                        sbsjjg = sjjg_query.First().sjjg;
+                    }
                     dypar.Add(":sbbh", item.sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                    dypar.Add(":sjjg", sbsjjg, System.Data.DbType.Int32, System.Data.ParameterDirection.Input);
                     var ztlist = Db.Connection.Query<sbztbhb>(sql.ToString(), dypar);
                     if (ztlist.Count() > 0)
                     {
                         yxzt = ztlist.First().sbzt;
+                        if(sbyxsj_entity.jsflag == 0)
+                        {
+                            sbyxsj_entity.jsflag = sbyxsj_entity.jsflag + 1;
+                            sbyxsj_entity.yxkssj = DateTime.Now;
+                        }
                     }
                     else
                     {
@@ -195,7 +229,7 @@ namespace OEECalc.Services
                         {
                             yxzt = item.sbzt;
                         }
-                        
+                        Remove_SBYXSJItem(item.sbbh);
                     }
                     //判断是否脱机
                     if (!NetCheck.IsPing(item.ip))
@@ -217,6 +251,7 @@ namespace OEECalc.Services
                         {
                             yxzt = item.sbzt;
                         }
+                        Remove_SBYXSJItem(item.sbbh);
                     }
                     else
                     {
@@ -225,6 +260,13 @@ namespace OEECalc.Services
                     double totalsj = 0;
                     switch (yxzt)
                     {
+                        case "待料":
+                            var tsdl = current_time - item.qlkssj;
+                            if (tsdl.HasValue)
+                            {
+                                totalsj = tsdl.Value.TotalSeconds;
+                            }
+                            break;
                         case "检修":
                             var tsjx = current_time - item.jxkssj;
                             if (tsjx.HasValue)
@@ -239,7 +281,7 @@ namespace OEECalc.Services
                                 totalsj = tshm.Value.TotalSeconds;
                             }
                             break;
-                        case "故障":
+                        case "修机":
                             var tsgz = current_time - item.gzkssj;
                             if (tsgz.HasValue)
                             {
@@ -253,11 +295,27 @@ namespace OEECalc.Services
                                 totalsj = djgz.Value.TotalSeconds;
                             }
                             break;
-                        case "停机":
-                            var tjgz = current_time - item.tjkssj;
-                            if (tjgz.HasValue)
+                        case "运行":
+                            if (qyx.Count()>0)
                             {
-                                totalsj = tjgz.Value.TotalSeconds;
+                                pos = sbyxsjlist.FindIndex(t => t.sbbh == item.sbbh);
+                                var yxkssj = sbyxsjlist[pos].yxkssj;
+                                var tsyx = DateTime.Now - yxkssj;
+                                if (tsyx.HasValue)
+                                {
+                                    totalsj = Math.Round(tsyx.Value.TotalSeconds, 0);
+                                }
+                            }
+                            else
+                            {
+                                totalsj = 0;
+                            }
+                            break;
+                        case "其它":
+                            var qtts = current_time - item.qttjkssj;
+                            if (qtts.HasValue)
+                            {
+                                totalsj = qtts.Value.TotalSeconds;
                             }
                             break;
                         case "修模":

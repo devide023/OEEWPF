@@ -654,12 +654,12 @@ namespace LBJOEE.ViewModels
             {
                 name = "qt",
                 sfqt = base_sbxx.sfqttj == "Y",
-                btntxt = base_sbxx.sfqttj == "Y" ? "停机恢复" : "其他停机",
+                btntxt = base_sbxx.sfqttj == "Y" ? "停机恢复" : "其它停机",
                 btnenable = base_sbxx.sbzt == "运行",
-                normaltxt = "其他停机",
+                normaltxt = "其它停机",
                 tjtxt = "停机恢复",
-                tjlx = "其他停机",
-                tjms = "其他"
+                tjlx = "其它停机",
+                tjms = "其它"
             };
             BtnStatusList.Add(_qtbtn);
         }
@@ -846,7 +846,7 @@ namespace LBJOEE.ViewModels
                 else
                 {
                     _qttimer.Change(0, 1000);
-                    base_sbxx.sbzt = "待机";
+                    base_sbxx.sbzt = "其它";
                     base_sbxx.sfqttj = "Y";
                     base_sbxx.qttjkssj = DateTime.Now;
                     obj.flag = 1;

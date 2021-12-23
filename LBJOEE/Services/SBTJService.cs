@@ -54,7 +54,7 @@ namespace LBJOEE.Services
             if (sbxx.sfqttj == "Y")
             {
                 kssj = sbxx.qttjkssj;
-                entity.tjlx = "其他";
+                entity.tjlx = "其它";
             }
             var jssj = DateTime.Now;
             entity.tjkssj = kssj;

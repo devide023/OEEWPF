@@ -88,6 +88,7 @@ namespace OEECalc.Services
                         {
                             var td2 = q.FirstOrDefault().cjsj;
                             var sjjg = list[i + 1].cjsj - td2;
+                            log.Info($"{list[i + 1].cjsj},{td2}");
                             jp = Math.Round(sjjg.TotalSeconds, 2) * 10;
                             rowid = list[i + 1].rowid;
                             dp.Add(":rid", rowid, System.Data.DbType.String, System.Data.ParameterDirection.Input);

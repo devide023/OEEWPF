@@ -146,6 +146,7 @@
     <Compile Include="Model\sys_cjsj.cs" />
     <Compile Include="Model\sys_jpcnf.cs" />
     <Compile Include="Model\sys_sbtjsj.cs" />
+    <Compile Include="Model\sys_sbyxsj.cs" />
     <Compile Include="Model\sys_sjsc.cs" />
     <Compile Include="Model\sys_zpjh.cs" />
     <Compile Include="Program.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Services\SBXXService.cs" />
     <Compile Include="Services\SBZTSLTJService.cs" />
     <Compile Include="Services\SBZTTJService.cs" />
+    <Compile Include="Model\sys_scsjconf.cs" />
     <Compile Include="Tool\NetCheck.cs" />
     <Compile Include="Tool\TimeUtil.cs" />
   </ItemGroup>
@@ -191,6 +193,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="sbzt.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="scsjconf.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
