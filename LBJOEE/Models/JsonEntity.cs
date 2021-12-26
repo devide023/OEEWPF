@@ -21,7 +21,7 @@ namespace LBJOEE
         /// <summary>
         /// 对应数据库字段（采集后的参数）
         /// </summary>
-        public sjcj SJCJ { get; set; }
+        public sjcjnew SJCJ { get; set; }
         
     }
 }

@@ -310,12 +310,12 @@ namespace LBJOEE.Services
                 var sfcz = Db.Connection.ExecuteScalar<int>("select count(id) FROM sbcsconf where sbbh = :sbbh", new { sbbh = sbbh });
                 if (sfcz == 0)
                 {
-                    return Db.Connection.Query<dygx>("select id, txt, colname, status,seq,width from DYGX where status = 1 ");
+                    return Db.Connection.Query<dygx>("select id, txt, colname, status,seq,width,coltype from DYGX where status = 1 ");
                 }
                 else
                 {
                     StringBuilder sql = new StringBuilder();
-                    sql.Append("select ta.id, ta.txt, ta.colname, ta.status, ta.seq, ta.width ");
+                    sql.Append("select ta.id, ta.txt, ta.colname, ta.status, ta.seq, ta.width,ta.coltype ");
                     sql.Append(" FROM   dygx ta, sbcsconf tb ");
                     sql.Append(" where  ta.id = tb.csid ");
                     sql.Append(" and    ta.status = 1 ");

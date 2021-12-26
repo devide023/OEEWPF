@@ -21,7 +21,7 @@ namespace LBJOEE.Tools
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static void SaveDataToLocal(sjcj entity)
+        public static void SaveDataToLocal(sjcjnew entity)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace LBJOEE.Tools
         /// 停机状态接收到的数据本地存储
         /// </summary>
         /// <param name="entity"></param>
-        public static void SaveTJDataToLocal(sjcj entity)
+        public static void SaveTJDataToLocal(sjcjnew entity)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace LBJOEE.Tools
             try
             {
                 SBSJService service = SBSJService.Instance;
-                sjcj entity = new sjcj();
+                sjcjnew entity = new sjcjnew();
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
@@ -106,7 +106,7 @@ namespace LBJOEE.Tools
                     string filepath = item.FullName;
                     StreamReader sr = new StreamReader(filepath);
                     string json = sr.ReadToEnd();
-                    entity = JsonConvert.DeserializeObject<sjcj>(json);
+                    entity = JsonConvert.DeserializeObject<sjcjnew>(json);
                     if (Tool.IsPing())
                     {
                         dynamic ret = service.AddByDate(entity);
@@ -129,7 +129,7 @@ namespace LBJOEE.Tools
             try
             {
                 SBSJService service = SBSJService.Instance;
-                sjcj entity = new sjcj();
+                sjcjnew entity = new sjcjnew();
                 if (!Directory.Exists(tjpath))
                 {
                     Directory.CreateDirectory(tjpath);
@@ -141,7 +141,7 @@ namespace LBJOEE.Tools
                     string filepath = item.FullName;
                     StreamReader sr = new StreamReader(filepath);
                     string json = sr.ReadToEnd();
-                    entity = JsonConvert.DeserializeObject<sjcj>(json);
+                    entity = JsonConvert.DeserializeObject<sjcjnew>(json);
                     if (Tool.IsPing())
                     {
                         var ret = service.TJSJCJ(entity);

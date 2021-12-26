@@ -13,7 +13,7 @@ namespace LBJOEE.Services
     /// <summary>
     /// 设备数据服务类
     /// </summary>
-    public class SBSJService:DBImp<sjcj>
+    public class SBSJService:DBImp<sjcjnew>
     {
         private static SBSJService instance = null;
         private static readonly object padlock = new object();
@@ -73,7 +73,7 @@ namespace LBJOEE.Services
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public int AddByDate(sjcj entity)
+        public int AddByDate(sjcjnew entity)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace LBJOEE.Services
             }
         }
 
-        public int TJSJCJ(sjcj entity)
+        public int TJSJCJ(sjcjnew entity)
         {
             try
             {

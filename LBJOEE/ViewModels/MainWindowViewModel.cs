@@ -39,8 +39,8 @@ namespace LBJOEE.ViewModels
             get { return _datagridcols; }
             set { SetProperty(ref _datagridcols, value); }
         }
-        private ObservableCollection<sjcj> _hislist = new ObservableCollection<sjcj>();
-        public ObservableCollection<sjcj> HisList
+        private ObservableCollection<sjcjnew> _hislist = new ObservableCollection<sjcjnew>();
+        public ObservableCollection<sjcjnew> HisList
         {
             get { return _hislist; }
             set { SetProperty(ref _hislist, value); }
@@ -199,6 +199,7 @@ namespace LBJOEE.ViewModels
             try
             {
                 this.dygxlist = _sbxxservice.GetDYGX(sbbh);
+                dealservice.SetSBParm = this.dygxlist.ToList();
             }
             catch (Exception e)
             {
@@ -317,11 +318,11 @@ namespace LBJOEE.ViewModels
                         string msg = Encoding.Default.GetString(bytes);
                         original_data = $"{DateTime.Now} {client.remoteip} \r\n{msg}\r\n";
                         var receivedata = JsonConvert.DeserializeObject<List<itemdata>>(msg);
+                        dealservice.SetReceiveData = receivedata;
                         JsonEntity data = new JsonEntity();
                         data.devicedata = receivedata;
-                        data.SJCJ = FanShe(data.devicedata);
+                        data.SJCJ = dealservice.Receive2SjCJ();
                         ShowHisData(data);
-                        dealservice.SetReceiveData = receivedata;
                         dealservice.DealData(msg);
                         if (data.SJCJ != null)
                         {
