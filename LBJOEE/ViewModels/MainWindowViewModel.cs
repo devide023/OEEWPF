@@ -29,8 +29,8 @@ namespace LBJOEE.ViewModels
     {
         private ILog log;
         private string _title = "压铸OEE数据采集";
-        private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer, _xmtimer, _tstimer;
-        private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn, _debugbtn, _xmbtn;
+        private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer, _xmtimer, _tstimer,_bytimer;
+        private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn, _debugbtn, _xmbtn, _bybtn;
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
         public ObservableCollection<string> ClientList { get; set; } = new ObservableCollection<string>();
         private ObservableCollection<dynamic> _datagridcols;
@@ -219,6 +219,9 @@ namespace LBJOEE.ViewModels
                 btn.sfjx = false;
                 btn.sfql = false;
                 btn.sfqt = false;
+                btn.sfxm = false;
+                btn.sfts = false;
+                btn.sfby = false;
                 btn.flag = 0;
                 btn.btnenable = false;
                 btn.btntxt = btn.normaltxt;
@@ -283,6 +286,15 @@ namespace LBJOEE.ViewModels
             else if (base_sbxx.sfqttj == "Y")
             {
                 _qtbtn.sfqt = true;
+                _qtbtn.flag = 1;
+                _qtbtn.btnenable = true;
+                _qtbtn.btntxt = _qtbtn.tjtxt;
+                _qtbtn.tjsjvisible = "Visible";
+                EnableOtherBtn(_qtbtn, false);
+            }
+            else if (base_sbxx.sfby == "Y")
+            {
+                _qtbtn.sfby = true;
                 _qtbtn.flag = 1;
                 _qtbtn.btnenable = true;
                 _qtbtn.btntxt = _qtbtn.tjtxt;
@@ -530,6 +542,9 @@ namespace LBJOEE.ViewModels
                 case "xm":
                     DealXMHandle(obj);
                     break;
+                case "by":
+                    DealBYHandle(obj);
+                    break;
                 default:
                     break;
             }
@@ -544,6 +559,7 @@ namespace LBJOEE.ViewModels
             _qttimer = new Timer(CalcQTtjsj, _qtbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             _tstimer = new Timer(CalcTStjsj, _debugbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             _xmtimer = new Timer(CalcXMtjsj, _xmbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            _bytimer = new Timer(CalcBYtjsj, _bybtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             if (_jxbtn.sfjx)
             {
                 _jxtimer.Change(_jxbtn.tjsj, 1000);
@@ -572,6 +588,10 @@ namespace LBJOEE.ViewModels
             if (_debugbtn.sfts)
             {
                 _tstimer.Change(_debugbtn.tjsj, 1000);
+            }
+            if (_bybtn.sfby)
+            {
+                _bytimer.Change(_bybtn.tjsj, 1000);
             }
         }
 
@@ -655,14 +675,27 @@ namespace LBJOEE.ViewModels
             {
                 name = "qt",
                 sfqt = base_sbxx.sfqttj == "Y",
-                btntxt = base_sbxx.sfqttj == "Y" ? "停机恢复" : "其它停机",
+                btntxt = base_sbxx.sfqttj == "Y" ? "计划停机恢复" : "计划停机",
                 btnenable = base_sbxx.sbzt == "运行",
-                normaltxt = "其它停机",
-                tjtxt = "停机恢复",
-                tjlx = "其它停机",
-                tjms = "其它"
+                normaltxt = "计划停机",
+                tjtxt = "计划停机恢复",
+                tjlx = "计划停机",
+                tjms = "计划停机"
             };
             BtnStatusList.Add(_qtbtn);
+            _bybtn = new BtnStatus()
+            {
+                name = "by",
+                tjsj = 0,
+                sfby = base_sbxx.sfby == "Y",
+                btntxt = base_sbxx.sfqttj == "Y" ? "保养停机恢复" : "保养停机",
+                btnenable = base_sbxx.sbzt == "运行",
+                normaltxt = "保养停机",
+                tjtxt = "保养停机恢复",
+                tjlx = "保养停机",
+                tjms = "保养停机"
+            };
+            BtnStatusList.Add(_bybtn);
         }
 
 
@@ -698,6 +731,7 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _gztimer.Change(0, 1000);
                     base_sbxx.sbzt = "修机";
                     base_sbxx.sfgz = "Y";
@@ -749,6 +783,7 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _tstimer.Change(0, 1000);
                     base_sbxx.sbzt = "调试";
                     base_sbxx.sfts = "Y";
@@ -798,6 +833,7 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _xmtimer.Change(0, 1000);
                     base_sbxx.sbzt = "修模";
                     base_sbxx.sfxm = "Y";
@@ -816,7 +852,7 @@ namespace LBJOEE.ViewModels
             }
         }
         /// <summary>
-        /// 其他停机处理函数
+        /// 计划停机处理函数
         /// </summary>
         private void DealQTHandle(BtnStatus obj)
         {
@@ -846,8 +882,9 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _qttimer.Change(0, 1000);
-                    base_sbxx.sbzt = "其它";
+                    base_sbxx.sbzt = "计划";
                     base_sbxx.sfqttj = "Y";
                     base_sbxx.qttjkssj = DateTime.Now;
                     obj.flag = 1;
@@ -895,6 +932,7 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _hmtimer.Change(0, 1000);
                     base_sbxx.sbzt = "换模";
                     base_sbxx.sfhm = "Y";
@@ -944,6 +982,7 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _jxtimer.Change(0, 1000);
                     base_sbxx.sbzt = "检修";
                     base_sbxx.sfjx = "Y";
@@ -993,6 +1032,7 @@ namespace LBJOEE.ViewModels
                 }
                 else
                 {
+                    obj.tjsj = 0;
                     _qltimer.Change(0, 1000);
                     base_sbxx.sbzt = "待料";
                     base_sbxx.sfql = "Y";
@@ -1011,6 +1051,57 @@ namespace LBJOEE.ViewModels
                 //Environment.Exit(0);
             }
         }
+        /// <summary>
+        /// 保养停机
+        /// </summary>
+        /// <param name="obj"></param>
+        private void DealBYHandle(BtnStatus obj)
+        {
+            try
+            {
+                if (base_sbxx.sfby == "Y")
+                {
+                    _bytimer.Change(-1, -1);
+                    base_sbxx.sbzt = "运行";
+                    base_sbxx.sfby = "N";
+                    obj.tjsj = 0;
+                    obj.flag = 0;
+                    obj.sfby = false;
+                    obj.tjsjvisible = "Collapsed";
+                    obj.btntxt = obj.normaltxt;
+                    EnableOtherBtn(obj, true);
+                    DateTime now = DateTime.Now;
+                    _sbtjservice.Add(new sbtj()
+                    {
+                        sbbh = base_sbxx.sbbh,
+                        tjjssj = now,
+                        tjkssj = base_sbxx.bytjkssj,
+                        tjlx = obj.tjlx,
+                        tjsj = (int)(now - base_sbxx.qlkssj).TotalSeconds,
+                        tjms = obj.tjms
+                    });
+                }
+                else
+                {
+                    obj.tjsj = 0;
+                    _bytimer.Change(0, 1000);
+                    base_sbxx.sbzt = "保养";
+                    base_sbxx.sfby = "Y";
+                    base_sbxx.bytjkssj = DateTime.Now;
+                    obj.sfby = true;
+                    obj.flag = 1;
+                    obj.tjsjvisible = "Visible";
+                    obj.btntxt = obj.tjtxt;
+                    EnableOtherBtn(obj, false);
+                }
+                _sbxxservice.SetBYTJ(base_sbxx);
+            }
+            catch (Exception e)
+            {
+                _logservice.Error(e.Message, e.StackTrace);
+            }
+        }
+
         private void EnableOtherBtn(BtnStatus obj, bool flag)
         {
             int index = BtnStatusList.IndexOf(obj);
@@ -1100,6 +1191,12 @@ namespace LBJOEE.ViewModels
         {
             var obj = state as BtnStatus;
             var ts = DateTime.Now - base_sbxx.xmkssj;
+            obj.tjsj = (int)ts.TotalSeconds;
+        }
+        private void CalcBYtjsj(object state)
+        {
+            var obj = state as BtnStatus;
+            var ts = DateTime.Now - base_sbxx.bytjkssj;
             obj.tjsj = (int)ts.TotalSeconds;
         }
         #endregion
@@ -1326,6 +1423,28 @@ namespace LBJOEE.ViewModels
                         tjms = _qlbtn.tjms
                     });
                     _sbxxservice.SetQLtj(base_sbxx);
+                } else if (base_sbxx.sfby == "Y")
+                {
+                    _bytimer.Change(-1, -1);
+                    base_sbxx.sbzt = "运行";
+                    base_sbxx.sfby = "N";
+                    _qlbtn.tjsj = 0;
+                    _qlbtn.flag = 0;
+                    _qlbtn.sfql = false;
+                    _qlbtn.tjsjvisible = "Collapsed";
+                    _qlbtn.btntxt = _qlbtn.normaltxt;
+                    EnableOtherBtn(_qlbtn, true);
+                    DateTime now = DateTime.Now;
+                    _sbtjservice.Add(new sbtj()
+                    {
+                        sbbh = base_sbxx.sbbh,
+                        tjjssj = now,
+                        tjkssj = base_sbxx.bytjkssj,
+                        tjlx = _qlbtn.tjlx,
+                        tjsj = (int)(now - base_sbxx.bytjkssj).TotalSeconds,
+                        tjms = _qlbtn.tjms
+                    });
+                    _sbxxservice.SetBYTJ(base_sbxx);
                 }
             }
             catch (Exception e)

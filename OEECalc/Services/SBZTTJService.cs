@@ -311,7 +311,7 @@ namespace OEECalc.Services
                                 totalsj = 0;
                             }
                             break;
-                        case "其它":
+                        case "计划":
                             var qtts = current_time - item.qttjkssj;
                             if (qtts.HasValue)
                             {
@@ -330,6 +330,13 @@ namespace OEECalc.Services
                             if (tsts.HasValue)
                             {
                                 totalsj = tsts.Value.TotalSeconds;
+                            }
+                            break;
+                        case "保养":
+                            var byts = current_time - item.bytjkssj;
+                            if (byts.HasValue)
+                            {
+                                totalsj = byts.Value.TotalSeconds;
                             }
                             break;
                         case "脱机":

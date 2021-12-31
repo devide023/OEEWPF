@@ -143,6 +143,14 @@ namespace OEECalc.Model
         /// 调试开始时间
         /// </summary>
         public DateTime? tskssj { get; set; }
+        /// <summary>
+        /// 是否保养
+        /// </summary>
+        public string sfby { get; set; }
+        /// <summary>
+        /// 保养停机开始时间
+        /// </summary>
+        public DateTime? bytjkssj { get; set; }
 
     }
 

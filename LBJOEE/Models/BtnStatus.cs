@@ -96,5 +96,9 @@ namespace LBJOEE
         /// 是否修模
         /// </summary>
         public bool sfxm { get; set; }
+        /// <summary>
+        /// 是否保养
+        /// </summary>
+        public bool sfby { get; set; }
     }
 }

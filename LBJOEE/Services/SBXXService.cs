@@ -172,6 +172,32 @@ namespace LBJOEE.Services
                 return false;
             }
         }
+        public bool SetBYTJ(base_sbxx entity)
+        {
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                OracleDynamicParameters q = new OracleDynamicParameters();
+                q.Add(":sbbh", entity.sbbh, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
+                q.Add(":tjms", entity.tjms ?? "", OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
+                q.Add(":sbzt", entity.sbzt, OracleMappingType.NVarchar2, System.Data.ParameterDirection.Input);
+                if (entity.sfby == "Y")
+                {
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfby='Y',bytjkssj=sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh ");
+                }
+                else
+                {
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfby='N',bytjkssj=NULL,tjms=NULL,gxsj=sysdate where sbbh=:sbbh ");
+                }
+                var ret = Db.Connection.Execute(sql.ToString(), q);
+                return ret > 0 ? true : false;
+            }
+            catch (Exception e)
+            {
+                ErrorAction?.Invoke("SBXXService.SetBYTJ" + e.Message);
+                return false;
+            }
+        }
         public bool SetQLtj(base_sbxx entity)
         {
             try

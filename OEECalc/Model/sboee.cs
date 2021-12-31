@@ -103,7 +103,7 @@ namespace OEECalc.Model
         /// <summary>
         ///压射次数
         ///</summary>
-        public int yscs { get; set; }
+        public long yscs { get; set; }
         /// <summary>
         ///合格率
         ///</summary>

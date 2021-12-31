@@ -13,7 +13,8 @@ namespace UnitTestProject1
         public void TestMethod1()
         {
             CalcOEEService service = CalcOEEService.Instance;
-            service.SaveOEE();
+            //service.SaveOEE();
+            service.SaveOEE(Convert.ToDateTime("2021-12-27"));
         }
 
         [TestMethod]

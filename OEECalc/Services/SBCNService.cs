@@ -89,15 +89,15 @@ namespace OEECalc.Services
             try
             {
                 StringBuilder sqlmax = new StringBuilder();
-                sqlmax.Append("select nvl(max(to_number(REGEXP_REPLACE(jgs, '[^-0-9.]', ''))),0) maxjgs ");
+                sqlmax.Append("select max(jgs) maxjgs ");
                 sqlmax.Append(" from sjcj ");
                 sqlmax.Append(" where trunc(cjsj) = trunc(sysdate) ");
-                sqlmax.Append(" and sbbh = :sbbh ");
+                sqlmax.Append(" and sbbh = :sbbh and jgs <> 0");
                 StringBuilder sqlmin = new StringBuilder();
-                sqlmin.Append("select nvl(min(to_number(REGEXP_REPLACE(jgs, '[^-0-9.]', ''))),0) minjgs ");
+                sqlmin.Append("select min(jgs) minjgs ");
                 sqlmin.Append(" from sjcj ");
                 sqlmin.Append(" where trunc(cjsj) = trunc(sysdate) ");
-                sqlmin.Append(" and sbbh = :sbbh ");
+                sqlmin.Append(" and sbbh = :sbbh and jgs <> 0");
                 if (Tool.NetCheck.IsPing("172.16.201.175"))
                 {
                     var max = Db.Connection.ExecuteScalar<long>(sqlmax.ToString(), new { sbbh = sbbh });
