@@ -118,6 +118,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DesignMode\DLState.cs" />
+    <Compile Include="DesignMode\State.cs" />
+    <Compile Include="DesignMode\StateContext.cs" />
+    <Compile Include="DesignMode\XJState.cs" />
     <Compile Include="Models\dygx.cs" />
     <Compile Include="Models\itemdata.cs" />
     <Compile Include="Models\originaldata.cs" />

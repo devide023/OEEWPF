@@ -116,7 +116,11 @@ namespace LBJOEE.Services
                             sbztgx_obj.sbqy = _base_sbxx.sbqy;
                             sbztgx_obj.sbzt = _base_sbxx.sbzt;
                             _sbztgxservice.Add(sbztgx_obj);
-                            SBRun?.Invoke();
+                            if (_global_jgs != local_jgs)
+                            {
+                                SBRun?.Invoke();
+                                _global_jgs = local_jgs;
+                            }
                         }
                     }
                 }

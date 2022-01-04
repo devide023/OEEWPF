@@ -297,9 +297,9 @@ namespace LBJOEE.ViewModels
                 _qtbtn.sfby = true;
                 _qtbtn.flag = 1;
                 _qtbtn.btnenable = true;
-                _qtbtn.btntxt = _qtbtn.tjtxt;
+                _qtbtn.btntxt = _bybtn.tjtxt;
                 _qtbtn.tjsjvisible = "Visible";
-                EnableOtherBtn(_qtbtn, false);
+                EnableOtherBtn(_bybtn, false);
             }
             else
             {
@@ -1428,21 +1428,21 @@ namespace LBJOEE.ViewModels
                     _bytimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfby = "N";
-                    _qlbtn.tjsj = 0;
-                    _qlbtn.flag = 0;
-                    _qlbtn.sfql = false;
-                    _qlbtn.tjsjvisible = "Collapsed";
-                    _qlbtn.btntxt = _qlbtn.normaltxt;
-                    EnableOtherBtn(_qlbtn, true);
+                    _bybtn.tjsj = 0;
+                    _bybtn.flag = 0;
+                    _bybtn.sfby = false;
+                    _bybtn.tjsjvisible = "Collapsed";
+                    _bybtn.btntxt = _bybtn.normaltxt;
+                    EnableOtherBtn(_bybtn, true);
                     DateTime now = DateTime.Now;
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = now,
                         tjkssj = base_sbxx.bytjkssj,
-                        tjlx = _qlbtn.tjlx,
+                        tjlx = _bybtn.tjlx,
                         tjsj = (int)(now - base_sbxx.bytjkssj).TotalSeconds,
-                        tjms = _qlbtn.tjms
+                        tjms = _bybtn.tjms
                     });
                     _sbxxservice.SetBYTJ(base_sbxx);
                 }
