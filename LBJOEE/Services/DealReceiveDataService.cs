@@ -39,6 +39,7 @@ namespace LBJOEE.Services
             _sbztgxservice = new SBZTGXService();
             log = LogManager.GetLogger(this.GetType());
             _base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
+            _global_jgs = Tool.Local2JGS(); 
         }
 
         public Action SBRun { get; set; }
@@ -120,6 +121,7 @@ namespace LBJOEE.Services
                             {
                                 SBRun?.Invoke();
                                 _global_jgs = local_jgs;
+                                Tool.SaveJGS2Local(local_jgs);
                             }
                         }
                     }
