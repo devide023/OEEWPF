@@ -5,14 +5,22 @@
   },
   {
     "sbbh": "D004",
-    "hour": 5
+    "hour": 1
   },
   {
     "sbbh": "D005",
-    "hour": 5
+    "hour": 1
   },
   {
     "sbbh": "E002",
     "hour": 1
+  },
+  {
+    "sbbh": "C006",
+    "hour": 5
+  },
+  {
+    "sbbh": "B008",
+    "hour": 5
   }
 ]

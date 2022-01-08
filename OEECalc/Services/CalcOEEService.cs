@@ -661,7 +661,7 @@ namespace OEECalc.Services
                     }
                     //性能稼动率(表现指数)
                     decimal bxzs = 0;
-                    if (jp != 0)
+                    if (jp != 0 && s!=0)
                     {
                         bxzs = Math.Round(yscs / (s / jp),5);
                     }

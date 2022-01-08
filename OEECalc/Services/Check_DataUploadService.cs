@@ -11,6 +11,9 @@ using OEECalc.Model;
 using Newtonsoft.Json;
 namespace OEECalc.Services
 {
+    /// <summary>
+    /// 检查是否有数据上传，并设置待机时间
+    /// </summary>
     public class Check_DataUploadService:OracleBaseFixture
     {
         private static Check_DataUploadService instance = null;
@@ -45,7 +48,7 @@ namespace OEECalc.Services
             try
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("select sbbh, ip, sbqy,sbzt,sfjx,sfhm,sfgz,sfql,sfqttj,sfxm,sfts FROM base_sbxx where scbz = 'N' order by sbbh asc");
+                sql.Append("select sbbh, ip, sbqy,sbzt,sfjx,sfhm,sfgz,sfql,sfqttj,sfxm,sfts,sfby FROM base_sbxx where scbz = 'N' order by sbbh asc");
                 return Db.Connection.Query<base_sbxx>(sql.ToString());
             }
             catch (Exception e)
@@ -158,7 +161,7 @@ namespace OEECalc.Services
                     {
                         var e = new sys_sjsc();
                         e.sbbh = item.sbbh;
-                        e.js = 0;
+                        e.js = 0m;
                         e.sbzt = string.Empty;
                         _global_cnf.Add(e);
                         pos = _global_cnf.FindIndex(t => t.sbbh == item.sbbh);
@@ -167,10 +170,11 @@ namespace OEECalc.Services
                     var isok = NetCheck.IsPing(item.ip);
                     if (isok)
                     {
+                        //5分钟内没有数据上传
                         if (datalist.Count() == 0)
                         {
                             //没有手动停机情况下更新设备待机时间
-                            if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && _global_cnf[pos].js == 0)
+                            if (_global_cnf[pos].js == 0 && item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfby=="N" )
                             {
                                 Set_SbDj_SJ(item.sbbh);
                                 _global_cnf[pos].js = _global_cnf[pos].js + 0.1m;
@@ -186,18 +190,18 @@ namespace OEECalc.Services
                                 UnSet_SbDj_SJ(item.sbbh);
                                 _global_cnf[pos].sbzt = firstzx.sbzt;
                             }
-                            else
-                            {
-                                if (_global_cnf[pos].sbzt != firstzx.sbzt && firstzx.sbzt=="待机")
-                                {
-                                    //没有手动停机情况下更新设备待机时间
-                                    if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N")
-                                    {
-                                        Set_SbDj_SJ(item.sbbh);
-                                    }
-                                    _global_cnf[pos].sbzt = firstzx.sbzt;
-                                }
-                            }
+                            //else
+                            //{
+                            //    if (_global_cnf[pos].sbzt != firstzx.sbzt && firstzx.sbzt=="待机")
+                            //    {
+                            //        //没有手动停机情况下更新设备待机时间
+                            //        if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfby=="N")
+                            //        {
+                            //            Set_SbDj_SJ(item.sbbh);
+                            //        }
+                            //        _global_cnf[pos].sbzt = firstzx.sbzt;
+                            //    }
+                            //}
                         }
                     }
                 }

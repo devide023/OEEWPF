@@ -221,7 +221,7 @@ namespace OEECalc.Services
                     }
                     else
                     {
-                        if(item.sfgz=="N" && item.sfjx=="N" && item.sfhm=="N" && item.sfxm=="N" && item.sfts=="N" && item.sfqttj=="N" && item.sfql == "N")
+                        if(item.sfgz=="N" && item.sfjx=="N" && item.sfhm=="N" && item.sfxm=="N" && item.sfts=="N" && item.sfqttj=="N" && item.sfql == "N" && item.sfby=="N")
                         {
                             yxzt = "待机";
                         }
@@ -234,7 +234,7 @@ namespace OEECalc.Services
                     //判断是否脱机
                     if (!NetCheck.IsPing(item.ip))
                     {
-                        if (item.sfgz == "N" && item.sfjx == "N" && item.sfhm == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfqttj == "N" && item.sfql == "N")
+                        if (item.sfgz == "N" && item.sfjx == "N" && item.sfhm == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfqttj == "N" && item.sfql == "N" && item.sfby=="N")
                         {
                             yxzt = "脱机"; 
                             var tempq = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
