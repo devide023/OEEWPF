@@ -121,7 +121,7 @@
                                 </Style>
                             </WrapPanel.Resources>
                             <TextBlock Text="设备编号：" />
-                            <TextBlock Text="{Binding base_sbxx.sbbh, StringFormat='{}{0}  '}" />
+                            <TextBlock Text="{Binding base_sbxx.sbqy, StringFormat='{}{0}  '}" />
                             <TextBlock Text="品牌型号：" />
                             <TextBlock>
                                 <TextBlock.Text>
