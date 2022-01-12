@@ -131,6 +131,7 @@
     <Compile Include="JOB\StaticSBCN_JOB.cs" />
     <Compile Include="JOB\StaticSBZT_JOB.cs" />
     <Compile Include="Model\base_sbxx.cs" />
+    <Compile Include="Model\itemdata.cs" />
     <Compile Include="Model\sbcjtj.cs" />
     <Compile Include="Model\sbcntj.cs" />
     <Compile Include="Model\sbjhtjsj.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="Services\CalcOEEService.cs" />
     <Compile Include="Services\CheckSBOnLineService.cs" />
     <Compile Include="Services\Check_DataUploadService.cs" />
+    <Compile Include="Services\JTCSService.cs" />
     <Compile Include="Services\LBJMesService.cs" />
     <Compile Include="Services\SbcjtjService.cs" />
     <Compile Include="Services\SBCNService.cs" />

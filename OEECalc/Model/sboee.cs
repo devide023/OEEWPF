@@ -85,6 +85,10 @@ namespace OEECalc.Model
         ///</summary>
         public decimal xxsj { get; set; }
         /// <summary>
+        /// 保养时间
+        /// </summary>
+        public decimal bysj { get; set; }
+        /// <summary>
         ///工作时间
         ///</summary>
         public decimal gzsj { get; set; }
@@ -120,6 +124,7 @@ namespace OEECalc.Model
         ///OEE
         ///</summary>
         public decimal oee { get; set; }
+        
     }
     public class sboee_mapper : ClassMapper<sboee>
     {

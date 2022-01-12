@@ -454,6 +454,7 @@ namespace OEECalc.Services
                         var hmsj = 0m;
                         var dlsj = 0m;
                         var qtsj = 0m;
+                        var bysj = 0m;
                         decimal fjhtjsj = 0m;//非计划停机时间
                         if (tjlist.Count() > 0)
                         {
@@ -464,7 +465,8 @@ namespace OEECalc.Services
                             dlsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("待料")).Sum(t => t.tjsj));
                             qtsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("计划")).Sum(t => t.tjsj));
                             hmsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("换模")).Sum(t => t.tjsj));
-                            fjhtjsj = Convert.ToDecimal(jxsj + tssj + xjsj + xmsj + dlsj + qtsj + hmsj);
+                            bysj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("保养")).Sum(t => t.tjsj));
+                            fjhtjsj = Convert.ToDecimal(jxsj + tssj + xjsj + xmsj + dlsj + qtsj + hmsj + bysj);
                         }
                         decimal jhtjsj = 0m; //计划停机时间,休息时间等
                         if (jhtjlist.Count() > 0)
@@ -517,6 +519,7 @@ namespace OEECalc.Services
                         oee.hmsj = hmsj > 0 ? Math.Round(hmsj / 60m, 4) : 0m;
                         oee.dlsj = dlsj > 0 ? Math.Round(dlsj / 60m, 4) : 0m;
                         oee.qtsj = qtsj > 0 ? Math.Round(qtsj / 60m, 4) : 0m;
+                        oee.bysj = bysj > 0 ? Math.Round(bysj / 60m, 4) : 0m;
                         oee.xxsj = jhtjsj;
                         oee.xxsl = xxsl;//下线数量
                         oee.jhsl = jhsl;//计划数量
@@ -614,6 +617,7 @@ namespace OEECalc.Services
                     var hmsj = 0m;
                     var dlsj = 0m;
                     var qtsj = 0m;
+                    var bysj = 0m;
                     decimal fjhtjsj = 0m;//非计划停机时间
                     if (tjlist.Count() > 0)
                     {
@@ -624,7 +628,8 @@ namespace OEECalc.Services
                         dlsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("待料")).Sum(t => t.tjsj));
                         qtsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("计划")).Sum(t => t.tjsj));
                         hmsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("换模")).Sum(t => t.tjsj));
-                        fjhtjsj = Convert.ToDecimal(jxsj + tssj + xjsj + xmsj + dlsj + qtsj + hmsj);
+                        bysj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("保养")).Sum(t => t.tjsj));
+                        fjhtjsj = Convert.ToDecimal(jxsj + tssj + xjsj + xmsj + dlsj + qtsj + hmsj + bysj);
                     }
                     decimal jhtjsj = 0m; //计划停机时间,休息时间等
                     if (jhtjlist.Count() > 0)
@@ -677,6 +682,7 @@ namespace OEECalc.Services
                     oee.hmsj = hmsj > 0 ? Math.Round(hmsj / 60m, 4) : 0m;
                     oee.dlsj = dlsj > 0 ? Math.Round(dlsj / 60m, 4) : 0m;
                     oee.qtsj = qtsj > 0 ? Math.Round(qtsj / 60m, 4) : 0m;
+                    oee.bysj = bysj > 0 ? Math.Round(bysj / 60m, 4) : 0m;
                     oee.xxsj = jhtjsj;
                     oee.xxsl = xxsl;//下线数量
                     oee.jhsl = jhsl;//计划数量

@@ -294,11 +294,11 @@ namespace LBJOEE.ViewModels
             }
             else if (base_sbxx.sfby == "Y")
             {
-                _qtbtn.sfby = true;
-                _qtbtn.flag = 1;
-                _qtbtn.btnenable = true;
-                _qtbtn.btntxt = _bybtn.tjtxt;
-                _qtbtn.tjsjvisible = "Visible";
+                _bybtn.sfby = true;
+                _bybtn.flag = 1;
+                _bybtn.btnenable = true;
+                _bybtn.btntxt = _bybtn.tjtxt;
+                _bybtn.tjsjvisible = "Visible";
                 EnableOtherBtn(_bybtn, false);
             }
             else

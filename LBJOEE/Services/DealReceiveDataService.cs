@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using log4net;
 using Newtonsoft.Json;
 using LBJOEE.Tools;
+using System.Threading;
 
 namespace LBJOEE.Services
 {
@@ -29,6 +30,7 @@ namespace LBJOEE.Services
         private string _yxzt = string.Empty;
         private List<itemdata> _receive_data = null;
         private IEnumerable<dygx> _sbcslist = null;
+        private Timer _check_norun_timer = null;//非运行状态下，数据上传检查定时器
         private DealReceiveDataService()
         {
             _receive_data = new List<itemdata>();
@@ -39,7 +41,9 @@ namespace LBJOEE.Services
             _sbztgxservice = new SBZTGXService();
             log = LogManager.GetLogger(this.GetType());
             _base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
-            _global_jgs = Tool.Local2JGS(); 
+            _global_jgs = Tool.Local2JGS();
+            _check_norun_timer = new Timer(CheckNoRunDataHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            _check_norun_timer.Change(0, 1000 * 60);
         }
 
         public Action SBRun { get; set; }
@@ -119,7 +123,7 @@ namespace LBJOEE.Services
                             _sbztgxservice.Add(sbztgx_obj);
                             if (_global_jgs != local_jgs)
                             {
-                                SBRun?.Invoke();
+                                //SBRun?.Invoke();
                                 _global_jgs = local_jgs;
                                 Tool.SaveJGS2Local(local_jgs);
                             }
@@ -244,6 +248,45 @@ namespace LBJOEE.Services
                 log.Error(e.Message);
             }
         }
-        
+        /// <summary>
+        /// 检测非运行停机状态数据上传情况，当数据上传达到阀值时，更改设备状态为运行状态
+        /// </summary>
+        /// <param name="obj"></param>
+        private void CheckNoRunDataHandle(object obj)
+        {
+            try
+            {
+                List<bool> oklist = new List<bool>();
+                //获取半小时内，上传数据数量
+                var list = _sbsjservide.Get_NoRunList(this._base_sbxx.sbbh);
+                var conflist = _sbsjservide.Get_Conf_BySBBH(this._base_sbxx.sbbh);
+                int norunsl = 5;
+                var q = conflist.Where(t => t.confkey == "norun_cnt");
+                if (q.Count() > 0)
+                {
+                    int.TryParse(q.FirstOrDefault().confval, out norunsl);
+                }
+                if (list.Count() > norunsl)
+                {
+                    foreach (var item in list)
+                    {
+                        var isok = _sbsjservide.AddByDate(item);
+                        if (isok > 0)
+                        {
+                            var ok = _sbsjservide.DelTjsjcj(item.rid);
+                            oklist.Add(ok);
+                        }
+                    }
+                    if(oklist.Count() == list.Count())
+                    {
+                        SBRun?.Invoke();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
     }
 }

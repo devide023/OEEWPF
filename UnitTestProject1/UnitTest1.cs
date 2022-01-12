@@ -1,9 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using LBJOEE.Services;
 using OEECalc;
 using OEECalc.Services;
-using LBJOEE.Tools;
 namespace UnitTestProject1
 {
     [TestClass]
@@ -14,7 +12,7 @@ namespace UnitTestProject1
         {
             CalcOEEService service = CalcOEEService.Instance;
             //service.SaveOEE();
-            service.SaveOEE(Convert.ToDateTime("2021-12-27"));
+            service.SaveOEE(Convert.ToDateTime("2021-12-29"));
         }
 
         [TestMethod]
@@ -32,9 +30,8 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod4()
         {
-            Tool.SaveJGS2Local((long)123);
+            JTCSService service = new JTCSService();
+            service.JTCS();
         }
-        
-
     }
 }

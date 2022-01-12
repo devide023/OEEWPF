@@ -432,6 +432,10 @@ namespace LBJOEE.Models
         ///热模件次数
         ///</summary>
         public long rmjcs { get; set; }
+        /// <summary>
+        /// 数据库rowid
+        /// </summary>
+        public string rid { get; set; }
     }
 
     public class sjcjnew_mapper : ClassMapper<sjcjnew>
@@ -440,6 +444,7 @@ namespace LBJOEE.Models
         {
             Table("sjcj");
             Map(t => t.cjsj).Ignore();
+            Map(t => t.rid).Ignore();
             AutoMap();
         }
     }

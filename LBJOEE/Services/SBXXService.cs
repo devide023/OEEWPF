@@ -73,7 +73,7 @@ namespace LBJOEE.Services
             try
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("select sbbh, sbmc, sbxh, sbpp, sbzt, sfjx, sfhm, sfgz, sfql, sfqttj, jxkssj, hmkssj, gzkssj, qlkssj, qttjkssj, sbqy, ip, tjms, port, cjgz, log, isupdate, issaveyssj,sfxm,sfts,xmkssj,tskssj FROM   base_sbxx where ip = :ip");
+                sql.Append("select sbbh, sbmc, sbxh, sbpp, sbzt, sfjx, sfhm, sfgz, sfql, sfqttj, jxkssj, hmkssj, gzkssj, qlkssj, qttjkssj, sbqy, ip, tjms, port, cjgz, log, isupdate, issaveyssj,sfxm,sfts,xmkssj,tskssj,sfby,bytjkssj FROM   base_sbxx where ip = :ip");
                 DynamicParameters p = new DynamicParameters();
                 p.Add(":ip", ip, System.Data.DbType.String, System.Data.ParameterDirection.Input);
                 var q = Db.Connection.Query<base_sbxx>(sql.ToString(),p);
