@@ -10,6 +10,9 @@ using OEECalc.Model;
 
 namespace OEECalc.Services
 {
+    /// <summary>
+    /// 零部件计划管理系统
+    /// </summary>
     public class LBJMesService: OracleBaseFixture
     {
         private static LBJMesService instance = null;

@@ -245,6 +245,14 @@ namespace LBJOEE
         /// 保养停机开始时间
         /// </summary>
         public DateTime bytjkssj { get; set; }
+        /// <summary>
+        /// 是否离岗停机
+        /// </summary>
+        public string sflgtj { get; set; }
+        /// <summary>
+        /// 离岗停机开始时间
+        /// </summary>
+        public DateTime lgtjkssj { get; set; }
     }
 
     public class base_sbxx_mapper : ClassMapper<base_sbxx>

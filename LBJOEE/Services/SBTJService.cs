@@ -34,7 +34,7 @@ namespace LBJOEE.Services
             if (sbxx.sfgz=="Y")
             {
                 kssj = sbxx.gzkssj;
-                entity.tjlx = "故障";
+                entity.tjlx = "修机";
             }
             if (sbxx.sfjx == "Y")
             {
@@ -44,17 +44,37 @@ namespace LBJOEE.Services
             if (sbxx.sfql == "Y")
             {
                 kssj = sbxx.qlkssj;
-                entity.tjlx = "缺料";
+                entity.tjlx = "待料";
             }
             if (sbxx.sfhm == "Y")
             {
                 kssj = sbxx.hmkssj;
                 entity.tjlx = "换模";
             }
+            if (sbxx.sfxm == "Y")
+            {
+                kssj = sbxx.xmkssj;
+                entity.tjlx = "修模";
+            }
+            if (sbxx.sfts == "Y")
+            {
+                kssj = sbxx.tskssj;
+                entity.tjlx = "调试";
+            }
             if (sbxx.sfqttj == "Y")
             {
                 kssj = sbxx.qttjkssj;
-                entity.tjlx = "其它";
+                entity.tjlx = "计划";
+            }
+            if (sbxx.sfby == "Y")
+            {
+                kssj = sbxx.bytjkssj;
+                entity.tjlx = "保养";
+            }
+            if (sbxx.sflgtj == "Y")
+            {
+                kssj = sbxx.lgtjkssj;
+                entity.tjlx = "离岗";
             }
             var jssj = DateTime.Now;
             entity.tjkssj = kssj;

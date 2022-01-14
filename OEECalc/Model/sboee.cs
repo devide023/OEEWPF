@@ -77,9 +77,13 @@ namespace OEECalc.Model
         ///</summary>
         public decimal dlsj { get; set; }
         /// <summary>
-        ///其它时间
+        ///计划时间
         ///</summary>
         public decimal qtsj { get; set; }
+        /// <summary>
+        /// 离岗时间
+        /// </summary>
+        public decimal lgsj { get; set; }
         /// <summary>
         ///休息时间
         ///</summary>

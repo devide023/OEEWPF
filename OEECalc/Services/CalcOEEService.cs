@@ -65,7 +65,7 @@ namespace OEECalc.Services
             try
             {
                 StringBuilder sql1 = new StringBuilder();
-                sql1.Append("select sbbh, sbqy, sbzt, sfjx, sfhm, sfgz, sfql, sfqttj, sfxm, sfts,sfby, jxkssj, hmkssj, gzkssj, qlkssj, qttjkssj, xmkssj, tskssj,bytjkssj ");
+                sql1.Append("select sbbh, sbqy, sbzt, sfjx, sfhm, sfgz, sfql, sfqttj, sfxm, sfts,sfby,sflgtj, jxkssj, hmkssj, gzkssj, qlkssj, qttjkssj, xmkssj, tskssj,bytjkssj,lgtjkssj ");
                 sql1.Append(" from base_sbxx ");
                 sql1.Append(" where sbbh = :sbbh ");
                 var q = Db.Connection.Query<base_sbxx>(sql1.ToString(), new { sbbh = sbbh });
@@ -77,7 +77,7 @@ namespace OEECalc.Services
                 Int32 tjsj = 0;//停机时间（秒数）
                 List<sbtj> retlist = new List<sbtj>();
                 //只点开始停机，未点结束停机情况
-                if (sbxx_entity.sfgz=="Y" || sbxx_entity.sfjx=="Y" || sbxx_entity.sfhm=="Y" || sbxx_entity.sfql=="Y" || sbxx_entity.sfqttj == "Y" || sbxx_entity.sfts=="Y" || sbxx_entity.sfxm=="Y" || sbxx_entity.sfby=="Y")
+                if (sbxx_entity.sfgz=="Y" || sbxx_entity.sfjx=="Y" || sbxx_entity.sfhm=="Y" || sbxx_entity.sfql=="Y" || sbxx_entity.sfqttj == "Y" || sbxx_entity.sfts=="Y" || sbxx_entity.sfxm=="Y" || sbxx_entity.sfby=="Y" || sbxx_entity.sflgtj=="Y")
                 {
                     DateTime tempdate;
                     var serverdate = Db.Connection.ExecuteScalar<DateTime>("select sysdate from dual ");
@@ -205,6 +205,30 @@ namespace OEECalc.Services
                             tjjssj = DateTime.Now,
                             tjlx = "计划",
                             tjms = "计划停机",
+                            tjsj = tjsj
+                        });
+                    }
+                    else if (sbxx_entity.sflgtj == "Y")//离岗停机
+                    {
+                        if (DateTime.Compare((DateTime)sbxx_entity.lgtjkssj, ksrq) < 0)
+                        {
+                            tjsj = Convert.ToInt32((tempdate - ksrq).TotalSeconds);
+                        }
+                        else if (DateTime.Compare(ksrq, (DateTime)sbxx_entity.lgtjkssj) < 0 && DateTime.Compare((DateTime)sbxx_entity.lgtjkssj, jsrq) < 0)
+                        {
+                            var ts = tempdate - sbxx_entity.lgtjkssj;
+                            if (ts.HasValue)
+                            {
+                                tjsj = Convert.ToInt32(ts.Value.TotalSeconds);
+                            }
+                        }
+                        retlist.Add(new sbtj()
+                        {
+                            sbbh = sbbh,
+                            tjkssj = (DateTime)sbxx_entity.lgtjkssj,
+                            tjjssj = DateTime.Now,
+                            tjlx = "离岗",
+                            tjms = "离岗停机",
                             tjsj = tjsj
                         });
                     }
@@ -455,6 +479,7 @@ namespace OEECalc.Services
                         var dlsj = 0m;
                         var qtsj = 0m;
                         var bysj = 0m;
+                        var lgsj = 0m;
                         decimal fjhtjsj = 0m;//非计划停机时间
                         if (tjlist.Count() > 0)
                         {
@@ -466,7 +491,8 @@ namespace OEECalc.Services
                             qtsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("计划")).Sum(t => t.tjsj));
                             hmsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("换模")).Sum(t => t.tjsj));
                             bysj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("保养")).Sum(t => t.tjsj));
-                            fjhtjsj = Convert.ToDecimal(jxsj + tssj + xjsj + xmsj + dlsj + qtsj + hmsj + bysj);
+                            lgsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("离岗")).Sum(t => t.tjsj));
+                            fjhtjsj = Convert.ToDecimal(jxsj + tssj + xjsj + xmsj + dlsj + qtsj + hmsj + bysj+lgsj);
                         }
                         decimal jhtjsj = 0m; //计划停机时间,休息时间等
                         if (jhtjlist.Count() > 0)
@@ -520,6 +546,7 @@ namespace OEECalc.Services
                         oee.dlsj = dlsj > 0 ? Math.Round(dlsj / 60m, 4) : 0m;
                         oee.qtsj = qtsj > 0 ? Math.Round(qtsj / 60m, 4) : 0m;
                         oee.bysj = bysj > 0 ? Math.Round(bysj / 60m, 4) : 0m;
+                        oee.lgsj = lgsj > 0 ? Math.Round(lgsj / 60m, 4) : 0m;
                         oee.xxsj = jhtjsj;
                         oee.xxsl = xxsl;//下线数量
                         oee.jhsl = jhsl;//计划数量
@@ -618,6 +645,7 @@ namespace OEECalc.Services
                     var dlsj = 0m;
                     var qtsj = 0m;
                     var bysj = 0m;
+                    var lgsj = 0m;
                     decimal fjhtjsj = 0m;//非计划停机时间
                     if (tjlist.Count() > 0)
                     {
@@ -629,7 +657,8 @@ namespace OEECalc.Services
                         qtsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("计划")).Sum(t => t.tjsj));
                         hmsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("换模")).Sum(t => t.tjsj));
                         bysj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("保养")).Sum(t => t.tjsj));
-                        fjhtjsj = Convert.ToDecimal(jxsj + tssj + xjsj + xmsj + dlsj + qtsj + hmsj + bysj);
+                        lgsj = Convert.ToDecimal(tjlist.Where(t => t.tjlx.Contains("离岗")).Sum(t => t.tjsj));
+                        fjhtjsj = Convert.ToDecimal(jxsj + tssj + xjsj + xmsj + dlsj + qtsj + hmsj + bysj + lgsj);
                     }
                     decimal jhtjsj = 0m; //计划停机时间,休息时间等
                     if (jhtjlist.Count() > 0)
@@ -683,6 +712,7 @@ namespace OEECalc.Services
                     oee.dlsj = dlsj > 0 ? Math.Round(dlsj / 60m, 4) : 0m;
                     oee.qtsj = qtsj > 0 ? Math.Round(qtsj / 60m, 4) : 0m;
                     oee.bysj = bysj > 0 ? Math.Round(bysj / 60m, 4) : 0m;
+                    oee.lgsj = lgsj > 0 ? Math.Round(lgsj / 60m, 4) : 0m;
                     oee.xxsj = jhtjsj;
                     oee.xxsl = xxsl;//下线数量
                     oee.jhsl = jhsl;//计划数量

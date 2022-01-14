@@ -100,5 +100,9 @@ namespace LBJOEE
         /// 是否保养
         /// </summary>
         public bool sfby { get; set; }
+        /// <summary>
+        /// 是否离岗停机
+        /// </summary>
+        public bool sflgtj { get; set; }
     }
 }

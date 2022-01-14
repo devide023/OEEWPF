@@ -257,10 +257,15 @@ namespace LBJOEE.Services
             try
             {
                 List<bool> oklist = new List<bool>();
-                //获取半小时内，上传数据数量
-                var list = _sbsjservide.Get_NoRunList(this._base_sbxx.sbbh);
+                int interval = 7;
                 var conflist = _sbsjservide.Get_Conf_BySBBH(this._base_sbxx.sbbh);
-                int norunsl = 5;
+                var s = conflist.Where(t => t.confkey == "norun_interval");
+                if (s.Count() > 0)
+                {
+                    int.TryParse(s.FirstOrDefault().confval, out interval);
+                }
+                var list = _sbsjservide.Get_NoRunList(this._base_sbxx.sbbh,interval);
+                int norunsl = 3;
                 var q = conflist.Where(t => t.confkey == "norun_cnt");
                 if (q.Count() > 0)
                 {

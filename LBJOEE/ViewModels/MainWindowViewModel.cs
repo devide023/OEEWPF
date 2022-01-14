@@ -29,8 +29,8 @@ namespace LBJOEE.ViewModels
     {
         private ILog log;
         private string _title = "压铸OEE数据采集";
-        private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer, _xmtimer, _tstimer,_bytimer;
-        private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn, _debugbtn, _xmbtn, _bybtn;
+        private Timer _qltimer, _jxtimer, _gztimer, _hmtimer, _qttimer, _xmtimer, _tstimer,_bytimer,_lgtjtimer;
+        private BtnStatus _qlbtn, _jxbtn, _hmbtn, _gzbtn, _qtbtn, _debugbtn, _xmbtn, _bybtn,_lgtjbtn;
         public ObservableCollection<BtnStatus> BtnStatusList { get; set; } = new ObservableCollection<BtnStatus>();
         public ObservableCollection<string> ClientList { get; set; } = new ObservableCollection<string>();
         private ObservableCollection<dynamic> _datagridcols;
@@ -222,6 +222,7 @@ namespace LBJOEE.ViewModels
                 btn.sfxm = false;
                 btn.sfts = false;
                 btn.sfby = false;
+                btn.sflgtj = false;
                 btn.flag = 0;
                 btn.btnenable = false;
                 btn.btntxt = btn.normaltxt;
@@ -300,6 +301,15 @@ namespace LBJOEE.ViewModels
                 _bybtn.btntxt = _bybtn.tjtxt;
                 _bybtn.tjsjvisible = "Visible";
                 EnableOtherBtn(_bybtn, false);
+            }
+            else if (base_sbxx.sflgtj == "Y")
+            {
+                _lgtjbtn.sflgtj = true;
+                _lgtjbtn.flag = 1;
+                _lgtjbtn.btnenable = true;
+                _lgtjbtn.btntxt = _lgtjbtn.tjtxt;
+                _lgtjbtn.tjsjvisible = "Visible";
+                EnableOtherBtn(_lgtjbtn, false);
             }
             else
             {
@@ -545,6 +555,9 @@ namespace LBJOEE.ViewModels
                 case "by":
                     DealBYHandle(obj);
                     break;
+                case "lgtj":
+                    DealLGHandle(obj);
+                    break;
                 default:
                     break;
             }
@@ -560,6 +573,7 @@ namespace LBJOEE.ViewModels
             _tstimer = new Timer(CalcTStjsj, _debugbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             _xmtimer = new Timer(CalcXMtjsj, _xmbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             _bytimer = new Timer(CalcBYtjsj, _bybtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            _lgtjtimer = new Timer(CalcLGtjsj, _lgtjbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             if (_jxbtn.sfjx)
             {
                 _jxtimer.Change(_jxbtn.tjsj, 1000);
@@ -592,6 +606,10 @@ namespace LBJOEE.ViewModels
             if (_bybtn.sfby)
             {
                 _bytimer.Change(_bybtn.tjsj, 1000);
+            }
+            if (_lgtjbtn.sflgtj)
+            {
+                _lgtjtimer.Change(_lgtjbtn.tjsj, 1000);
             }
         }
 
@@ -688,14 +706,27 @@ namespace LBJOEE.ViewModels
                 name = "by",
                 tjsj = 0,
                 sfby = base_sbxx.sfby == "Y",
-                btntxt = base_sbxx.sfqttj == "Y" ? "保养停机恢复" : "保养停机",
+                btntxt = base_sbxx.sfby == "Y" ? "保养停机恢复" : "保养停机",
                 btnenable = base_sbxx.sbzt == "运行",
                 normaltxt = "保养停机",
                 tjtxt = "保养停机恢复",
                 tjlx = "保养停机",
-                tjms = "保养停机"
+                tjms = "保养"
             };
             BtnStatusList.Add(_bybtn);
+            _lgtjbtn = new BtnStatus()
+            {
+                name = "lgtj",
+                tjsj = 0,
+                sflgtj = base_sbxx.sflgtj == "Y",
+                btntxt = base_sbxx.sflgtj == "Y" ? "离岗停机恢复" : "离岗停机",
+                btnenable = base_sbxx.sbzt == "运行",
+                normaltxt = "离岗停机",
+                tjtxt = "离岗停机恢复",
+                tjlx = "离岗停机",
+                tjms = "离岗"
+            };
+            BtnStatusList.Add(_lgtjbtn);
         }
 
 
@@ -1077,7 +1108,7 @@ namespace LBJOEE.ViewModels
                         tjjssj = now,
                         tjkssj = base_sbxx.bytjkssj,
                         tjlx = obj.tjlx,
-                        tjsj = (int)(now - base_sbxx.qlkssj).TotalSeconds,
+                        tjsj = (int)(now - base_sbxx.bytjkssj).TotalSeconds,
                         tjms = obj.tjms
                     });
                 }
@@ -1095,6 +1126,56 @@ namespace LBJOEE.ViewModels
                     EnableOtherBtn(obj, false);
                 }
                 _sbxxservice.SetBYTJ(base_sbxx);
+            }
+            catch (Exception e)
+            {
+                _logservice.Error(e.Message, e.StackTrace);
+            }
+        }
+        /// <summary>
+        /// 离岗停机处理
+        /// </summary>
+        /// <param name="obj"></param>
+        private void DealLGHandle(BtnStatus obj)
+        {
+            try
+            {
+                if (base_sbxx.sflgtj == "Y")
+                {
+                    _lgtjtimer.Change(-1, -1);
+                    base_sbxx.sbzt = "运行";
+                    base_sbxx.sflgtj = "N";
+                    obj.tjsj = 0;
+                    obj.flag = 0;
+                    obj.sflgtj = false;
+                    obj.tjsjvisible = "Collapsed";
+                    obj.btntxt = obj.normaltxt;
+                    EnableOtherBtn(obj, true);
+                    DateTime now = DateTime.Now;
+                    _sbtjservice.Add(new sbtj()
+                    {
+                        sbbh = base_sbxx.sbbh,
+                        tjjssj = now,
+                        tjkssj = base_sbxx.lgtjkssj,
+                        tjlx = obj.tjlx,
+                        tjsj = (int)(now - base_sbxx.lgtjkssj).TotalSeconds,
+                        tjms = obj.tjms
+                    });
+                }
+                else
+                {
+                    obj.tjsj = 0;
+                    _lgtjtimer.Change(0, 1000);
+                    base_sbxx.sbzt = "离岗";
+                    base_sbxx.sflgtj = "Y";
+                    base_sbxx.lgtjkssj = DateTime.Now;
+                    obj.sflgtj = true;
+                    obj.flag = 1;
+                    obj.tjsjvisible = "Visible";
+                    obj.btntxt = obj.tjtxt;
+                    EnableOtherBtn(obj, false);
+                }
+                _sbxxservice.SetLGTJ(base_sbxx);
             }
             catch (Exception e)
             {
@@ -1197,6 +1278,12 @@ namespace LBJOEE.ViewModels
         {
             var obj = state as BtnStatus;
             var ts = DateTime.Now - base_sbxx.bytjkssj;
+            obj.tjsj = (int)ts.TotalSeconds;
+        }
+        private void CalcLGtjsj(object state)
+        {
+            var obj = state as BtnStatus;
+            var ts = DateTime.Now - base_sbxx.lgtjkssj;
             obj.tjsj = (int)ts.TotalSeconds;
         }
         #endregion
@@ -1445,6 +1532,29 @@ namespace LBJOEE.ViewModels
                         tjms = _bybtn.tjms
                     });
                     _sbxxservice.SetBYTJ(base_sbxx);
+                }
+                else if (base_sbxx.sflgtj == "Y")
+                {
+                    _lgtjtimer.Change(-1, -1);
+                    base_sbxx.sbzt = "运行";
+                    base_sbxx.sflgtj = "N";
+                    _lgtjbtn.tjsj = 0;
+                    _lgtjbtn.flag = 0;
+                    _lgtjbtn.sflgtj = false;
+                    _lgtjbtn.tjsjvisible = "Collapsed";
+                    _lgtjbtn.btntxt = _lgtjbtn.normaltxt;
+                    EnableOtherBtn(_lgtjbtn, true);
+                    DateTime now = DateTime.Now;
+                    _sbtjservice.Add(new sbtj()
+                    {
+                        sbbh = base_sbxx.sbbh,
+                        tjjssj = now,
+                        tjkssj = base_sbxx.lgtjkssj,
+                        tjlx = _lgtjbtn.tjlx,
+                        tjsj = (int)(now - base_sbxx.lgtjkssj).TotalSeconds,
+                        tjms = _lgtjbtn.tjms
+                    });
+                    _sbxxservice.SetLGTJ(base_sbxx);
                 }
             }
             catch (Exception e)

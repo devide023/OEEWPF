@@ -221,7 +221,7 @@ namespace OEECalc.Services
                     }
                     else
                     {
-                        if(item.sfgz=="N" && item.sfjx=="N" && item.sfhm=="N" && item.sfxm=="N" && item.sfts=="N" && item.sfqttj=="N" && item.sfql == "N" && item.sfby=="N")
+                        if(item.sfgz=="N" && item.sfjx=="N" && item.sfhm=="N" && item.sfxm=="N" && item.sfts=="N" && item.sfqttj=="N" && item.sfql == "N" && item.sfby=="N" && item.sflgtj =="N")
                         {
                             yxzt = "待机";
                         }
@@ -234,7 +234,7 @@ namespace OEECalc.Services
                     //判断是否脱机
                     if (!NetCheck.IsPing(item.ip))
                     {
-                        if (item.sfgz == "N" && item.sfjx == "N" && item.sfhm == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfqttj == "N" && item.sfql == "N" && item.sfby=="N")
+                        if (item.sfgz == "N" && item.sfjx == "N" && item.sfhm == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfqttj == "N" && item.sfql == "N" && item.sfby=="N" && item.sflgtj=="N")
                         {
                             yxzt = "脱机"; 
                             var tempq = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
@@ -316,6 +316,13 @@ namespace OEECalc.Services
                             if (qtts.HasValue)
                             {
                                 totalsj = qtts.Value.TotalSeconds;
+                            }
+                            break;
+                        case "离岗":
+                            var lgts = current_time - item.lgtjkssj;
+                            if (lgts.HasValue)
+                            {
+                                totalsj = lgts.Value.TotalSeconds;
                             }
                             break;
                         case "修模":

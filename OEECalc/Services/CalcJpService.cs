@@ -8,6 +8,9 @@ using OEECalc.Model;
 using log4net;
 namespace OEECalc.Services
 {
+    /// <summary>
+    /// 节拍计算服务，针对于不能采集到节拍的机台
+    /// </summary>
     public class CalcJpService: OracleBaseFixture
     {
         private static CalcJpService instance = null;

@@ -34,7 +34,9 @@ namespace OEECalc.Services
                 return new List<base_sbxx>();
             }
         }
-
+        /// <summary>
+        /// 机台参数
+        /// </summary>
         public void JTCS()
         {
             var list = sbxxlist();

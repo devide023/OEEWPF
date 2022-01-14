@@ -174,7 +174,7 @@ namespace OEECalc.Services
                         if (datalist.Count() == 0)
                         {
                             //没有手动停机情况下更新设备待机时间
-                            if (_global_cnf[pos].js == 0 && item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfby=="N" )
+                            if (_global_cnf[pos].js == 0 && item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfby=="N" && item.sflgtj=="N" )
                             {
                                 Set_SbDj_SJ(item.sbbh);
                                 _global_cnf[pos].js = _global_cnf[pos].js + 0.1m;
@@ -190,18 +190,6 @@ namespace OEECalc.Services
                                 UnSet_SbDj_SJ(item.sbbh);
                                 _global_cnf[pos].sbzt = firstzx.sbzt;
                             }
-                            //else
-                            //{
-                            //    if (_global_cnf[pos].sbzt != firstzx.sbzt && firstzx.sbzt=="待机")
-                            //    {
-                            //        //没有手动停机情况下更新设备待机时间
-                            //        if (item.sfgz == "N" && item.sfhm == "N" && item.sfjx == "N" && item.sfql == "N" && item.sfqttj == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfby=="N")
-                            //        {
-                            //            Set_SbDj_SJ(item.sbbh);
-                            //        }
-                            //        _global_cnf[pos].sbzt = firstzx.sbzt;
-                            //    }
-                            //}
                         }
                     }
                 }
