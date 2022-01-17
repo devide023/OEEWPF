@@ -135,6 +135,7 @@ namespace LBJOEE.ViewModels
         private readonly SBZTGXService _sbztgxservice;//记录设备状态更新
         private DealReceiveDataService dealservice;
         private readonly LogService _logservice;
+        private readonly EventLogService _eventlogservice;
         private readonly IContainerExtension _container;
         private readonly IRegionManager _regionmgr;
         private IEnumerable<dygx> dygxlist;
@@ -147,6 +148,7 @@ namespace LBJOEE.ViewModels
             _regionmgr = container.Resolve<IRegionManager>();
             _hisservice = container.Resolve<HisService>();
             _sbztgxservice = container.Resolve<SBZTGXService>();
+            _eventlogservice = container.Resolve<EventLogService>();
             try
             {
                 var pcip = Tool.GetIpAddress();
@@ -184,6 +186,7 @@ namespace LBJOEE.ViewModels
                 _read_sbxx_timer.Change(0, 1000 * 60 * 10);
                 _databackup_timer = new Timer(DataBackupHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 _databackup_timer.Change(0, 1000 * 60 * 5);
+                _eventlogservice.Save_EventLog(base_sbxx);
             }
             catch (Exception e)
             {

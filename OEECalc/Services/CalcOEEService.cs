@@ -8,6 +8,7 @@ using Dapper;
 using DapperExtensions;
 using DapperExtensions.Predicate;
 using OEECalc.Model;
+using System.Configuration;
 
 namespace OEECalc.Services
 {
@@ -393,15 +394,23 @@ namespace OEECalc.Services
         {
             try
             {
-                DynamicParameters p = new DynamicParameters();
-                p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-                p.Add(":ksrq", ksrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
-                p.Add(":jsrq", jsrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
-                string maxsql = "select max(jgs) FROM sjcj where sbbh = :sbbh and cjsj between :ksrq and :jsrq and jgs<> 0 ";
-                string minsql = "select min(jgs) FROM sjcj where sbbh = :sbbh and cjsj between :ksrq and :jsrq and jgs<> 0";
-                var max = Db.Connection.ExecuteScalar<long>(maxsql, p);
-                var min = Db.Connection.ExecuteScalar<long>(minsql, p);
-                return max - min;
+                var jgstjfs = ConfigurationManager.AppSettings["jgstj"] != null ? ConfigurationManager.AppSettings["jgstj"].ToString() : "0";
+                if(jgstjfs == "1") { 
+                    DynamicParameters p = new DynamicParameters();
+                    p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                    p.Add(":ksrq", ksrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                    p.Add(":jsrq", jsrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                    string maxsql = "select max(jgs) FROM sjcj where sbbh = :sbbh and cjsj between :ksrq and :jsrq and jgs<> 0 ";
+                    string minsql = "select min(jgs) FROM sjcj where sbbh = :sbbh and cjsj between :ksrq and :jsrq and jgs<> 0";
+                    var max = Db.Connection.ExecuteScalar<long>(maxsql, p);
+                    var min = Db.Connection.ExecuteScalar<long>(minsql, p);
+                    return max - min;
+                }
+                else
+                {
+                    DynamicParameters p = new DynamicParameters();
+                    return Db.Connection.ExecuteScalar<long>("select count(jgs) FROM sjcj where sbbh = :sbbh and cjsj between :ksrq and :jsrq and jgs<> 0", p);
+                }
             }
             catch (Exception e)
             {

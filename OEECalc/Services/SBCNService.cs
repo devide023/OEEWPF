@@ -9,6 +9,8 @@ using Dapper;
 using DapperExtensions;
 using DapperExtensions.Predicate;
 using System.Threading.Tasks;
+using System.Configuration;
+
 namespace OEECalc.Services
 {
     public class SBCNService: OracleBaseFixture
@@ -100,9 +102,18 @@ namespace OEECalc.Services
                 sqlmin.Append(" and sbbh = :sbbh and jgs <> 0");
                 if (Tool.NetCheck.IsPing("172.16.201.175"))
                 {
-                    var max = Db.Connection.ExecuteScalar<long>(sqlmax.ToString(), new { sbbh = sbbh });
-                    var min = Db.Connection.ExecuteScalar<long>(sqlmin.ToString(), new { sbbh = sbbh });
-                    return max - min;
+                    var jgstjfs = ConfigurationManager.AppSettings["jgstj"] != null ? ConfigurationManager.AppSettings["jgstj"].ToString() : "0";
+                    if (jgstjfs == "1")
+                    {
+                        var max = Db.Connection.ExecuteScalar<long>(sqlmax.ToString(), new { sbbh = sbbh });
+                        var min = Db.Connection.ExecuteScalar<long>(sqlmin.ToString(), new { sbbh = sbbh });
+                        return max - min;
+                    }
+                    else
+                    {
+                        DynamicParameters p = new DynamicParameters();
+                        return Db.Connection.ExecuteScalar<long>("select count(jgs) FROM sjcj where sbbh = :sbbh and cjsj between :ksrq and :jsrq and jgs<> 0", p);
+                    }
                 }
                 else
                 {

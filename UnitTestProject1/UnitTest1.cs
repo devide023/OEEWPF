@@ -2,6 +2,8 @@
 using System;
 using OEECalc;
 using OEECalc.Services;
+using System.Diagnostics;
+
 namespace UnitTestProject1
 {
     [TestClass]
@@ -12,7 +14,6 @@ namespace UnitTestProject1
         {
             CalcOEEService service = CalcOEEService.Instance;
             service.SaveOEE();
-            //service.SaveOEE(Convert.ToDateTime("2021-12-29"));
         }
 
         [TestMethod]
@@ -33,5 +34,22 @@ namespace UnitTestProject1
             JTCSService service = new JTCSService();
             service.JTCS();
         }
+        [TestMethod]
+        public void EventLog()
+        {
+            EventLogEntryCollection eventCollection;
+            EventLog systemEvent = new EventLog();
+            systemEvent.Log = "System";
+            eventCollection = systemEvent.Entries;
+            for (int i = 0; i < eventCollection.Count; i++)
+            {
+                EventLogEntry entry = eventCollection[i];
+                if(entry.InstanceId == 41)
+                {
+                    
+                }
+            }
+        }
+
     }
 }

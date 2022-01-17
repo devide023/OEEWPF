@@ -131,7 +131,9 @@
     <Compile Include="Models\sbztbhb.cs" />
     <Compile Include="Models\sjcj.cs" />
     <Compile Include="Models\sjcjnew.cs" />
+    <Compile Include="Models\sys_eventlog.cs" />
     <Compile Include="Services\DealReceiveDataService.cs" />
+    <Compile Include="Services\EventLogService.cs" />
     <Compile Include="Services\SBYXTJService.cs" />
     <Compile Include="Services\SBYXZTService.cs" />
     <Compile Include="Services\SBZTGXService.cs" />
