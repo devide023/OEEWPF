@@ -186,7 +186,10 @@ namespace LBJOEE.ViewModels
                 _read_sbxx_timer.Change(0, 1000 * 60 * 10);
                 _databackup_timer = new Timer(DataBackupHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 _databackup_timer.Change(0, 1000 * 60 * 5);
-                _eventlogservice.Save_EventLog(base_sbxx);
+                Task.Run(() =>
+                {
+                    _eventlogservice.Save_EventLog(base_sbxx);
+                });
             }
             catch (Exception e)
             {

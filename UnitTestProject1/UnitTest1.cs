@@ -13,7 +13,7 @@ namespace UnitTestProject1
         public void TestMethod1()
         {
             CalcOEEService service = CalcOEEService.Instance;
-            service.SaveOEE();
+            service.SaveOEE(Convert.ToDateTime("2022-01-18"));
         }
 
         [TestMethod]
@@ -25,8 +25,8 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod3()
         {
-            SBZTTJService service = SBZTTJService.Instance;
-            service.sbzttj();
+            SbcjtjService service = SbcjtjService.Instance;
+            service.sbcjtj();
         }
         [TestMethod]
         public void TestMethod4()

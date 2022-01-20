@@ -53,8 +53,8 @@ namespace WebOEE.Services
             try
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("select ta.sbbh, sbqy, tb.bzjp ");
-                sql.Append(" FROM(select sbbh, sbqy FROM base_sbxx where scbz = 'N') ta, sbbzjp tb ");
+                sql.Append("select ta.sbbh, ta.sbqy,ta.sbxh, tb.bzjp ");
+                sql.Append(" FROM(select sbbh,sbxh, sbqy FROM base_sbxx where scbz = 'N') ta, sbbzjp tb ");
                 sql.Append(" where  ta.sbbh = tb.sbbh(+) ");
                 sql.Append(" order  by ta.sbqy asc");
                 return Db.Connection.Query<base_sbxx>(sql.ToString());

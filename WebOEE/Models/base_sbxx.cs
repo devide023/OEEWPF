@@ -10,5 +10,6 @@ namespace WebOEE.Models
         public string sbbh { get; set; }
         public string sbqy { get; set; }
         public string bzjp { get; set; }
+        public string sbxh { get; set; }
     }
 }

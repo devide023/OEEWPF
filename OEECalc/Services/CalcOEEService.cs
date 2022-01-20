@@ -409,6 +409,9 @@ namespace OEECalc.Services
                 else
                 {
                     DynamicParameters p = new DynamicParameters();
+                    p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                    p.Add(":ksrq", ksrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                    p.Add(":jsrq", jsrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
                     return Db.Connection.ExecuteScalar<long>("select count(jgs) FROM sjcj where sbbh = :sbbh and cjsj between :ksrq and :jsrq and jgs<> 0", p);
                 }
             }
@@ -540,7 +543,7 @@ namespace OEECalc.Services
                         decimal bxzs = 0;
                         if (jp != 0)
                         {
-                            bxzs = Math.Round(yscs / (s / jp), 5);
+                            bxzs = Math.Round(yscs / ((s*60) / jp), 5);
                         }
                         sboee oee = new sboee();
                         oee.sbbh = item.sbbh;
@@ -706,7 +709,7 @@ namespace OEECalc.Services
                     decimal bxzs = 0;
                     if (jp != 0 && s!=0)
                     {
-                        bxzs = Math.Round(yscs / (s / jp),5);
+                        bxzs = Math.Round(yscs / ((s*60) / jp),5);
                     }
                     sboee oee = new sboee();
                     oee.sbbh = item.sbbh;

@@ -112,7 +112,8 @@ namespace OEECalc.Services
                     else
                     {
                         DynamicParameters p = new DynamicParameters();
-                        return Db.Connection.ExecuteScalar<long>("select count(jgs) FROM sjcj where sbbh = :sbbh and cjsj between :ksrq and :jsrq and jgs<> 0", p);
+                        p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                        return Db.Connection.ExecuteScalar<long>("select count(jgs) FROM sjcj where sbbh = :sbbh and trunc(cjsj) = trunc(sysdate) and jgs<> 0", p);
                     }
                 }
                 else

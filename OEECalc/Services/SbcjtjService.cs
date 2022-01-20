@@ -45,14 +45,26 @@ namespace OEECalc.Services
         {
             try
             {
-              var ret = Db.Insert<sbcjtj>(entity);
-                if (System.Convert.ToInt32(ret) > 0)
+                string sql = "select id,kssj,sbbh,sfcj from sbcjtj where sbbh = :sbbh and kssj = :kssj ";
+                var q = Db.Connection.Query<sbcjtj>(sql, new { sbbh = entity.sbbh, kssj = entity.kssj });
+                if (q.Count() == 0)
                 {
-                    return true;
+                    var ret = Db.Insert<sbcjtj>(entity);
+                    if (System.Convert.ToInt32(ret) > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    return false;
+                    var obj = q.FirstOrDefault();
+                    obj.sfcj = entity.sfcj;
+                    obj.sbbh = entity.sbbh;
+                    return Db.Update<sbcjtj>(obj);
                 }
             }
             catch (Exception e)

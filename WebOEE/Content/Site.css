@@ -29,21 +29,25 @@ input{
 
 .page_header {
     width:100%;
-    height:110px;
-    line-height:110px;
+    height:80px;
+    line-height:80px;
     background-image: url(../Image/bg/tt.png);
     background-repeat: no-repeat;
     background-position-x:center;
     background-position-y:center;
 }
 .page_header_txt{
-    font-size:25pt;
+    font-size:22pt;
     margin:0px auto;
-    height:90px;
-    line-height:90px;
+    margin-top:-12px;
+    height:80px;
+    line-height:80px;
     width:100%;
     font-family:"微软雅黑";
     text-align:center;
+}
+
+.page_content{
 }
 
 fieldset {
@@ -77,6 +81,7 @@ fieldset ul li input{
 }
 .btn_bar {
     margin-top: 20px;
+    margin-bottom:30px;
     width: 100%;
     height: 50px;
     line-height: 50px;

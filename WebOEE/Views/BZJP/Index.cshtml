@@ -3,26 +3,26 @@
     ViewBag.Title = "设备标准节拍设置";
 }
 <div class="page_header">
-    <div class="page_header_txt">设置标准节拍</div>
+    <div class="page_header_txt">设置标准节拍&nbsp;<span style="font-size:14px;">(秒/件)</span></div>
 </div>
+<div class="page_content">
+    @{ foreach (var item in ViewBag.list)
+        {
+            <fieldset>
+                <legend>@(item+"线")</legend>
+                <ul>
+                    @{ foreach (var sitem in Model.Where(t => t.sbqy.StartsWith(item)))
+                        {
+                            <li><label style="font-size:19pt;">@sitem.sbqy</label><label>@("["+sitem.sbxh+"]"+"：") </label><input name="@sitem.sbbh" type="number" value="@sitem.bzjp" /></li>
+                        }}
+                </ul>
+            </fieldset>
+        }}
 
-@{ foreach (var item in ViewBag.list)
-    {
-        <fieldset>
-            <legend>@(item+"线")</legend>
-            <ul>
-                @{ foreach (var sitem in Model.Where(t => t.sbqy.StartsWith(item)))
-                    {
-                        <li><label>@(sitem.sbqy+"：") </label><input name="@sitem.sbbh" type="number" value="@sitem.bzjp" /></li>
-                    }}
-            </ul>
-        </fieldset>
-    }}
-
-<div class="btn_bar">
-    <button class="btn btn-primary btn_save" id="btn_save_bzjp">保存</button>
+    <div class="btn_bar">
+        <button class="btn btn-primary btn_save" id="btn_save_bzjp">保存</button>
+    </div>
 </div>
-
 
 <script type="text/javascript">
     $(function () {
