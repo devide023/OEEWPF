@@ -9,6 +9,9 @@ using DapperExtensions;
 using OEECalc.Tool;
 using OEECalc.Model;
 using Newtonsoft.Json;
+using System.Configuration;
+using System.IO;
+
 namespace OEECalc.Services
 {
     /// <summary>
@@ -62,7 +65,7 @@ namespace OEECalc.Services
         /// 获取设备最近5分钟内的状态变化
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<sbztbhb> Get_ZTBH_List(string sbbh)
+        public IEnumerable<sbztbhb> Get_ZTBH_List(string sbbh,int djsj=5)
         {
             try
             {
@@ -70,7 +73,7 @@ namespace OEECalc.Services
                 sql.Append("select id, sj, sbbh, sbzt, sbqy ");
                 sql.Append(" from sbztbhb ");
                 sql.Append(" where sbbh = :sbbh ");
-                sql.Append(" and    sj between sysdate - (1 / 24 / 60) * 5 and sysdate order by sj desc");
+                sql.Append(" and    sj between sysdate - (1 / 24 / 60) * " + djsj + " and sysdate order by sj desc");
                 var list = Db.Connection.Query<sbztbhb>(sql.ToString(), new { sbbh = sbbh });
                 return list;
             }
@@ -142,12 +145,34 @@ namespace OEECalc.Services
                 return false;
             }
         }
-
-        public void Check()
+        /// <summary>
+        /// 设备待机时间配置
+        /// </summary>
+        /// <returns></returns>
+        public List<sys_scsjconf> DJSJConf()
         {
-            //log.Info(JsonConvert.SerializeObject(_global_cnf) + "\r\n");
             try
             {
+                string path = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+                string fullpath = path + "\\" + "djsjconf.json";
+                using (StreamReader sr = new StreamReader(fullpath))
+                {
+                    string json = sr.ReadToEnd();
+                    List<sys_scsjconf> list = JsonConvert.DeserializeObject<List<sys_scsjconf>>(json);
+                    return list;
+                }
+            }
+            catch (Exception)
+            {
+                return new List<sys_scsjconf>();
+            }
+        }
+
+        public void Check()
+        {            
+            try
+            {
+                var sjjgconf = DJSJConf();
                 var sbxxlist = Get_SBXX_List();
                 foreach (var item in sbxxlist)
                 {
@@ -166,7 +191,13 @@ namespace OEECalc.Services
                         _global_cnf.Add(e);
                         pos = _global_cnf.FindIndex(t => t.sbbh == item.sbbh);
                     }
-                    var datalist = Get_ZTBH_List(item.sbbh);
+                    Int32 sbsjjg = 5;
+                    var sjjg_query = sjjgconf.Where(t => t.sbbh == item.sbbh);
+                    if (sjjg_query.Count() > 0)
+                    {
+                        sbsjjg = sjjg_query.First().sjjg;
+                    }
+                    var datalist = Get_ZTBH_List(item.sbbh, sbsjjg);
                     var isok = NetCheck.IsPing(item.ip);
                     if (isok)
                     {

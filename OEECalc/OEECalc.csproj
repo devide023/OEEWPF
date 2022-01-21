@@ -197,6 +197,9 @@
     <None Include="sbzt.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="djsjconf.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="scsjconf.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
