@@ -51,7 +51,7 @@ namespace OEECalc.Services
             try
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("select sbbh, ip, sbqy,sbzt,sfjx,sfhm,sfgz,sfql,sfqttj,sfxm,sfts,sfby FROM base_sbxx where scbz = 'N' order by sbbh asc");
+                sql.Append("select sbbh, ip, sbqy,sbzt,sfjx,sfhm,sfgz,sfql,sfqttj,sfxm,sfts,sfby,sflgtj FROM base_sbxx where scbz = 'N' order by sbbh asc");
                 return Db.Connection.Query<base_sbxx>(sql.ToString());
             }
             catch (Exception e)
