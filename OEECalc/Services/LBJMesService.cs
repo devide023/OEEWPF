@@ -66,12 +66,12 @@ namespace OEECalc.Services
                 sql.Append(" and zequp = :sbqy ");
                 sql.Append("          and    gcdm = '9901') t1, (select wlbm,wlmc from base_wlxx where gc='9901') t2");
                 sql.Append(" where  t1.ztbm = t2.wlbm");*/
-                DateTime bcjssj4 = bcjssj.AddHours(3.5);
-                DateTime bckssj4 = bckssj.AddHours(3.5);
+                DateTime bckssj_next = bcjssj; 
+                DateTime bcjssj_next = bcjssj.AddHours(12);
                 DynamicParameters p = new DynamicParameters();
                 p.Add(":sbqy", sbqy, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-                p.Add(":bcksrq", bckssj4, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
-                p.Add(":bcjsrq", bcjssj4, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                p.Add(":bcksrq", bckssj_next, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                p.Add(":bcjsrq", bcjssj_next, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
 
                 return Db.Connection.Query<sys_zpjh>(sql.ToString(), p);
 
