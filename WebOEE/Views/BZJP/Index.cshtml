@@ -1,4 +1,5 @@
-﻿@model IEnumerable<WebOEE.Models.base_sbxx>
+﻿@using System.Text.RegularExpressions
+@model IEnumerable<WebOEE.Models.base_sbxx>
 @{
     ViewBag.Title = "设备标准节拍设置";
 }
@@ -13,7 +14,7 @@
                 <ul>
                     @{ foreach (var sitem in Model.Where(t => t.sbqy.StartsWith(item)))
                         {
-                            <li><label style="font-size:19pt;">@sitem.sbqy</label><label>@("["+sitem.sbxh+"]"+"：") </label><input name="@sitem.sbbh" type="number" value="@sitem.bzjp" /></li>
+                            <li><label style="font-size:19pt;">@sitem.sbqy</label><label>@("("+Regex.Replace(sitem.sbxh, @"[^\d]*", "")+"T)")</label><input name="@sitem.sbbh" type="number" value="@sitem.bzjp" /></li>
                         }}
                 </ul>
             </fieldset>

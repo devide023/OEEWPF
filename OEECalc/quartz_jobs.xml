@@ -130,7 +130,7 @@
 				<group>TriggerGroup</group>
 				<job-name>CalcOEEJob</job-name>
 				<job-group>jobGroup</job-group>
-				<cron-expression>0 0 1,9,13,21 * * ?</cron-expression>
+				<cron-expression>0 0 1,9,12,15,18,21 * * ?</cron-expression>
 			</cron>
 		</trigger>
 		<job>

@@ -13,7 +13,7 @@ namespace UnitTestProject1
         public void TestMethod1()
         {
             CalcOEEService service = CalcOEEService.Instance;
-            service.SaveOEE();
+            service.SaveOEE(Convert.ToDateTime("2022-01-18"));
         }
 
         [TestMethod]
@@ -37,18 +37,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void EventLog()
         {
-            EventLogEntryCollection eventCollection;
-            EventLog systemEvent = new EventLog();
-            systemEvent.Log = "System";
-            eventCollection = systemEvent.Entries;
-            for (int i = 0; i < eventCollection.Count; i++)
-            {
-                EventLogEntry entry = eventCollection[i];
-                if(entry.InstanceId == 41)
-                {
-                    
-                }
-            }
+
         }
 
     }
