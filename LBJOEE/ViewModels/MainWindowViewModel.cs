@@ -164,7 +164,7 @@ namespace LBJOEE.ViewModels
                 base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
                 dealservice = DealReceiveDataService.Instance;
                 dealservice.SetSBXXInfo = base_sbxx;
-                dealservice.SBRun = new Action(SBYX_Handle);
+                dealservice.SBRun = new Action<DateTime>(SBYX_Handle);
                 if (base_sbxx == null)
                 {
                     ErrorMsg = $"IP地址{pcip}未配置";
@@ -1356,8 +1356,11 @@ namespace LBJOEE.ViewModels
             }
         }
         #endregion
-
-        private void SBYX_Handle()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="runtime">设备开始运行时的时间</param>
+        private void SBYX_Handle(DateTime runtime)
         {
             try
             {
@@ -1376,10 +1379,10 @@ namespace LBJOEE.ViewModels
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
-                        tjjssj = now,
+                        tjjssj = runtime,
                         tjkssj = base_sbxx.gzkssj,
                         tjlx = _gzbtn.tjlx,
-                        tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
+                        tjsj = (int)(runtime - base_sbxx.gzkssj).TotalSeconds,
                         tjms = _gzbtn.tjms
                     });
                     _sbxxservice.SetGZtj(base_sbxx);
@@ -1398,10 +1401,10 @@ namespace LBJOEE.ViewModels
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
-                        tjjssj = now,
+                        tjjssj = runtime,
                         tjkssj = base_sbxx.tskssj,
                         tjlx = _debugbtn.tjlx,
-                        tjsj = (int)(now - base_sbxx.tskssj).TotalSeconds,
+                        tjsj = (int)(runtime - base_sbxx.tskssj).TotalSeconds,
                         tjms = _debugbtn.tjms
                     });
                     _sbxxservice.SetTStj(base_sbxx);
@@ -1421,10 +1424,10 @@ namespace LBJOEE.ViewModels
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
-                        tjjssj = now,
+                        tjjssj = runtime,
                         tjkssj = base_sbxx.xmkssj,
                         tjlx = _xmbtn.tjlx,
-                        tjsj = (int)(now - base_sbxx.xmkssj).TotalSeconds,
+                        tjsj = (int)(runtime - base_sbxx.xmkssj).TotalSeconds,
                         tjms = _xmbtn.tjms
                     });
                     _sbxxservice.SetXMtj(base_sbxx);
@@ -1443,10 +1446,10 @@ namespace LBJOEE.ViewModels
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
-                        tjjssj = now,
+                        tjjssj = runtime,
                         tjkssj = base_sbxx.qttjkssj,
                         tjlx = _qtbtn.tjlx,
-                        tjsj = (int)(now - base_sbxx.qttjkssj).TotalSeconds,
+                        tjsj = (int)(runtime - base_sbxx.qttjkssj).TotalSeconds,
                         tjms = _qtbtn.tjms
                     });
                     _sbxxservice.SetQTtj(base_sbxx);
@@ -1465,10 +1468,10 @@ namespace LBJOEE.ViewModels
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
-                        tjjssj = now,
+                        tjjssj = runtime,
                         tjkssj = base_sbxx.hmkssj,
                         tjlx = _hmbtn.tjlx,
-                        tjsj = (int)(now - base_sbxx.hmkssj).TotalSeconds,
+                        tjsj = (int)(runtime - base_sbxx.hmkssj).TotalSeconds,
                         tjms = _hmbtn.tjms
                     });
                     _sbxxservice.SetHMtj(base_sbxx);
@@ -1487,10 +1490,10 @@ namespace LBJOEE.ViewModels
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
-                        tjjssj = now,
+                        tjjssj = runtime,
                         tjkssj = base_sbxx.jxkssj,
                         tjlx = _jxbtn.tjlx,
-                        tjsj = (int)(now - base_sbxx.jxkssj).TotalSeconds,
+                        tjsj = (int)(runtime - base_sbxx.jxkssj).TotalSeconds,
                         tjms = _jxbtn.tjms
                     });
                     _sbxxservice.SetJXtj(base_sbxx);
@@ -1509,10 +1512,10 @@ namespace LBJOEE.ViewModels
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
-                        tjjssj = now,
+                        tjjssj = runtime,
                         tjkssj = base_sbxx.qlkssj,
                         tjlx = _qlbtn.tjlx,
-                        tjsj = (int)(now - base_sbxx.qlkssj).TotalSeconds,
+                        tjsj = (int)(runtime - base_sbxx.qlkssj).TotalSeconds,
                         tjms = _qlbtn.tjms
                     });
                     _sbxxservice.SetQLtj(base_sbxx);
@@ -1531,10 +1534,10 @@ namespace LBJOEE.ViewModels
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
-                        tjjssj = now,
+                        tjjssj = runtime,
                         tjkssj = base_sbxx.bytjkssj,
                         tjlx = _bybtn.tjlx,
-                        tjsj = (int)(now - base_sbxx.bytjkssj).TotalSeconds,
+                        tjsj = (int)(runtime - base_sbxx.bytjkssj).TotalSeconds,
                         tjms = _bybtn.tjms
                     });
                     _sbxxservice.SetBYTJ(base_sbxx);
@@ -1554,10 +1557,10 @@ namespace LBJOEE.ViewModels
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
-                        tjjssj = now,
+                        tjjssj = runtime,
                         tjkssj = base_sbxx.lgtjkssj,
                         tjlx = _lgtjbtn.tjlx,
-                        tjsj = (int)(now - base_sbxx.lgtjkssj).TotalSeconds,
+                        tjsj = (int)(runtime - base_sbxx.lgtjkssj).TotalSeconds,
                         tjms = _lgtjbtn.tjms
                     });
                     _sbxxservice.SetLGTJ(base_sbxx);

@@ -121,7 +121,46 @@ namespace LBJOEE.Services
                 sql.Append(" FROM   tjsjcj ");
                 sql.Append(" where  cjsj between sysdate - (1 / (24*60)) * :interval and sysdate ");
                 sql.Append(" and    sbbh = :sbbh ");
-                return Db.Connection.Query<sjcjnew>(sql.ToString(), new { sbbh = sbbh, interval=interval });
+                var list = Db.Connection.Query<sjcjnew>(sql.ToString(), new { sbbh = sbbh, interval = interval });
+                if (list.Count() > 0)
+                {
+                    var jgs = Db.Connection.ExecuteScalar<long>("select max(jgs) FROM sjcj where sbbh = :sbbh ", new { sbbh = sbbh });
+                    var minjgs = list.Min(t => t.jgs);
+                    if (jgs + 1 != minjgs)
+                    {
+                        return Get_NoRunListByJGS(sbbh, jgs);
+                    }
+                    else
+                    {
+                        return list;
+                    }
+                }
+                else
+                {
+                    return new List<sjcjnew>();
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                return new List<sjcjnew>();
+            }
+        }
+        /// <summary>
+        /// 通过加工数字段取数停机状态数据
+        /// </summary>
+        /// <param name="sbbh"></param>
+        /// <returns></returns>
+        public IEnumerable<sjcjnew> Get_NoRunListByJGS(string sbbh,long jgs)
+        {
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("select rowid as rid,cjsj, sbbh, sbip, jp, jgs, yssd, jysj, jssj, lbhd, zyyl, yxzt, bjzt, xhsj, sdzt, zdzt, jt, ljkjsj, dzcdqwz, dqyl, dqll, ksyl, essd, sssd, sdqd, tqxc, tcsj, lbwz, gswz, mysd, gssd, zzyl, ysyl, ysll, zltx, hml, jzsyhd, ysxc, xqctsj, zzysj, sscnylsjz, zycnylsjz, smqdyl, smqdll, smqdwz, smksyl, smksll, smkswz, skdyyl, skdyll, smdywz, smgyyl, smgyll, smgywz, kssmsd, mssmsd, kmhcyl, kmhcll, kmhcwz, kmkyyl, kmksll, kmkswz, kmgyyl, kmgyll, kmgywz, mskmsd, kskmsd, cx1jryl, cx1jrll, cx1htyl, cx1htll, cx2jryl, cx2jrll, cx2htyl, cx2htll, cxrys, cxcys, cxcndqyl, cxcnyltlz, cxcnylsdz, kyyswz, kyeswz, kysswz, kyzywz, kygcwz, dqylsd, dqllsd, dqyssd, dhylsd, dhllsd, dhyssd, dzcs, kscnyl, zycnyl, hchcwz, kmzzwz, mjwz, yw, mswz, mjtcjs, yasxc, jzhs, zhls, gsks, gsqj, sysj, rmjcs ");
+                sql.Append(" FROM   tjsjcj ");
+                sql.Append(" where  jgs > :jgs ");
+                sql.Append(" and    sbbh = :sbbh ");
+                return Db.Connection.Query<sjcjnew>(sql.ToString(), new { sbbh = sbbh, jgs = jgs });
             }
             catch (Exception e)
             {

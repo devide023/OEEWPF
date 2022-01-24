@@ -46,7 +46,7 @@ namespace LBJOEE.Services
             _check_norun_timer.Change(0, 1000 * 60);
         }
 
-        public Action SBRun { get; set; }
+        public Action<DateTime> SBRun { get; set; }
 
         public base_sbxx SetSBXXInfo
         {
@@ -271,8 +271,9 @@ namespace LBJOEE.Services
                 {
                     int.TryParse(q.FirstOrDefault().confval, out norunsl);
                 }
-                if (list.Count() > norunsl)
+                if (list.Count() >= norunsl)
                 {
+                    DateTime runtime = list.Min(t => t.cjsj);
                     foreach (var item in list)
                     {
                         var isok = _sbsjservide.AddByDate(item);
@@ -284,7 +285,7 @@ namespace LBJOEE.Services
                     }
                     if(oklist.Count() == list.Count())
                     {
-                        SBRun?.Invoke();
+                        SBRun?.Invoke(runtime);
                     }
                 }
             }
