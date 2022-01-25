@@ -543,7 +543,7 @@ namespace OEECalc.Services
                         decimal bxzs = 0;
                         if (jp != 0)
                         {
-                            bxzs = Math.Round(yscs / ((s*60) / jp), 5);
+                            bxzs = Math.Round(xxsl / ((s*60) / jp), 5);
                         }
                         sboee oee = new sboee();
                         oee.sbbh = item.sbbh;
@@ -709,7 +709,7 @@ namespace OEECalc.Services
                     decimal bxzs = 0;
                     if (jp != 0 && s!=0)
                     {
-                        bxzs = Math.Round(yscs / ((s*60) / jp),5);
+                        bxzs = Math.Round(xxsl / ((s*60) / jp),5);
                     }
                     sboee oee = new sboee();
                     oee.sbbh = item.sbbh;
