@@ -55,26 +55,27 @@ namespace OEECalc.Services
                 sql.Append(" and    to_date(ta.DTSEND, 'yyyy-mm-dd HH24:mi:ss') BETWEEN ");
                 sql.Append("        :bcksrq and :bcjsrq ");
                 sql.Append(" and    tb.ZEQUP = :sbqy");
+                sql.Append(" and    tb.ztprog = :ztprog ");
                 sql.Append(" and    ta.zstall = 'S' ");
                 sql.Append(" and ta.menge > 0 ");
-                /*
-                sql.Append("select t1.ztbm, t2.wlmc, t1.xxsl as xxcnt, t1.scsl, t1.zequp as sbqy, t1.zmould, t1.zemold ");
-                sql.Append(" FROM( select ztbm,xxsl,scsl,zequp,zmould,zemold");
-                sql.Append("          FROM   pp_zpjh");
-                sql.Append("          where  xx_sj between");
-                sql.Append("                 :bcksrq and :bcjsrq ");
-                sql.Append(" and zequp = :sbqy ");
-                sql.Append("          and    gcdm = '9901') t1, (select wlbm,wlmc from base_wlxx where gc='9901') t2");
-                sql.Append(" where  t1.ztbm = t2.wlbm");*/
+                
+                string ztprog = string.Empty;
+                if(bckssj.Hour == 8)
+                {
+                    ztprog = "2";
+                }
+                if(bckssj.Hour == 20)
+                {
+                    ztprog = "1";
+                }
                 DateTime bckssj_next = bcjssj; 
-                DateTime bcjssj_next = bcjssj.AddHours(12);
+                DateTime bcjssj_next = bckssj.AddHours(24);
                 DynamicParameters p = new DynamicParameters();
                 p.Add(":sbqy", sbqy, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-                p.Add(":bcksrq", bckssj_next, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                p.Add(":bcksrq", bckssj, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
                 p.Add(":bcjsrq", bcjssj_next, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
-
+                p.Add(":ztprog", ztprog, System.Data.DbType.String, System.Data.ParameterDirection.Input);
                 return Db.Connection.Query<sys_zpjh>(sql.ToString(), p);
-
             }
             catch (Exception e)
             {

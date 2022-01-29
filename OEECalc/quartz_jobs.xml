@@ -150,6 +150,23 @@
 				<cron-expression>*/20 * * * * ?</cron-expression>
 			</cron>
 		</trigger>
+		<job>
+			<name>CalcTJSJJob</name>
+			<group>jobGroup</group>
+			<description>针对跨班次停机时段，分摊到每个班次</description>
+			<job-type>OEECalc.JOB.CalcTJSJ_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>CalcTJSJTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>CalcTJSJJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 5 8,20 * * ?</cron-expression>
+			</cron>
+		</trigger>
 	</schedule>
 
 </job-scheduling-data>

@@ -36,6 +36,14 @@ namespace LBJOEE
         /// 停机描述
         /// </summary>
         public string tjms { get; set; }
+        /// <summary>
+        /// 类型，区分是总时间段还是班次时间段。1班次时间段，0总时间段
+        /// </summary>
+        public string lx { get; set; }
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime? gxsj { get; set; }
     }
 
     public class sbtj_mapper:ClassMapper<sbtj>

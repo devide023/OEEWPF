@@ -131,6 +131,8 @@
     <Compile Include="Models\sbztbhb.cs" />
     <Compile Include="Models\sjcj.cs" />
     <Compile Include="Models\sjcjnew.cs" />
+    <Compile Include="Models\sys_bcsd.cs" />
+    <Compile Include="Models\sys_bcxx.cs" />
     <Compile Include="Models\sys_eventlog.cs" />
     <Compile Include="Services\DealReceiveDataService.cs" />
     <Compile Include="Services\EventLogService.cs" />
@@ -141,6 +143,7 @@
     <Compile Include="Tools\DataBackUp.cs" />
     <Compile Include="Tools\RegTool.cs" />
     <Compile Include="Tools\SyncServerTime.cs" />
+    <Compile Include="Tools\TimeTool.cs" />
     <Compile Include="Views\UserControl1.xaml.cs">
       <DependentUpon>UserControl1.xaml</DependentUpon>
     </Compile>

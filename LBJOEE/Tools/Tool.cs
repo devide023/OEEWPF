@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.NetworkInformation;
 using System.IO;
+using LBJOEE.Models;
+
 namespace LBJOEE.Tools
 {
     public class Tool
@@ -89,6 +91,28 @@ namespace LBJOEE.Tools
             }
             catch (Exception)
             {
+            }
+        }
+        /// <summary>
+        /// 是否跨班次
+        /// </summary>
+        /// <param name="tjkssj"></param>
+        /// <param name="tjjssj"></param>
+        /// <returns></returns>
+        public static bool IsCrossBC(DateTime ksrq,DateTime jsrq)
+        {
+            try
+            {
+                var bcxx = TimeTool.GetBCInfo(ksrq);
+                return !TimeTool.IsSameBC(new sbtj()
+                {
+                    tjkssj = ksrq,
+                    tjjssj = jsrq
+                });
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
         

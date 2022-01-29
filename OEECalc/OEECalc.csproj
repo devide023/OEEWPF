@@ -124,6 +124,8 @@
     <Compile Include="DAO\OracleBaseFixture.cs" />
     <Compile Include="JOB\CalcJp_JOB.cs" />
     <Compile Include="JOB\CalcOEE_JOB.cs" />
+    <Compile Include="JOB\CalcTJSJEnd_JOB.cs" />
+    <Compile Include="JOB\CalcTJSJ_JOB.cs" />
     <Compile Include="JOB\CheckHasData_JOB.cs" />
     <Compile Include="JOB\SBZTSL_JOB.cs" />
     <Compile Include="JOB\SBZX_JOB.cs" />
@@ -131,6 +133,7 @@
     <Compile Include="JOB\StaticSBCN_JOB.cs" />
     <Compile Include="JOB\StaticSBZT_JOB.cs" />
     <Compile Include="Model\base_sbxx.cs" />
+    <Compile Include="Model\bctjsj.cs" />
     <Compile Include="Model\itemdata.cs" />
     <Compile Include="Model\sbcjtj.cs" />
     <Compile Include="Model\sbcntj.cs" />
@@ -144,6 +147,7 @@
     <Compile Include="Model\sbztbhb.cs" />
     <Compile Include="Model\sbztsltj.cs" />
     <Compile Include="Model\sbzx.cs" />
+    <Compile Include="Model\sys_bcxx.cs" />
     <Compile Include="Model\sys_cjsj.cs" />
     <Compile Include="Model\sys_jpcnf.cs" />
     <Compile Include="Model\sys_sbtjsj.cs" />
@@ -160,6 +164,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CalcJpService.cs" />
     <Compile Include="Services\CalcOEEService.cs" />
+    <Compile Include="Services\CalcTJSJService.cs" />
     <Compile Include="Services\CheckSBOnLineService.cs" />
     <Compile Include="Services\Check_DataUploadService.cs" />
     <Compile Include="Services\JTCSService.cs" />
@@ -171,6 +176,7 @@
     <Compile Include="Services\SBZTTJService.cs" />
     <Compile Include="Model\sys_scsjconf.cs" />
     <Compile Include="Tool\NetCheck.cs" />
+    <Compile Include="Tool\TimeTool.cs" />
     <Compile Include="Tool\TimeUtil.cs" />
   </ItemGroup>
   <ItemGroup>
