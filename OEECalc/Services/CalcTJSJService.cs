@@ -65,7 +65,6 @@ namespace OEECalc.Services
                 foreach (var item in sbxxlist)
                 {
                     var tjsjlist = Tool.TimeTool.Calc_SBTjSD(item).ToList();
-                    tjsjlist.ForEach(t => t.lx = "1");
                     foreach (var obj in tjsjlist)
                     {
                         Db.Connection.Execute(sql.ToString(), obj);

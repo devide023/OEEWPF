@@ -115,6 +115,7 @@ namespace OEECalc.Tool
                             tjsj = Convert.ToInt32((dt_jsrq - dt_ksrq).TotalSeconds),
                             tjlx = tjlx,
                             tjms = tjms,
+                            lx="1",
                         });
                         current_sj = next_sj;
                     }
