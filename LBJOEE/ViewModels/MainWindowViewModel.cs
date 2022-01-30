@@ -1303,68 +1303,6 @@ namespace LBJOEE.ViewModels
         }
         #endregion
 
-        #region 更新设备状态
-        private void ChangeDeviceStatus(dynamic stateinfo)
-        {
-            if (stateinfo.status == "故障" && base_sbxx.sbzt != stateinfo.status)
-            {
-                _gztimer.Change(0, 1000);
-                base_sbxx.sfgz = "Y";
-                base_sbxx.sbzt = "故障";
-                base_sbxx.tjms = "采集到的故障信息";
-                base_sbxx.gzkssj = DateTime.Now;
-                _gzbtn.btnenable = false;
-                _gzbtn.sfgz = true;
-                _gzbtn.flag = 1;
-                _gzbtn.tjsjvisible = "Visible";
-                _gzbtn.btntxt = _gzbtn.tjtxt;
-                _sbxxservice.SetGZtj(base_sbxx);
-                EnableOtherBtn(_gzbtn, false);
-            }
-            else
-            {
-                if (_gzbtn.sfgz)
-                {
-                    _gzbtn.tjsjvisible = "Visible";
-                    _gztimer.Change(_gzbtn.tjsj, 1000);
-                }
-            }
-
-            if (stateinfo.status == "运行" && base_sbxx.sbzt == "故障")
-            {
-                base_sbxx.sbzt = "运行";
-                base_sbxx.sfgz = "N";
-                base_sbxx.cjgz = "N";
-                _gzbtn.flag = 0;
-                _gzbtn.sfgz = false;
-                _gzbtn.btnenable = true;
-                _gzbtn.btntxt = _gzbtn.normaltxt;
-                _gzbtn.tjsj = 0;
-                _gzbtn.tjsjvisible = "Collapsed";
-                EnableOtherBtn(_gzbtn, true);
-                DateTime now = DateTime.Now;
-                _sbtjservice.Add(new sbtj()
-                {
-                    sbbh = base_sbxx.sbbh,
-                    tjjssj = now,
-                    tjkssj = base_sbxx.gzkssj,
-                    tjlx = _gzbtn.tjlx,
-                    tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
-                    tjms = _gzbtn.tjms
-                });
-                _sbxxservice.SetGZtj(base_sbxx);
-            }
-            if (stateinfo.status == "运行" && base_sbxx.sbzt == "")
-            {
-                base_sbxx.sbzt = "运行";
-                foreach (var item in BtnStatusList)
-                {
-                    item.btnenable = true;
-                    //item.tjsj = 0;
-                }
-            }
-        }
-        #endregion
         /// <summary>
         /// 
         /// </summary>

@@ -82,7 +82,7 @@ namespace OEECalc.Services
                 //只点开始停机，未点结束停机情况
                 if (sbxx_entity.sfgz=="Y" || sbxx_entity.sfjx=="Y" || sbxx_entity.sfhm=="Y" || sbxx_entity.sfql=="Y" || sbxx_entity.sfqttj == "Y" || sbxx_entity.sfts=="Y" || sbxx_entity.sfxm=="Y" || sbxx_entity.sfby=="Y" || sbxx_entity.sflgtj=="Y")
                 {
-                    retlist = Tool.TimeTool.Calc_SBTjSD(sbxx_entity).ToList();
+                    retlist = Tool.TimeTool.Calc_SBTjSD(sbxx_entity).Where(t => t.tjkssj >= ksrq && t.tjkssj <= jsrq && t.tjjssj >= ksrq && t.tjjssj <= jsrq).ToList();
                 }
                 else//完整停机数据
                 {
@@ -95,7 +95,7 @@ namespace OEECalc.Services
                     var list = Db.Connection.Query<sbtj>(sql.ToString(), p);
                     foreach (var item in list)
                     {
-                        retlist.AddRange(Tool.TimeTool.Calc_SBTJSD(item));
+                        retlist.AddRange(Tool.TimeTool.Calc_SBTJSD(item).Where(t => t.tjkssj >= ksrq && t.tjkssj <= jsrq && t.tjjssj >= ksrq && t.tjjssj <= jsrq));
                     }
                     
                 }
@@ -107,106 +107,6 @@ namespace OEECalc.Services
                 return new List<sbtj>();
             }
         }
-
-        private void Update_SYBCTJSj(List<bctjsj> tjmx)
-        {
-            try
-            {
-                if (tjmx.Count > 0)
-                {
-                    StringBuilder sql = new StringBuilder();
-                    var list = tjmx.GroupBy(t => new { sbbh = t.sbbh, rq = t.bc, tjlx = t.tjlx }).Select(g => new { sbbh = g.Key.sbbh, rq = g.Key.rq, tjlx = g.Key.tjlx, tjsj = g.Sum(t => t.tjsj) });
-
-                    foreach (var item in list)
-                    {
-                        var ztjsj = 0m;
-                        var zsjyxsj = 0m;
-                        var tjlx = item.tjlx;
-                        if (tjlx.Contains("检修"))
-                        {
-                            sql.Clear();
-                            sql.Append("update sboee set jxsj = :tjsj where rq = :rq and sbbh=:sbbh ");
-                            ztjsj = ztjsj + item.tjsj;
-                            Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh, tjsj = Math.Round(item.tjsj / 60m, 5), rq = item.rq });
-                        }
-                        else if (tjlx.Contains("修机"))
-                        {
-                            sql.Clear();
-                            sql.Append("update sboee set xjsj = :tjsj where rq = :rq and sbbh=:sbbh ");
-                            ztjsj = ztjsj + item.tjsj;
-                            Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh, tjsj = Math.Round(item.tjsj / 60m, 5), rq = item.rq });
-                        }
-                        else if (tjlx.Contains("修模"))
-                        {
-                            sql.Clear();
-                            sql.Append("update sboee set xmsj = :tjsj where rq = :rq and sbbh=:sbbh ");
-                            ztjsj = ztjsj + item.tjsj;
-                            Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh, tjsj = Math.Round(item.tjsj / 60m, 5), rq = item.rq });
-                        }
-                        else if (tjlx.Contains("换模"))
-                        {
-                            sql.Clear();
-                            sql.Append("update sboee set hmsj = :tjsj where rq = :rq and sbbh=:sbbh ");
-                            ztjsj = ztjsj + item.tjsj;
-                            Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh, tjsj = Math.Round(item.tjsj / 60m, 5), rq = item.rq });
-                        }
-                        else if (tjlx.Contains("计划"))
-                        {
-                            sql.Clear();
-                            sql.Append("update sboee set qtsj = :tjsj where rq = :rq and sbbh=:sbbh ");
-                            ztjsj = ztjsj + item.tjsj;
-                            Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh, tjsj = Math.Round(item.tjsj / 60m, 5), rq = item.rq });
-                        }
-                        else if (tjlx.Contains("保养"))
-                        {
-                            sql.Clear();
-                            sql.Append("update sboee set bysj = :tjsj where rq = :rq and sbbh=:sbbh ");
-                            ztjsj = ztjsj + item.tjsj;
-                            Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh, tjsj = Math.Round(item.tjsj / 60m, 5), rq = item.rq });
-                        }
-                        else if (tjlx.Contains("离岗"))
-                        {
-                            sql.Clear();
-                            sql.Append("update sboee set lgsj = :tjsj where rq = :rq and sbbh=:sbbh ");
-                            ztjsj = ztjsj + item.tjsj;
-                            Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh, tjsj = Math.Round(item.tjsj / 60m, 5), rq = item.rq });
-                        }
-                        else if (tjlx.Contains("待料"))
-                        {
-                            sql.Clear();
-                            sql.Append("update sboee set dlsj = :tjsj where rq = :rq and sbbh=:sbbh ");
-                            ztjsj = ztjsj + item.tjsj;
-                            Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh, tjsj = Math.Round(item.tjsj / 60m, 5), rq = item.rq });
-                        }
-                        else if (tjlx.Contains("调试"))
-                        {
-                            sql.Clear();
-                            sql.Append("update sboee set tssj = :tjsj where rq = :rq and sbbh=:sbbh ");
-                            ztjsj = ztjsj + item.tjsj;
-                            Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh, tjsj = Math.Round(item.tjsj / 60m, 5), rq = item.rq });
-                        }
-                        zsjyxsj = Convert.ToDecimal(720 * 60) - Math.Round(ztjsj, 5);
-                        var lyl = Math.Round(zsjyxsj / 720 * 60, 5);
-                        var bxzs = 0m;
-                        var jpcx = Db.Connection.Query<sboee>("select jp,xxsl from sboee where sbbh=:sbbh and rq=:rq ", new { sbbh = item.sbbh, rq = item.rq });
-                        if (jpcx.Count() > 0)
-                        {
-                            var obj = jpcx.FirstOrDefault();
-                            if (obj.jp != 0 && zsjyxsj != 0)
-                            {
-                                bxzs = Math.Round(obj.xxsl / (zsjyxsj / obj.jp), 5);
-                            }
-                        }
-                        Db.Connection.Execute("update sboee set yxsj=:yxsj,lyl=:lyl,bxzs=:bxzs where sbbh=:sbbh and rq=:rq", new { sbbh = item.sbbh, rq = item.rq, yxsj = zsjyxsj, lyl = lyl, bxzs = bxzs });
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-            }
-        }
-
         public decimal SBJP(string sbbh,DateTime ksrq,DateTime jsrq)
         {
             try
@@ -383,7 +283,7 @@ namespace OEECalc.Services
                         }
                         //性能稼动率(表现指数)
                         decimal bxzs = 0;
-                        if (jp != 0)
+                        if (jp != 0 && s!=0)
                         {
                             bxzs = Math.Round(xxsl / ((s*60) / jp), 5);
                         }
@@ -456,31 +356,13 @@ namespace OEECalc.Services
                 };
                 var sblist = Get_SBBHList();
                 var jhtjlist = GetJhTJSJ();
+                var bcxx = Tool.TimeTool.GetBCInfo(DateTime.Now);
                 var bckssj = DateTime.Now;
                 var bcjssj = DateTime.Now;
                 var bc = string.Empty;
-                //上一个白班
-                var d1 = Convert.ToDateTime(DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd 08:00:00"));
-                //上一个晚班
-                var d2 = Convert.ToDateTime(DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd 20:00:00"));
-                var d3 = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 08:00:00"));
-
-                var d5 = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 00:00:00"));
-                var d6 = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 12:00:00"));
-                var d7 = Convert.ToDateTime(DateTime.Now.AddDays(1).ToString("yyyy-MM-dd 00:00:00"));
-
-                if (DateTime.Compare(DateTime.Now, d5) >= 0 && DateTime.Compare(DateTime.Now, d6) < 0)
-                {
-                    bckssj = d1;
-                    bcjssj = d1.AddHours(12);
-                    bc = "白班";
-                }
-                if (DateTime.Compare(DateTime.Now, d6) >= 0 && DateTime.Compare(DateTime.Now, d7) < 0)
-                {
-                    bckssj = d2;
-                    bcjssj = d2.AddHours(12);
-                    bc = "夜班";
-                }
+                bckssj = bcxx.up_kssj;
+                bcjssj = bcxx.up_jssj;
+                bc = bcxx.up_bcmc;
                 foreach (var item in sblist)
                 {
                     //停机信息

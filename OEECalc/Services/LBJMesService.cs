@@ -56,6 +56,7 @@ namespace OEECalc.Services
                 sql.Append("        :bcksrq and :bcjsrq ");
                 sql.Append(" and    tb.ZEQUP = :sbqy");
                 sql.Append(" and    tb.ztprog = :ztprog ");
+                sql.Append(" and    ta.vbeln ='0000000000' ");
                 sql.Append(" and    ta.zstall = 'S' ");
                 sql.Append(" and ta.menge > 0 ");
                 
@@ -69,10 +70,10 @@ namespace OEECalc.Services
                     ztprog = "1";
                 }
                 DateTime bckssj_next = bcjssj; 
-                DateTime bcjssj_next = bckssj.AddHours(24);
+                DateTime bcjssj_next = bcjssj.AddHours(12);
                 DynamicParameters p = new DynamicParameters();
                 p.Add(":sbqy", sbqy, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-                p.Add(":bcksrq", bckssj, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                p.Add(":bcksrq", bckssj_next, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
                 p.Add(":bcjsrq", bcjssj_next, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
                 p.Add(":ztprog", ztprog, System.Data.DbType.String, System.Data.ParameterDirection.Input);
                 return Db.Connection.Query<sys_zpjh>(sql.ToString(), p);

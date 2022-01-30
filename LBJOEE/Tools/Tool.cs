@@ -19,7 +19,8 @@ namespace LBJOEE.Tools
             string AddressIP = string.Empty;
             foreach (IPAddress _IPAddress in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
             {
-                if (_IPAddress.AddressFamily.ToString() == "InterNetwork" && _IPAddress.ToString().Contains("172.16"))
+                //&& _IPAddress.ToString().Contains("172.16")
+                if (_IPAddress.AddressFamily.ToString() == "InterNetwork" )
                 {
                     AddressIP = _IPAddress.ToString();
                 }

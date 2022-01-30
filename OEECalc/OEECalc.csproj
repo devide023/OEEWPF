@@ -124,7 +124,6 @@
     <Compile Include="DAO\OracleBaseFixture.cs" />
     <Compile Include="JOB\CalcJp_JOB.cs" />
     <Compile Include="JOB\CalcOEE_JOB.cs" />
-    <Compile Include="JOB\CalcTJSJEnd_JOB.cs" />
     <Compile Include="JOB\CalcTJSJ_JOB.cs" />
     <Compile Include="JOB\CheckHasData_JOB.cs" />
     <Compile Include="JOB\SBZTSL_JOB.cs" />
