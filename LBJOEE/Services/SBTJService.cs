@@ -20,6 +20,66 @@ namespace LBJOEE.Services
         {
             log = LogManager.GetLogger(this.GetType());
         }
+        public DateTime GetServerTime()
+        {
+            try
+            {
+                DateTime result;
+                string sql = "select sysdate from dual";
+                string dt = Db.Connection.ExecuteScalar<string>(sql);
+                if (DateTime.TryParse(dt, out result))
+                {
+                    return result;
+                }
+                else
+                {
+                    return DateTime.Now;
+                }
+            }
+            catch (Exception)
+            {
+                return DateTime.Now;
+            }
+        }
+        public override dynamic Add(sbtj entity)
+        {
+            var ret = base.Add(entity);
+            if (entity.lx == "0")
+            {
+                Task.Run(() =>
+                {
+                    CalcTJSJ(entity);
+                });
+            }
+            return ret;
+        }
+        //跨班次停机时间分配到每个班次上
+        public void CalcTJSJ(sbtj entity)
+        {
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("insert into sbtj ");
+                sql.Append("(sbbh, tjlx, tjsj, tjkssj, tjjssj, tjms,lx) ");
+                sql.Append(" select ");
+                sql.Append(":sbbh, :tjlx, :tjsj, :tjkssj, :tjjssj, :tjms,:lx from dual where ");
+                sql.Append(" not exists (select id from SBTJ where sbbh=:sbbh and tjlx=:tjlx and tjsj=:tjsj and tjkssj=:tjkssj and tjjssj = :tjjssj) ");
+                if (entity.tjkssj != System.Convert.ToDateTime(null) && entity.tjjssj != System.Convert.ToDateTime(null))
+                {
+                    //停机明细
+                    var bctjsj_list = Tools.TimeTool.Calc_SBTJSD(entity);
+                    foreach (var o in bctjsj_list)
+                    {
+                        Db.Connection.Execute(sql.ToString(), o);
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
         /// <summary>
         /// 计算设备停机时间
         /// </summary>
@@ -105,6 +165,7 @@ namespace LBJOEE.Services
                 sql.Append(" from SBTJ ");
                 sql.Append(" where trunc(tjjssj) between trunc(:ksrq) and trunc(:jsrq) ");
                 sql.Append(" and sbbh = :sbbh");
+                sql.Append(" and lx = '1' ");
                 return Db.Connection.Query<sbtj>(sql.ToString(), p);
             }
             catch (Exception e)

@@ -704,7 +704,7 @@ namespace LBJOEE.ViewModels
                 normaltxt = "计划停机",
                 tjtxt = "计划停机恢复",
                 tjlx = "计划停机",
-                tjms = "计划停机"
+                tjms = "计划"
             };
             BtnStatusList.Add(_qtbtn);
             _bybtn = new BtnStatus()
@@ -746,6 +746,7 @@ namespace LBJOEE.ViewModels
             {
                 if (base_sbxx.sfgz == "Y")
                 {
+                    var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                     _gztimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfgz = "N";
@@ -755,16 +756,16 @@ namespace LBJOEE.ViewModels
                     obj.btntxt = obj.normaltxt;
                     obj.tjsjvisible = "Collapsed";
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = now,
-                        tjkssj = base_sbxx.gzkssj,
+                        tjkssj = tjinfo.gzkssj,
                         tjlx = obj.tjlx,
-                        tjsj = (int)(now - base_sbxx.gzkssj).TotalSeconds,
+                        tjsj = (int)(now - tjinfo.gzkssj).TotalSeconds,
                         tjms = obj.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.gzkssj,now)?"0":"1",
+                        lx = Tool.IsCrossBC(tjinfo.gzkssj,now)?"0":"1",
                     });
                 }
                 else
@@ -799,6 +800,7 @@ namespace LBJOEE.ViewModels
             {
                 if (base_sbxx.sfts == "Y")
                 {
+                    var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                     _tstimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfts = "N";
@@ -808,16 +810,16 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = now,
-                        tjkssj = base_sbxx.tskssj,
+                        tjkssj = tjinfo.tskssj,
                         tjlx = obj.tjlx,
-                        tjsj = (int)(now - base_sbxx.tskssj).TotalSeconds,
+                        tjsj = (int)(now - tjinfo.tskssj).TotalSeconds,
                         tjms = obj.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.tskssj, now) ? "0" : "1",
+                        lx = Tool.IsCrossBC(tjinfo.tskssj, now) ? "0" : "1",
                     });
                 }
                 else
@@ -850,6 +852,7 @@ namespace LBJOEE.ViewModels
             {
                 if (base_sbxx.sfxm == "Y")
                 {
+                    var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                     _xmtimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfxm = "N";
@@ -859,16 +862,16 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = now,
-                        tjkssj = base_sbxx.xmkssj,
+                        tjkssj = tjinfo.xmkssj,
                         tjlx = obj.tjlx,
-                        tjsj = (int)(now - base_sbxx.xmkssj).TotalSeconds,
+                        tjsj = (int)(now - tjinfo.xmkssj).TotalSeconds,
                         tjms = obj.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.xmkssj, now) ? "0" : "1",
+                        lx = Tool.IsCrossBC(tjinfo.xmkssj, now) ? "0" : "1",
                     });
                 }
                 else
@@ -900,6 +903,7 @@ namespace LBJOEE.ViewModels
             {
                 if (base_sbxx.sfqttj == "Y")
                 {
+                    var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                     _qttimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfqttj = "N";
@@ -909,16 +913,16 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = now,
-                        tjkssj = base_sbxx.qttjkssj,
+                        tjkssj = tjinfo.qttjkssj,
                         tjlx = obj.tjlx,
-                        tjsj = (int)(now - base_sbxx.qttjkssj).TotalSeconds,
+                        tjsj = (int)(now - tjinfo.qttjkssj).TotalSeconds,
                         tjms = obj.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.qttjkssj, now) ? "0" : "1",
+                        lx = Tool.IsCrossBC(tjinfo.qttjkssj, now) ? "0" : "1",
                     });
                 }
                 else
@@ -951,6 +955,7 @@ namespace LBJOEE.ViewModels
             {
                 if (base_sbxx.sfhm == "Y")
                 {
+                    var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                     _hmtimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfhm = "N";
@@ -960,16 +965,16 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = now,
-                        tjkssj = base_sbxx.hmkssj,
+                        tjkssj = tjinfo.hmkssj,
                         tjlx = obj.tjlx,
-                        tjsj = (int)(now - base_sbxx.hmkssj).TotalSeconds,
+                        tjsj = (int)(now - tjinfo.hmkssj).TotalSeconds,
                         tjms = obj.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.hmkssj, now) ? "0" : "1",
+                        lx = Tool.IsCrossBC(tjinfo.hmkssj, now) ? "0" : "1",
                     });
                 }
                 else
@@ -1002,6 +1007,7 @@ namespace LBJOEE.ViewModels
             {
                 if (base_sbxx.sfjx == "Y")
                 {
+                    var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                     _jxtimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfjx = "N";
@@ -1011,16 +1017,16 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = now,
-                        tjkssj = base_sbxx.jxkssj,
+                        tjkssj = tjinfo.jxkssj,
                         tjlx = obj.tjlx,
-                        tjsj = (int)(now - base_sbxx.jxkssj).TotalSeconds,
+                        tjsj = (int)(now - tjinfo.jxkssj).TotalSeconds,
                         tjms = obj.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.jxkssj, now) ? "0" : "1",
+                        lx = Tool.IsCrossBC(tjinfo.jxkssj, now) ? "0" : "1",
                     });
                 }
                 else
@@ -1053,6 +1059,7 @@ namespace LBJOEE.ViewModels
             {
                 if (base_sbxx.sfql == "Y")
                 {
+                    var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                     _qltimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfql = "N";
@@ -1062,16 +1069,16 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = now,
-                        tjkssj = base_sbxx.qlkssj,
+                        tjkssj = tjinfo.qlkssj,
                         tjlx = obj.tjlx,
-                        tjsj = (int)(now - base_sbxx.qlkssj).TotalSeconds,
+                        tjsj = (int)(now - tjinfo.qlkssj).TotalSeconds,
                         tjms = obj.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.qlkssj, now) ? "0" : "1",
+                        lx = Tool.IsCrossBC(tjinfo.qlkssj, now) ? "0" : "1",
                     });
                 }
                 else
@@ -1105,6 +1112,7 @@ namespace LBJOEE.ViewModels
             {
                 if (base_sbxx.sfby == "Y")
                 {
+                    var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                     _bytimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfby = "N";
@@ -1114,16 +1122,16 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = now,
-                        tjkssj = base_sbxx.bytjkssj,
+                        tjkssj = tjinfo.bytjkssj,
                         tjlx = obj.tjlx,
-                        tjsj = (int)(now - base_sbxx.bytjkssj).TotalSeconds,
+                        tjsj = (int)(now - tjinfo.bytjkssj).TotalSeconds,
                         tjms = obj.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.bytjkssj, now) ? "0" : "1",
+                        lx = Tool.IsCrossBC(tjinfo.bytjkssj, now) ? "0" : "1",
                     });
                 }
                 else
@@ -1156,6 +1164,7 @@ namespace LBJOEE.ViewModels
             {
                 if (base_sbxx.sflgtj == "Y")
                 {
+                    var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                     _lgtjtimer.Change(-1, -1);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sflgtj = "N";
@@ -1165,16 +1174,16 @@ namespace LBJOEE.ViewModels
                     obj.tjsjvisible = "Collapsed";
                     obj.btntxt = obj.normaltxt;
                     EnableOtherBtn(obj, true);
-                    DateTime now = DateTime.Now;
+                    DateTime now = _sbxxservice.GetServerTime();
                     _sbtjservice.Add(new sbtj()
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = now,
-                        tjkssj = base_sbxx.lgtjkssj,
+                        tjkssj = tjinfo.lgtjkssj,
                         tjlx = obj.tjlx,
-                        tjsj = (int)(now - base_sbxx.lgtjkssj).TotalSeconds,
+                        tjsj = (int)(now - tjinfo.lgtjkssj).TotalSeconds,
                         tjms = obj.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.lgtjkssj, now) ? "0" : "1",
+                        lx = Tool.IsCrossBC(tjinfo.lgtjkssj, now) ? "0" : "1",
                     });
                 }
                 else
@@ -1311,6 +1320,7 @@ namespace LBJOEE.ViewModels
         {
             try
             {
+                var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                 if (base_sbxx.sfgz=="Y")
                 {
                     _gztimer.Change(-1, -1);
@@ -1327,11 +1337,11 @@ namespace LBJOEE.ViewModels
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = runtime,
-                        tjkssj = base_sbxx.gzkssj,
+                        tjkssj = tjinfo.gzkssj,
                         tjlx = _gzbtn.tjlx,
-                        tjsj = (int)(runtime - base_sbxx.gzkssj).TotalSeconds,
+                        tjsj = (int)(runtime - tjinfo.gzkssj).TotalSeconds,
                         tjms = _gzbtn.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.gzkssj, now) ? "0" : "1"
+                        lx = Tool.IsCrossBC(tjinfo.gzkssj, now) ? "0" : "1"
                     });
                     _sbxxservice.SetGZtj(base_sbxx);
                 } else if(base_sbxx.sfts == "Y")
@@ -1350,11 +1360,11 @@ namespace LBJOEE.ViewModels
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = runtime,
-                        tjkssj = base_sbxx.tskssj,
+                        tjkssj = tjinfo.tskssj,
                         tjlx = _debugbtn.tjlx,
-                        tjsj = (int)(runtime - base_sbxx.tskssj).TotalSeconds,
+                        tjsj = (int)(runtime - tjinfo.tskssj).TotalSeconds,
                         tjms = _debugbtn.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.tskssj, now) ? "0" : "1"
+                        lx = Tool.IsCrossBC(tjinfo.tskssj, now) ? "0" : "1"
                     });
                     _sbxxservice.SetTStj(base_sbxx);
                 }
@@ -1374,11 +1384,11 @@ namespace LBJOEE.ViewModels
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = runtime,
-                        tjkssj = base_sbxx.xmkssj,
+                        tjkssj = tjinfo.xmkssj,
                         tjlx = _xmbtn.tjlx,
-                        tjsj = (int)(runtime - base_sbxx.xmkssj).TotalSeconds,
+                        tjsj = (int)(runtime - tjinfo.xmkssj).TotalSeconds,
                         tjms = _xmbtn.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.xmkssj, now) ? "0" : "1"
+                        lx = Tool.IsCrossBC(tjinfo.xmkssj, now) ? "0" : "1"
                     });
                     _sbxxservice.SetXMtj(base_sbxx);
                 } else if(base_sbxx.sfqttj == "Y")
@@ -1397,11 +1407,11 @@ namespace LBJOEE.ViewModels
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = runtime,
-                        tjkssj = base_sbxx.qttjkssj,
+                        tjkssj = tjinfo.qttjkssj,
                         tjlx = _qtbtn.tjlx,
-                        tjsj = (int)(runtime - base_sbxx.qttjkssj).TotalSeconds,
+                        tjsj = (int)(runtime - tjinfo.qttjkssj).TotalSeconds,
                         tjms = _qtbtn.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.qttjkssj, now) ? "0" : "1"
+                        lx = Tool.IsCrossBC(tjinfo.qttjkssj, now) ? "0" : "1"
                     });
                     _sbxxservice.SetQTtj(base_sbxx);
                 } else if(base_sbxx.sfhm == "Y")
@@ -1420,11 +1430,11 @@ namespace LBJOEE.ViewModels
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = runtime,
-                        tjkssj = base_sbxx.hmkssj,
+                        tjkssj = tjinfo.hmkssj,
                         tjlx = _hmbtn.tjlx,
-                        tjsj = (int)(runtime - base_sbxx.hmkssj).TotalSeconds,
+                        tjsj = (int)(runtime - tjinfo.hmkssj).TotalSeconds,
                         tjms = _hmbtn.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.hmkssj, now) ? "0" : "1"
+                        lx = Tool.IsCrossBC(tjinfo.hmkssj, now) ? "0" : "1"
                     });
                     _sbxxservice.SetHMtj(base_sbxx);
                 } else if(base_sbxx.sfjx == "Y")
@@ -1443,11 +1453,11 @@ namespace LBJOEE.ViewModels
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = runtime,
-                        tjkssj = base_sbxx.jxkssj,
+                        tjkssj = tjinfo.jxkssj,
                         tjlx = _jxbtn.tjlx,
-                        tjsj = (int)(runtime - base_sbxx.jxkssj).TotalSeconds,
+                        tjsj = (int)(runtime - tjinfo.jxkssj).TotalSeconds,
                         tjms = _jxbtn.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.jxkssj, now) ? "0" : "1"
+                        lx = Tool.IsCrossBC(tjinfo.jxkssj, now) ? "0" : "1"
                     });
                     _sbxxservice.SetJXtj(base_sbxx);
                 } else if(base_sbxx.sfql == "Y")
@@ -1466,11 +1476,11 @@ namespace LBJOEE.ViewModels
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = runtime,
-                        tjkssj = base_sbxx.qlkssj,
+                        tjkssj = tjinfo.qlkssj,
                         tjlx = _qlbtn.tjlx,
-                        tjsj = (int)(runtime - base_sbxx.qlkssj).TotalSeconds,
+                        tjsj = (int)(runtime - tjinfo.qlkssj).TotalSeconds,
                         tjms = _qlbtn.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.qlkssj, now) ? "0" : "1"
+                        lx = Tool.IsCrossBC(tjinfo.qlkssj, now) ? "0" : "1"
                     });
                     _sbxxservice.SetQLtj(base_sbxx);
                 } else if (base_sbxx.sfby == "Y")
@@ -1489,11 +1499,11 @@ namespace LBJOEE.ViewModels
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = runtime,
-                        tjkssj = base_sbxx.bytjkssj,
+                        tjkssj = tjinfo.bytjkssj,
                         tjlx = _bybtn.tjlx,
-                        tjsj = (int)(runtime - base_sbxx.bytjkssj).TotalSeconds,
+                        tjsj = (int)(runtime - tjinfo.bytjkssj).TotalSeconds,
                         tjms = _bybtn.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.bytjkssj, now) ? "0" : "1"
+                        lx = Tool.IsCrossBC(tjinfo.bytjkssj, now) ? "0" : "1"
                     });
                     _sbxxservice.SetBYTJ(base_sbxx);
                 }
@@ -1513,11 +1523,11 @@ namespace LBJOEE.ViewModels
                     {
                         sbbh = base_sbxx.sbbh,
                         tjjssj = runtime,
-                        tjkssj = base_sbxx.lgtjkssj,
+                        tjkssj = tjinfo.lgtjkssj,
                         tjlx = _lgtjbtn.tjlx,
-                        tjsj = (int)(runtime - base_sbxx.lgtjkssj).TotalSeconds,
+                        tjsj = (int)(runtime - tjinfo.lgtjkssj).TotalSeconds,
                         tjms = _lgtjbtn.tjms,
-                        lx = Tool.IsCrossBC(base_sbxx.lgtjkssj, now) ? "0" : "1"
+                        lx = Tool.IsCrossBC(tjinfo.lgtjkssj, now) ? "0" : "1"
                     });
                     _sbxxservice.SetLGTJ(base_sbxx);
                 }

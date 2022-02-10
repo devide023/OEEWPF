@@ -69,7 +69,7 @@ namespace OEECalc.Services
                     {
                         Db.Connection.Execute(sql.ToString(), obj);
                     }
-                    var q = Db.Connection.Query<sbtj>(tsql.ToString(), new { sbbh = item.sbbh, rq1 = bcinfo.kssj, rq2 = bcinfo.jssj });
+                    var q = Db.Connection.Query<sbtj>(tsql.ToString(), new { sbbh = item.sbbh, rq1 = bcinfo.kssj.AddHours(-24), rq2 = bcinfo.jssj });
                     //停机数据
                     foreach (var obj in q)
                     {

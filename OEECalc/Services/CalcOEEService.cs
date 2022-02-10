@@ -80,24 +80,18 @@ namespace OEECalc.Services
                 }
                 List<sbtj> retlist = new List<sbtj>();
                 //只点开始停机，未点结束停机情况
-                if (sbxx_entity.sfgz=="Y" || sbxx_entity.sfjx=="Y" || sbxx_entity.sfhm=="Y" || sbxx_entity.sfql=="Y" || sbxx_entity.sfqttj == "Y" || sbxx_entity.sfts=="Y" || sbxx_entity.sfxm=="Y" || sbxx_entity.sfby=="Y" || sbxx_entity.sflgtj=="Y")
+                retlist = Tool.TimeTool.Calc_SBTjSD(sbxx_entity).Where(t => t.tjkssj >= ksrq && t.tjkssj <= jsrq && t.tjjssj >= ksrq && t.tjjssj <= jsrq).ToList();
+                //完整停机数据
+                StringBuilder sql = new StringBuilder();
+                sql.Append("select id, sbbh, tjlx, tjsj, tjkssj, tjjssj, tjms from SBTJ where lx = '0' and sbbh = :sbbh and tjjssj between :rq1 and :rq2 ");
+                DynamicParameters p = new DynamicParameters();
+                p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                p.Add(":rq1", ksrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                p.Add(":rq2", jsrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                var list = Db.Connection.Query<sbtj>(sql.ToString(), p);
+                foreach (var item in list)
                 {
-                    retlist = Tool.TimeTool.Calc_SBTjSD(sbxx_entity).Where(t => t.tjkssj >= ksrq && t.tjkssj <= jsrq && t.tjjssj >= ksrq && t.tjjssj <= jsrq).ToList();
-                }
-                else//完整停机数据
-                {
-                    StringBuilder sql = new StringBuilder();
-                    sql.Append("select id, sbbh, tjlx, tjsj, tjkssj, tjjssj, tjms from SBTJ where lx = '0' and sbbh = :sbbh and tjjssj between :rq1 and :rq2 ");
-                    DynamicParameters p = new DynamicParameters();
-                    p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-                    p.Add(":rq1", ksrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
-                    p.Add(":rq2", jsrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
-                    var list = Db.Connection.Query<sbtj>(sql.ToString(), p);
-                    foreach (var item in list)
-                    {
-                        retlist.AddRange(Tool.TimeTool.Calc_SBTJSD(item).Where(t => t.tjkssj >= ksrq && t.tjkssj <= jsrq && t.tjjssj >= ksrq && t.tjjssj <= jsrq));
-                    }
-                    
+                    retlist.AddRange(Tool.TimeTool.Calc_SBTJSD(item).Where(t => t.tjkssj >= ksrq && t.tjkssj <= jsrq && t.tjjssj >= ksrq && t.tjjssj <= jsrq));
                 }
                 return retlist;
             }
@@ -105,6 +99,27 @@ namespace OEECalc.Services
             {
                 log.Error(e.Message);
                 return new List<sbtj>();
+            }
+        }
+        public IEnumerable<sbtj> GetTJInfoHis(string sbbh, DateTime ksrq, DateTime jsrq)
+        {
+            try
+            {
+                List<sbtj> retlist = new List<sbtj>();
+                //完整停机数据
+                StringBuilder sql = new StringBuilder();
+                sql.Append("select id, sbbh, tjlx, tjsj, tjkssj, tjjssj, tjms from SBTJ where lx = '1' and sbbh = :sbbh and tjkssj between :rq1 and :rq2 and tjjssj between :rq1 and :rq2 ");
+                DynamicParameters p = new DynamicParameters();
+                p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                p.Add(":rq1", ksrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                p.Add(":rq2", jsrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);
+                retlist = Db.Connection.Query<sbtj>(sql.ToString(), p).ToList();
+                return retlist;
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
         public decimal SBJP(string sbbh,DateTime ksrq,DateTime jsrq)
@@ -218,7 +233,7 @@ namespace OEECalc.Services
                     foreach (var item in sblist)
                     {
                         //停机信息
-                        var tjlist = GetTJInfo(item.sbbh, bckssj, bcjssj);
+                        var tjlist = GetTJInfoHis(item.sbbh, bckssj, bcjssj);
                         //装配计划
                         var zpjhlist = _messervice.Get_PlanInfo(item.sbqy, bckssj, bcjssj);
                         //节拍

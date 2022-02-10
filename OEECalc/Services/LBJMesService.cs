@@ -46,6 +46,8 @@ namespace OEECalc.Services
         {
             try
             {
+                //下线数统计开始时间小时数
+                var xxstjkssj = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["xxstjkssj"] == null ? "12" : System.Configuration.ConfigurationManager.AppSettings["xxstjkssj"].ToString());
                 StringBuilder sql = new StringBuilder();
                 sql.Append("select ta.wlmc,ta.matnr as wlbm,menge as xxcnt,tb.scsl,tb.zequp as sbqy,tb.zmould,tb.zemold ");
                 sql.Append(" from v_ztpp_ordscan_lbj ta, PP_ZPJH tb ");
@@ -69,7 +71,7 @@ namespace OEECalc.Services
                 {
                     ztprog = "1";
                 }
-                DateTime bckssj_next = bcjssj; 
+                DateTime bckssj_next = bckssj.AddHours(xxstjkssj); 
                 DateTime bcjssj_next = bcjssj.AddHours(12);
                 DynamicParameters p = new DynamicParameters();
                 p.Add(":sbqy", sbqy, System.Data.DbType.String, System.Data.ParameterDirection.Input);

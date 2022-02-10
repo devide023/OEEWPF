@@ -103,5 +103,72 @@ namespace LBJOEE.Tools
                 return false;
             }
         }
+
+        /// <summary>
+        /// 完成停机时段，停机时间分解到每个班次上
+        /// </summary>
+        /// <param name="tjinfo"></param>
+        /// <returns></returns>
+        public static IEnumerable<sbtj> Calc_SBTJSD(sbtj tjinfo)
+        {
+            try
+            {
+                List<sbtj> list = new List<sbtj>();
+                DateTime kstjsj = tjinfo.tjkssj;
+                DateTime jstjsj = tjinfo.tjjssj;
+                DateTime dt_ksrq = System.Convert.ToDateTime(null);
+                DateTime dt_jsrq = System.Convert.ToDateTime(null);
+                DateTime current_sj = System.Convert.ToDateTime(null);
+                current_sj = TimeTool.GetBCInfo(kstjsj).kssj;
+                while (DateTime.Compare(current_sj, jstjsj) <= 0)
+                {
+                    DateTime next_sj = current_sj.AddHours(12);
+                    //开始停机时间在班次范围内，结束时间不再班次范围内
+                    if (DateTime.Compare(current_sj, kstjsj) <= 0 && DateTime.Compare(kstjsj, next_sj) <= 0 &&
+                        DateTime.Compare(next_sj, jstjsj) < 0
+                        )
+                    {
+                        dt_ksrq = kstjsj;
+                        dt_jsrq = next_sj;
+                    }//开始停机时间不再班次范围内，结束停机时间在班次范围内
+                    else if (DateTime.Compare(current_sj, jstjsj) <= 0 && DateTime.Compare(jstjsj, next_sj) <= 0 &&
+                        DateTime.Compare(kstjsj, current_sj) < 0
+                        )
+                    {
+                        dt_ksrq = current_sj;
+                        dt_jsrq = jstjsj;
+                    }//开始停机时间，结束停机时间都在班次范围内
+                    else if (DateTime.Compare(current_sj, kstjsj) <= 0 && DateTime.Compare(kstjsj, next_sj) <= 0 &&
+                        DateTime.Compare(current_sj, jstjsj) <= 0 && DateTime.Compare(jstjsj, next_sj) <= 0
+                        )
+                    {
+                        dt_ksrq = kstjsj;
+                        dt_jsrq = jstjsj;
+                    }
+                    else
+                    {
+                        dt_ksrq = current_sj;
+                        dt_jsrq = next_sj;
+                    }
+                    list.Add(new sbtj()
+                    {
+                        sbbh = tjinfo.sbbh,
+                        tjkssj = dt_ksrq,
+                        tjjssj = dt_jsrq,
+                        tjsj = System.Convert.ToInt32((dt_jsrq - dt_ksrq).TotalSeconds),
+                        tjlx = tjinfo.tjlx,
+                        tjms = tjinfo.tjms,
+                        lx = "1",
+                    });
+                    current_sj = next_sj;
+                }
+                return list;
+            }
+            catch (Exception e)
+            {
+                log4net.LogManager.GetLogger("LBJOEE.Tools.TimeTool").Error(e.Message);
+                return new List<sbtj>();
+            }
+        }
     }
 }

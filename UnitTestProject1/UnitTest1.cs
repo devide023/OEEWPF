@@ -17,9 +17,9 @@ namespace UnitTestProject1
         public void TestMethod1()
         {
             CalcOEEService service = CalcOEEService.Instance;
-            for (int i = 16; i <= 31; i++)
+            for (int i = 24; i <= 29; i++)
             {
-                service.SaveOEE(Convert.ToDateTime("2021-12-"+i));
+                service.SaveOEE(Convert.ToDateTime("2022-01-" + i));
             }
         }
 
@@ -50,8 +50,8 @@ namespace UnitTestProject1
             //{
             //    Console.WriteLine($"{item.tjkssj}\t{item.tjjssj}\t{item.tjsj}");
             //}
-            CalcTJSJService service = CalcTJSJService.Instance;
-            service.CreateTJMX();
+            var list = TimeTool.GetBCInfo(Convert.ToDateTime("2022-02-08 08:05:00"));
+            Console.WriteLine(list);
 
         }
         [TestMethod]
@@ -59,12 +59,12 @@ namespace UnitTestProject1
         {
             sbtj sbtj = new sbtj()
             {
-                id = 767,
+                id = 3851,
                 sbbh = "D001",
                 tjlx = "计划停机",
                 tjsj = 33151,
-                tjkssj = System.Convert.ToDateTime("2022-01-29 11:26:27"),
-                tjjssj = System.Convert.ToDateTime("2022-01-29 16:01:21"),
+                tjkssj = System.Convert.ToDateTime("2022-1-6 8:51:24"),
+                tjjssj = System.Convert.ToDateTime("2022-2-8 9:01:31"),
                 tjms = "计划"
             };
             var list = OEECalc.Tool.TimeTool.Calc_SBTJSD(sbtj);
