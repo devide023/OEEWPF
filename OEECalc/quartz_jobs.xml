@@ -167,6 +167,23 @@
 				<cron-expression>0 5 8,20 * * ?</cron-expression>
 			</cron>
 		</trigger>
+	<job>
+			<name>EventYCGJSjJob</name>
+			<group>jobGroup</group>
+			<description>提取异常关机日志中关机时间</description>
+			<job-type>OEECalc.JOB.YCgjsj_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>EventYCGJSjTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>EventYCGJSjJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 0 * * * ?</cron-expression>
+			</cron>
+		</trigger>
 	</schedule>
 
 </job-scheduling-data>

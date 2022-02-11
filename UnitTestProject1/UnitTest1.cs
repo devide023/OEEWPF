@@ -73,8 +73,19 @@ namespace UnitTestProject1
                 Console.WriteLine($"{item.tjkssj}\t{item.tjjssj}\t{item.tjsj}");
             }
         }
+        [TestMethod]
+        public void TestReg()
+        {
+            try
+            {
+                EventLogService s = EventLogService.Instance;
+                s.DealYcgjLog();
+            }
+            catch (Exception)
+            {
 
-        
-
+                throw;
+            }
+        }
     }
 }

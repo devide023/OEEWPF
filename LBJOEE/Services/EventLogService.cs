@@ -37,7 +37,7 @@ namespace LBJOEE.Services
                 for (int i = 0; i < eventCollection.Count; i++)
                 {
                     EventLogEntry entry = eventCollection[i];
-                    if (entry.InstanceId == 41 || entry.InstanceId == 6008)
+                    if (entry.InstanceId == 41 || entry.InstanceId == 2147489656)
                     {
                         sys_eventlog eventlog = new sys_eventlog()
                         {
