@@ -283,6 +283,7 @@ namespace LBJOEE.Services
                             oklist.Add(ok);
                         }
                     }
+                    log.Info($"非运行状态采集条目：{list.Count()},转移条目：{oklist.Count()}");
                     if(oklist.Count() == list.Count())
                     {
                         SBRun?.Invoke(runtime);
