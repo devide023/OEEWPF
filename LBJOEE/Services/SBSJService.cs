@@ -109,6 +109,30 @@ namespace LBJOEE.Services
             }
         }
         /// <summary>
+        /// 查询相应时间内，非运行状态下上传数据条目
+        /// </summary>
+        /// <param name="sbbh"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        public int Get_NoRunQty(string sbbh, int interval = 7)
+        {
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("select count(sbbh) qty ");
+                sql.Append(" FROM   tjsjcj ");
+                sql.Append(" where  cjsj between sysdate - " + interval + " / (24 * 60) and sysdate ");
+                sql.Append(" and    sbbh = '"+sbbh+"'");
+                return Db.Connection.ExecuteScalar<int>(sql.ToString());
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                return 0;
+            }
+        }
+
+        /// <summary>
         /// 获取非运行状态下，上传的数据
         /// </summary>
         /// <returns></returns>
@@ -119,16 +143,20 @@ namespace LBJOEE.Services
                 StringBuilder sql = new StringBuilder();
                 sql.Append("select rowid as rid,cjsj, sbbh, sbip, jp, jgs, yssd, jysj, jssj, lbhd, zyyl, yxzt, bjzt, xhsj, sdzt, zdzt, jt, ljkjsj, dzcdqwz, dqyl, dqll, ksyl, essd, sssd, sdqd, tqxc, tcsj, lbwz, gswz, mysd, gssd, zzyl, ysyl, ysll, zltx, hml, jzsyhd, ysxc, xqctsj, zzysj, sscnylsjz, zycnylsjz, smqdyl, smqdll, smqdwz, smksyl, smksll, smkswz, skdyyl, skdyll, smdywz, smgyyl, smgyll, smgywz, kssmsd, mssmsd, kmhcyl, kmhcll, kmhcwz, kmkyyl, kmksll, kmkswz, kmgyyl, kmgyll, kmgywz, mskmsd, kskmsd, cx1jryl, cx1jrll, cx1htyl, cx1htll, cx2jryl, cx2jrll, cx2htyl, cx2htll, cxrys, cxcys, cxcndqyl, cxcnyltlz, cxcnylsdz, kyyswz, kyeswz, kysswz, kyzywz, kygcwz, dqylsd, dqllsd, dqyssd, dhylsd, dhllsd, dhyssd, dzcs, kscnyl, zycnyl, hchcwz, kmzzwz, mjwz, yw, mswz, mjtcjs, yasxc, jzhs, zhls, gsks, gsqj, sysj, rmjcs ");
                 sql.Append(" FROM   tjsjcj ");
-                sql.Append(" where  cjsj between sysdate - (1 / (24*60)) * :interval and sysdate ");
-                sql.Append(" and    sbbh = :sbbh ");
+                sql.Append(" where  cjsj between sysdate - (1 / (24*60)) * "+interval+" and sysdate ");
+                sql.Append(" and    sbbh = '"+sbbh+"' ");
                 var list = Db.Connection.Query<sjcjnew>(sql.ToString(), new { sbbh = sbbh, interval = interval });
+                log.Info($"非运行采集数据：{list.Count()}");
                 if (list.Count() > 0)
                 {
                     var jgs = Db.Connection.ExecuteScalar<long>("select max(jgs) FROM sjcj where sbbh = :sbbh ", new { sbbh = sbbh });
                     var minjgs = list.Min(t => t.jgs);
-                    if (jgs + 1 != minjgs)
+                    log.Info($"{sbbh}采集jgs:{jgs},查询minjgs：{minjgs}");
+                    if (jgs != minjgs)
                     {
-                        return Get_NoRunListByJGS(sbbh, jgs);
+                        var norunlist = Get_NoRunListByJGS(sbbh, jgs);
+                        log.Info($"大于运行时最大加工数的非运行停机数据：{norunlist.Count()}");
+                        return norunlist;
                     }
                     else
                     {

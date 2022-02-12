@@ -43,7 +43,7 @@ namespace LBJOEE.Services
             _base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
             _global_jgs = Tool.Local2JGS();
             _check_norun_timer = new Timer(CheckNoRunDataHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-            _check_norun_timer.Change(0, 1000 * 60);
+            _check_norun_timer.Change(0, 1000 * 30);
         }
 
         public Action<DateTime> SBRun { get; set; }
@@ -264,15 +264,18 @@ namespace LBJOEE.Services
                 {
                     int.TryParse(s.FirstOrDefault().confval, out interval);
                 }
-                var list = _sbsjservide.Get_NoRunList(this._base_sbxx.sbbh,interval);
                 int norunsl = 3;
                 var q = conflist.Where(t => t.confkey == "norun_cnt");
                 if (q.Count() > 0)
                 {
                     int.TryParse(q.FirstOrDefault().confval, out norunsl);
                 }
-                if (list.Count() >= norunsl)
+                var norunqty = _sbsjservide.Get_NoRunQty(this._base_sbxx.sbbh, interval);
+                //log.Info($"sbbh:{this._base_sbxx.sbbh},interval:{interval},norun_cnt:{norunsl},list:{norunqty}");
+                if (norunqty >= norunsl)
                 {
+                    _check_norun_timer.Change(-1, -1);
+                    var list = _sbsjservide.Get_NoRunList(this._base_sbxx.sbbh, interval);
                     DateTime runtime = list.Min(t => t.cjsj);
                     foreach (var item in list)
                     {
@@ -283,9 +286,10 @@ namespace LBJOEE.Services
                             oklist.Add(ok);
                         }
                     }
-                    log.Info($"非运行状态采集条目：{list.Count()},转移条目：{oklist.Count()}");
+                    //log.Info($"非运行状态采集条目：{list.Count()},转移条目：{oklist.Count()}");
                     if(oklist.Count() == list.Count())
                     {
+                        _check_norun_timer.Change(0, 1000 * 30);
                         SBRun?.Invoke(runtime);
                     }
                 }
