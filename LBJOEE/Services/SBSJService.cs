@@ -146,16 +146,16 @@ namespace LBJOEE.Services
                 sql.Append(" where  cjsj between sysdate - (1 / (24*60)) * "+interval+" and sysdate ");
                 sql.Append(" and    sbbh = '"+sbbh+"' ");
                 var list = Db.Connection.Query<sjcjnew>(sql.ToString(), new { sbbh = sbbh, interval = interval });
-                log.Info($"非运行采集数据：{list.Count()}");
+                //log.Info($"非运行采集数据：{list.Count()}");
                 if (list.Count() > 0)
                 {
                     var jgs = Db.Connection.ExecuteScalar<long>("select max(jgs) FROM sjcj where sbbh = :sbbh ", new { sbbh = sbbh });
                     var minjgs = list.Min(t => t.jgs);
-                    log.Info($"{sbbh}采集jgs:{jgs},查询minjgs：{minjgs}");
+                    //log.Info($"{sbbh}采集jgs:{jgs},查询minjgs：{minjgs}");
                     if (jgs != minjgs)
                     {
                         var norunlist = Get_NoRunListByJGS(sbbh, jgs);
-                        log.Info($"大于运行时最大加工数的非运行停机数据：{norunlist.Count()}");
+                        //log.Info($"大于运行时最大加工数的非运行停机数据：{norunlist.Count()}");
                         return norunlist;
                     }
                     else
