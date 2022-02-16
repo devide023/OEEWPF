@@ -181,15 +181,15 @@ namespace LBJOEE.Services
                 if (entity.sfgz == "Y")
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='Y',gzkssj=sysdate,tjms=:tjms,cjgz=:cjgz,gxsj=sysdate,tjkssj=sysdate where sbbh=:sbbh ");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
-                    UpdateYxzt(entity.sbbh, "gzkssj");
+                    
                 }
                 else
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='N',tjms='',cjgz=:cjgz,gxsj=sysdate,tjkssj=NULL where sbbh=:sbbh ");
-                    UpdateYxzt(entity.sbbh, "gzkssj"); 
-                    ret = Db.Connection.Execute(sql.ToString(), q);
+                    
                 }
+                ret = Db.Connection.Execute(sql.ToString(), q);
+                UpdateYxzt(entity.sbbh, "gzkssj");
                 return ret > 0 ? true : false;
             }
             catch (Exception e)
@@ -211,15 +211,15 @@ namespace LBJOEE.Services
                 if (entity.sfjx == "Y")
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='Y',jxkssj=sysdate,tjms=:tjms,gxsj=sysdate,tjkssj=sysdate where sbbh=:sbbh ");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
-                    UpdateYxzt(entity.sbbh, "jxkssj");
+                    
                 }
                 else
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='N',tjms='',gxsj=sysdate,tjkssj=NULL where sbbh=:sbbh ");
-                    UpdateYxzt(entity.sbbh, "jxkssj");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
+                    
                 }
+                ret = Db.Connection.Execute(sql.ToString(), q);
+                UpdateYxzt(entity.sbbh, "jxkssj");
                 return ret > 0 ? true : false;
             }
             catch (Exception e)
@@ -246,15 +246,15 @@ namespace LBJOEE.Services
                 if (entity.sflgtj == "Y")
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sflgtj='Y',lgtjkssj=sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh ");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
-                    UpdateYxzt(entity.sbbh, "lgtjkssj");
+                    
                 }
                 else
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sflgtj='N',lgtjkssj=NULL,tjms=NULL,gxsj=sysdate where sbbh=:sbbh ");                    
-                    UpdateYxzt(entity.sbbh, "lgtjkssj");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
+                    
                 }
+                ret = Db.Connection.Execute(sql.ToString(), q);
+                UpdateYxzt(entity.sbbh, "lgtjkssj");
                 return ret > 0 ? true : false;
             }
             catch (Exception e)
@@ -281,15 +281,15 @@ namespace LBJOEE.Services
                 if (entity.sfby == "Y")
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfby='Y',bytjkssj=sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh ");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
-                    UpdateYxzt(entity.sbbh, "bytjkssj");
+                    
                 }
                 else
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfby='N',bytjkssj=NULL,tjms=NULL,gxsj=sysdate where sbbh=:sbbh ");
-                    UpdateYxzt(entity.sbbh, "bytjkssj");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
+                    
                 }
+                ret = Db.Connection.Execute(sql.ToString(), q);
+                UpdateYxzt(entity.sbbh, "bytjkssj");
                 return ret > 0 ? true : false;
             }
             catch (Exception e)
@@ -311,15 +311,15 @@ namespace LBJOEE.Services
                 if (entity.sfql == "Y")
                 {
                     sql.Append(" update base_sbxx set sbzt=:sbzt,sfql='Y',qlkssj=sysdate,djkssj=sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
-                    UpdateYxzt(entity.sbbh, "qlkssj");
+                    
                 }
                 else
                 {
                     sql.Append(" update base_sbxx set sbzt=:sbzt,sfql='N',tjms='',djkssj = NULL,gxsj=sysdate where sbbh=:sbbh");
-                    UpdateYxzt(entity.sbbh, "qlkssj");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
+                    
                 }
+                ret = Db.Connection.Execute(sql.ToString(), q);
+                UpdateYxzt(entity.sbbh, "qlkssj");
                 return ret > 0 ? true : false;
             }
             catch (Exception e)
@@ -341,15 +341,15 @@ namespace LBJOEE.Services
                 if (entity.sfhm == "Y")
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='Y',hmkssj=sysdate,tjms=:tjms,gxsj=sysdate,tjkssj=sysdate where sbbh=:sbbh ");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
-                    UpdateYxzt(entity.sbbh, "hmkssj");
+                    
                 }
                 else
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='N',tjms='',gxsj=sysdate,tjkssj=NULL where sbbh=:sbbh ");
-                    UpdateYxzt(entity.sbbh, "hmkssj");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
+                    
                 }
+                ret = Db.Connection.Execute(sql.ToString(), q);
+                UpdateYxzt(entity.sbbh, "hmkssj");
                 return ret > 0 ? true : false;
             }
             catch (Exception e)
@@ -371,15 +371,15 @@ namespace LBJOEE.Services
                 if (entity.sfxm == "Y")
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfxm='Y',xmkssj=sysdate,tjms=:tjms,gxsj=sysdate,tjkssj=sysdate where sbbh=:sbbh ");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
-                    UpdateYxzt(entity.sbbh, "xmkssj");
+                    
                 }
                 else
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfxm='N',tjms='',gxsj=sysdate,tjkssj=NULL where sbbh=:sbbh ");
-                    UpdateYxzt(entity.sbbh, "xmkssj");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
+                    
                 }
+                ret = Db.Connection.Execute(sql.ToString(), q);
+                UpdateYxzt(entity.sbbh, "xmkssj");
                 return ret > 0 ? true : false;
             }
             catch (Exception e)
@@ -401,15 +401,15 @@ namespace LBJOEE.Services
                 if (entity.sfts == "Y")
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfts='Y',tskssj=sysdate,tjms=:tjms,gxsj=sysdate,tjkssj=sysdate where sbbh=:sbbh ");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
-                    UpdateYxzt(entity.sbbh, "tskssj");
+                    
                 }
                 else
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfts='N',tjms='',gxsj=sysdate,tjkssj=NULL where sbbh=:sbbh ");
-                    UpdateYxzt(entity.sbbh, "tskssj");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
+                    
                 }
+                ret = Db.Connection.Execute(sql.ToString(), q);
+                UpdateYxzt(entity.sbbh, "tskssj");
                 return ret > 0 ? true : false;
             }
             catch (Exception e)
@@ -431,15 +431,15 @@ namespace LBJOEE.Services
                 if (entity.sfqttj == "Y")
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='Y',qttjkssj=sysdate,djkssj = sysdate,tjms=:tjms,gxsj=sysdate where sbbh=:sbbh ");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
-                    UpdateYxzt(entity.sbbh, "qttjkssj");
+                    
                 }
                 else
                 {
                     sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='N',tjms='',djkssj =NULL,gxsj=sysdate where sbbh=:sbbh ");
-                    UpdateYxzt(entity.sbbh, "qttjkssj");
-                    ret = Db.Connection.Execute(sql.ToString(), q);
+                    
                 }
+                ret = Db.Connection.Execute(sql.ToString(), q);
+                UpdateYxzt(entity.sbbh, "qttjkssj");
                 return ret > 0 ? true : false;
             }
             catch (Exception e)
