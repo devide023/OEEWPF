@@ -30,7 +30,7 @@ namespace LBJOEE.Tools
 
         public static bool IsPing()
         {
-            string url = "172.16.201.135";
+            string url = "172.16.201.175";
             Ping ping = new Ping();
             PingReply pingReply = ping.Send(url, 3000);
             if(pingReply.Status == IPStatus.Success)
