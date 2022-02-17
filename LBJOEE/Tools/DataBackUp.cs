@@ -94,6 +94,7 @@ namespace LBJOEE.Tools
             try
             {
                 SBSJService service = SBSJService.Instance;
+                SBZTGXService _sbztbhservice = new SBZTGXService();
                 sjcjnew entity = new sjcjnew();
                 if (!Directory.Exists(path))
                 {
@@ -110,6 +111,11 @@ namespace LBJOEE.Tools
                     if (Tool.IsPing())
                     {
                         dynamic ret = service.AddByDate(entity);
+                        _sbztbhservice.AddByDate(new sbztbhb()
+                        {
+                            sj = entity.cjsj,
+                            sbbh=entity.sbbh
+                        });
                         if (!string.IsNullOrEmpty(ret.ToString()))
                         {
                             sr.Close();

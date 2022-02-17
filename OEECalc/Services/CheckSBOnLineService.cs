@@ -72,9 +72,9 @@ namespace OEECalc.Services
             {
                 var list = Get_SbList();
                 StringBuilder sql = new StringBuilder();
-                sql.Append("update base_sbxx set tjkssj = sysdate where sbbh=:sbbh and (sbzt='运行' or sbzt='') ");
+                sql.Append("update base_sbxx set tjkssj = sysdate where sbbh=:sbbh ");
                 StringBuilder sql1 = new StringBuilder();
-                sql1.Append("update base_sbxx set tjkssj = NULL where sbbh=:sbbh and (sbzt='运行' or sbzt='') ");
+                sql1.Append("update base_sbxx set tjkssj = NULL where sbbh=:sbbh ");
 
                 foreach (var item in list)
                 {

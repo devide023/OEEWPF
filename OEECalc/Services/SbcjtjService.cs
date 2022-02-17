@@ -81,6 +81,7 @@ namespace OEECalc.Services
         {
             try
             {
+                //时间间隔
                 var sjjg = System.Convert.ToInt32(ConfigurationManager.AppSettings["sjjg"] != null ? ConfigurationManager.AppSettings["sjjg"].ToString() : "3");                
                 var sblist = _sbxxservice.Get_SBXX_List().OrderBy(t => t.sbqy).ToList();
                 StringBuilder sql = new StringBuilder();

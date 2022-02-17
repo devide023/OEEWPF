@@ -78,8 +78,12 @@ namespace UnitTestProject1
         {
             try
             {
-                EventLogService s = EventLogService.Instance;
-                s.DealYcgjLog();
+                LBJOEE.Services.SBZTGXService s = new LBJOEE.Services.SBZTGXService();
+                s.AddByDate(new LBJOEE.Models.sbztbhb()
+                {
+                    sj = DateTime.Now.AddDays(-1),
+                    sbbh="A001",
+                }) ;
             }
             catch (Exception)
             {

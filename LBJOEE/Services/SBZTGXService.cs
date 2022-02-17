@@ -9,6 +9,44 @@ namespace LBJOEE.Services
 {
     public class SBZTGXService: DBImp<sbztbhb>
     {
+        public int AddByDate(sbztbhb entity)
+        {
+            try
+            {
+                int sjjg = 3;
+                StringBuilder sql = new StringBuilder();
+                sql.Append(" declare \n");
+                sql.Append(" v_sbzt varchar(50); \n");
+                sql.Append(" v_sbqy varchar(50); \n");
+                sql.Append(" v_sfcj number; \n");
+                sql.Append(" v_kssj date; \n");//开始时间
+                sql.Append(" v_jssj date; \n");//结束时间
+                sql.Append(" v_tempsj date; \n");
+                sql.Append(" v_sjjg number; \n");//时间间隔
+                sql.Append(" begin \n");
+                sql.Append(" select :sj into v_tempsj from dual;\n");
+                sql.Append($" select {sjjg} into v_sjjg from dual;\n");
+                sql.Append(" select to_date( to_char(v_tempsj,'yyyy-mm-dd hh24')||':'||to_char(to_number(to_char(v_tempsj,'mi')) - mod(to_number(to_char(v_tempsj,'mi')), v_sjjg))||':00','yyyy-mm-dd hh24:mi:ss') into v_kssj FROM dual;\n");
+                sql.Append(" select v_kssj + numtodsinterval(v_sjjg,'minute') into v_jssj from dual;\n");
+                sql.Append(" select sbzt,sbqy into v_sbzt,v_sbqy from base_sbxx where sbbh = :sbbh;\n");
+                sql.Append(" insert into sbztbhb(sj,sbbh,sbzt,sbqy) ");
+                sql.Append(" select :sj,:sbbh,v_sbzt,v_sbqy from dual; \n");
+                sql.Append(" select count(sbbh) into v_sfcj from sbztbhb where sbbh=:sbbh and sj between v_kssj and v_jssj;\n");
+                sql.Append(" insert into sbcjtj(kssj,sbbh,sfcj) values(v_kssj,:sbbh,v_sfcj);\n");
+                sql.Append(" commit;\n");
+                sql.Append(" exception \n");
+                sql.Append(" when others then \n");
+                sql.Append(" rollback; \n");
+                sql.Append(" return;  \n");
+                sql.Append(" end; \n");
+                return Db.Connection.Execute(sql.ToString(),entity);
+            }
+            catch (Exception e)
+            {
+                log4net.LogManager.GetLogger("LBJOEE.Services.SBZTGXService").Error(e.Message);
+                return 0;
+            }
+        }
         public override dynamic Add(sbztbhb entity)
         {
             try
