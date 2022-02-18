@@ -54,9 +54,14 @@ namespace LBJOEE.Services
                 if (Tools.Tool.IsPing())
                 {
                     StringBuilder sql = new StringBuilder();
-                    sql.Append("insert into sbztbhb(sbbh,sbzt,sbqy) ");
+                    sql.Append(" begin \n");
+                    sql.Append(" insert into sbztbhb(sbbh,sbzt,sbqy) ");
                     sql.Append(" values ");
-                    sql.Append(" (:sbbh,:sbzt,:sbqy)");
+                    sql.Append(" (:sbbh,:sbzt,:sbqy);\n");
+                    sql.Append(" update base_sbxx set djkssj=NULL where sbbh= :sbbh and djkssj is not null;\n");
+                    sql.Append(" update base_sbxx set tjkssj=NULL where sbbh= :sbbh and tjkssj is not null;\n");
+                    sql.Append(" commit;\n");
+                    sql.Append(" end;\n");
                     DynamicParameters p = new DynamicParameters();
                     p.Add(":sbbh", entity.sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
                     p.Add(":sbzt", entity.sbzt, System.Data.DbType.String, System.Data.ParameterDirection.Input);

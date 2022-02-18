@@ -225,14 +225,33 @@ namespace OEECalc.Services
                         {
                             totalsj = tsdj.Value.TotalSeconds;
                         }
-                        SbyxtjUpdate(new sbyxtj()
+                        if (totalsj > 1200)
                         {
-                            sbbh = item.sbbh,
-                            sbqy = item.sbqy,
-                            sbzt = "待机",
-                            sj = bdsj,
-                            sc = totalsj
-                        });
+                            SbyxtjUpdate(new sbyxtj()
+                            {
+                                sbbh = item.sbbh,
+                                sbqy = item.sbqy,
+                                sbzt = "待机",
+                                sj = bdsj,
+                                sc = totalsj
+                            });
+                        }
+                        else
+                        {
+                            tsdj = current_time - item.yxkssj;
+                            if (tsdj.HasValue)
+                            {
+                                totalsj = tsdj.Value.TotalSeconds;
+                            }
+                            SbyxtjUpdate(new sbyxtj()
+                            {
+                                sbbh = item.sbbh,
+                                sbqy = item.sbqy,
+                                sbzt = "运行",
+                                sj = bdsj,
+                                sc = totalsj
+                            });
+                        }
                     }
                     //脱机设备
                     if (item.tjkssj != null)

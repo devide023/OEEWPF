@@ -64,7 +64,7 @@ namespace LBJOEE.Services
                 sql.Append(" select ");
                 sql.Append(":sbbh, :tjlx, :tjsj, :tjkssj, :tjjssj, :tjms,:lx from dual where ");
                 sql.Append(" not exists (select id from SBTJ where sbbh=:sbbh and tjlx=:tjlx and tjsj=:tjsj and tjkssj=:tjkssj and tjjssj = :tjjssj) ");
-                if (entity.tjkssj != System.Convert.ToDateTime(null) && entity.tjjssj != System.Convert.ToDateTime(null))
+                if (entity.tjkssj != null && entity.tjjssj != null)
                 {
                     //停机明细
                     var bctjsj_list = Tools.TimeTool.Calc_SBTJSD(entity);

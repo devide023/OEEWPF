@@ -77,7 +77,7 @@ namespace LBJOEE.Tools
             }
             catch (Exception e)
             {
-                log4net.LogManager.GetLogger("OEECalc.Tool.TimeTool").Error(e.Message);
+                log4net.LogManager.GetLogger("LBJOEE.Tools.TimeTool").Error(e.Message);
                 return new sys_bcxx();
             }
         }
@@ -99,7 +99,7 @@ namespace LBJOEE.Tools
             }
             catch (Exception e)
             {
-                log4net.LogManager.GetLogger("OEECalc.Tool.TimeTool").Error(e.Message);
+                log4net.LogManager.GetLogger("LBJOEE.Tools.TimeTool").Error(e.Message);
                 return false;
             }
         }

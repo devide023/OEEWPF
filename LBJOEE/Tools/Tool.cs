@@ -104,12 +104,19 @@ namespace LBJOEE.Tools
         {
             try
             {
-                var bcxx = TimeTool.GetBCInfo(ksrq);
-                return !TimeTool.IsSameBC(new sbtj()
+                if (ksrq != null && jsrq != null)
                 {
-                    tjkssj = ksrq,
-                    tjjssj = jsrq
-                });
+                    var bcxx = TimeTool.GetBCInfo(ksrq);
+                    return !TimeTool.IsSameBC(new sbtj()
+                    {
+                        tjkssj = ksrq,
+                        tjjssj = jsrq
+                    });
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception)
             {

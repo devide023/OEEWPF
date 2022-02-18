@@ -93,7 +93,7 @@ namespace UnitTestProject1
             try
             {
                 Check_DataUploadService s = Check_DataUploadService.Instance;
-                s.Check();
+                s.NewCheck();
 
                 //CheckSBOnLineService s = CheckSBOnLineService.Instance;
                 //s.CheckOnLine();
