@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Dapper;
 namespace OEECalc.Services
 {
+    /// <summary>
+    /// 异常关机windows系统日志
+    /// </summary>
     public class EventLogService: OracleBaseFixture
     {
         private static EventLogService instance = null;

@@ -74,16 +74,33 @@ namespace UnitTestProject1
             }
         }
         [TestMethod]
+        public void TestSByxsc()
+        {
+            try
+            {
+                SBZTTJService service = SBZTTJService.Instance;
+                service.SBZT_ScTJ();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [TestMethod]
         public void TestReg()
         {
             try
             {
-                LBJOEE.Services.SBZTGXService s = new LBJOEE.Services.SBZTGXService();
-                s.AddByDate(new LBJOEE.Models.sbztbhb()
-                {
-                    sj = DateTime.Now.AddDays(-1),
-                    sbbh="A001",
-                }) ;
+                //Check_DataUploadService s = Check_DataUploadService.Instance;
+                //s.Check();
+
+                //CheckSBOnLineService s = CheckSBOnLineService.Instance;
+                //s.CheckOnLine();
+
+
+                CheckSBOnLineService s1 = CheckSBOnLineService.Instance;
+                s1.CheckOnLine();
             }
             catch (Exception)
             {

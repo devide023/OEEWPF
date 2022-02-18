@@ -180,12 +180,12 @@ namespace LBJOEE.Services
                 int ret = 0;
                 if (entity.sfgz == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='Y',gzkssj=sysdate,tjms=:tjms,cjgz=:cjgz,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='Y',gzkssj=sysdate,tjms=:tjms,cjgz=:cjgz,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=NULL where sbbh=:sbbh ");
                     
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='N',tjms='',cjgz=:cjgz,gxsj=sysdate,tjkssj=NULL,djkssj=NULL,gzkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfgz='N',tjms='',cjgz=:cjgz,gxsj=sysdate,tjkssj=NULL,djkssj=NULL,gzkssj=NULL,yxkssj=sysdate where sbbh=:sbbh ");
                     
                 }
                 ret = Db.Connection.Execute(sql.ToString(), q);
@@ -210,12 +210,12 @@ namespace LBJOEE.Services
                 int ret = 0;
                 if (entity.sfjx == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='Y',jxkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='Y',jxkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=NULL where sbbh=:sbbh ");
                     
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='N',tjms='',gxsj=sysdate,tjkssj=NULL,djkssj=NULL,jxkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfjx='N',tjms='',gxsj=sysdate,tjkssj=NULL,djkssj=NULL,jxkssj=NULL,yxkssj=sysdate where sbbh=:sbbh ");
                     
                 }
                 ret = Db.Connection.Execute(sql.ToString(), q);
@@ -245,12 +245,12 @@ namespace LBJOEE.Services
                 int ret = 0;
                 if (entity.sflgtj == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sflgtj='Y',lgtjkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sflgtj='Y',lgtjkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=NULL where sbbh=:sbbh ");
                     
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sflgtj='N',lgtjkssj=NULL,tjms=NULL,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh ");                    
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sflgtj='N',lgtjkssj=NULL,tjms=NULL,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=sysdate where sbbh=:sbbh ");                    
                     
                 }
                 ret = Db.Connection.Execute(sql.ToString(), q);
@@ -280,12 +280,12 @@ namespace LBJOEE.Services
                 int ret = 0;
                 if (entity.sfby == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfby='Y',bytjkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfby='Y',bytjkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=NULL where sbbh=:sbbh ");
                     
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfby='N',bytjkssj=NULL,tjms=NULL,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfby='N',bytjkssj=NULL,tjms=NULL,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=sysdate where sbbh=:sbbh ");
                     
                 }
                 ret = Db.Connection.Execute(sql.ToString(), q);
@@ -310,12 +310,12 @@ namespace LBJOEE.Services
                 int ret = 0;
                 if (entity.sfql == "Y")
                 {
-                    sql.Append(" update base_sbxx set sbzt=:sbzt,sfql='Y',qlkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh");
+                    sql.Append(" update base_sbxx set sbzt=:sbzt,sfql='Y',qlkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=NULL where sbbh=:sbbh");
                     
                 }
                 else
                 {
-                    sql.Append(" update base_sbxx set sbzt=:sbzt,sfql='N',tjms='',djkssj = NULL,gxsj=sysdate,tjkssj=NULL,qlkssj=NULL where sbbh=:sbbh");
+                    sql.Append(" update base_sbxx set sbzt=:sbzt,sfql='N',tjms='',djkssj = NULL,gxsj=sysdate,tjkssj=NULL,qlkssj=NULL,yxkssj=sysdate where sbbh=:sbbh");
                     
                 }
                 ret = Db.Connection.Execute(sql.ToString(), q);
@@ -340,12 +340,12 @@ namespace LBJOEE.Services
                 int ret = 0;
                 if (entity.sfhm == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='Y',hmkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='Y',hmkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=NULL where sbbh=:sbbh ");
                     
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='N',tjms='',gxsj=sysdate,tjkssj=NULL,hmkssj=NULL,djkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfhm='N',tjms='',gxsj=sysdate,tjkssj=NULL,hmkssj=NULL,djkssj=NULL,yxkssj=sysdate where sbbh=:sbbh ");
                     
                 }
                 ret = Db.Connection.Execute(sql.ToString(), q);
@@ -370,12 +370,12 @@ namespace LBJOEE.Services
                 int ret = 0;
                 if (entity.sfxm == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfxm='Y',xmkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfxm='Y',xmkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=NULL where sbbh=:sbbh ");
                     
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfxm='N',tjms='',gxsj=sysdate,tjkssj=NULL,djkssj=NULL,xmkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfxm='N',tjms='',gxsj=sysdate,tjkssj=NULL,djkssj=NULL,xmkssj=NULL,yxkssj=sysdate where sbbh=:sbbh ");
                     
                 }
                 ret = Db.Connection.Execute(sql.ToString(), q);
@@ -400,12 +400,12 @@ namespace LBJOEE.Services
                 int ret = 0;
                 if (entity.sfts == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfts='Y',tskssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfts='Y',tskssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=NULL where sbbh=:sbbh ");
                     
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfts='N',tjms='',gxsj=sysdate,tjkssj=NULL,djkssj=NULL,tskssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfts='N',tjms='',gxsj=sysdate,tjkssj=NULL,djkssj=NULL,tskssj=NULL,yxkssj=sysdate where sbbh=:sbbh ");
                     
                 }
                 ret = Db.Connection.Execute(sql.ToString(), q);
@@ -430,12 +430,12 @@ namespace LBJOEE.Services
                 int ret = 0;
                 if (entity.sfqttj == "Y")
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='Y',qttjkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='Y',qttjkssj=sysdate,tjms=:tjms,gxsj=sysdate,djkssj=NULL,tjkssj=NULL,yxkssj=NULL where sbbh=:sbbh ");
                     
                 }
                 else
                 {
-                    sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='N',tjms='',djkssj =NULL,gxsj=sysdate,tjkssj=NULL,qttjkssj=NULL where sbbh=:sbbh ");
+                    sql.Append("update base_sbxx set sbzt=:sbzt,sfqttj='N',tjms='',djkssj =NULL,gxsj=sysdate,tjkssj=NULL,qttjkssj=NULL,yxkssj=sysdate where sbbh=:sbbh ");
                     
                 }
                 ret = Db.Connection.Execute(sql.ToString(), q);

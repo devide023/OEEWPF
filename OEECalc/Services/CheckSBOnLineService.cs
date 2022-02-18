@@ -20,17 +20,6 @@ namespace OEECalc.Services
         private CheckSBOnLineService()
         {
             log = LogManager.GetLogger(this.GetType());
-            var sblist = Get_SbList();
-            foreach (var item in sblist)
-            {
-                _sbzx_list.Add(new sbzx()
-                {
-                    ip = item.ip,
-                    sbbh=item.sbbh,
-                    sbzt = item.sbzt,
-                    isonline = true,
-                });
-            }
         }
 
         public static CheckSBOnLineService Instance
@@ -70,50 +59,24 @@ namespace OEECalc.Services
         {
             try
             {
+                int ret = 0;
                 var list = Get_SbList();
                 StringBuilder sql = new StringBuilder();
-                sql.Append("update base_sbxx set tjkssj = sysdate where sbbh=:sbbh ");
+                sql.Append("update base_sbxx set tjkssj = sysdate where sbbh=:sbbh and sbzt='运行' and tjkssj is null ");
                 StringBuilder sql1 = new StringBuilder();
-                sql1.Append("update base_sbxx set tjkssj = NULL where sbbh=:sbbh ");
-
+                sql1.Append("update base_sbxx set tjkssj = NULL where sbbh=:sbbh and sbzt='运行' and tjkssj is not null ");
                 foreach (var item in list)
                 {
-                    var q = _sbzx_list.Where(t => t.sbbh == item.sbbh);
                     var isok = Tool.NetCheck.IsPing(item.ip);
-                    //有新增设备加入全局变量
-                    if (q.Count() == 0)
+                    if (!isok)
                     {
-                        _sbzx_list.Add(new sbzx()
-                        {
-                            ip = item.ip,
-                            sbbh = item.sbbh,
-                            sbzt = item.sbzt,
-                            isonline = isok,
-                        });
+                       ret = Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh });
                     }
-                    else//原有设备
+                    else
                     {
-                        var fitem = q.FirstOrDefault();
-                        if (fitem != null)
-                        {
-                            if(fitem.isonline != isok)
-                            {
-                                //更新数据表,当设备不能ping通时
-                                if (!isok)
-                                {
-                                    Db.Connection.Execute(sql.ToString(), new { sbbh = item.sbbh });
-                                }
-                                else
-                                {
-                                    Db.Connection.Execute(sql1.ToString(), new { sbbh = item.sbbh });
-                                }
-                                fitem.isonline = isok;
-                            }
-                        }
+                       ret = Db.Connection.Execute(sql1.ToString(), new { sbbh = item.sbbh });
                     }
                 }
-                //log.Info(JsonConvert.SerializeObject(_sbzx_list));
-
             }
             catch (Exception e)
             {

@@ -159,6 +159,10 @@ namespace OEECalc.Model
         /// 离岗停机开始时间
         /// </summary>
         public DateTime? lgtjkssj { get; set; }
+        /// <summary>
+        /// 运行开始时间
+        /// </summary>
+        public DateTime? yxkssj { get; set; }
 
     }
 

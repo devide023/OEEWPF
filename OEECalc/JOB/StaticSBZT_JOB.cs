@@ -17,8 +17,8 @@ namespace OEECalc.JOB
         {
             return Task.Run(() =>
             {  
-                //设备状态统计
-                service.sbzttj();
+                //设备状态运行时长统计
+                service.SBZT_ScTJ();
             });
         }
     }

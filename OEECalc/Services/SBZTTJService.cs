@@ -145,6 +145,218 @@ namespace OEECalc.Services
             }
         }
         /// <summary>
+        /// 获取半点时间
+        /// </summary>
+        /// <param name="current_time"></param>
+        /// <returns></returns>
+        private DateTime SJInfo(DateTime current_time)
+        {
+            var d1 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:00:00"));
+            var d2 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:30:00"));
+            var d3 = d1.AddHours(1);
+            DateTime sj = d1;
+            //前半点
+            if (DateTime.Compare(current_time, d2) < 0 && DateTime.Compare(current_time, d1) >= 0)
+            {
+                sj = d1;
+            }
+            //后半点
+            if (DateTime.Compare(current_time, d2) >= 0 && DateTime.Compare(current_time, d3) < 0)
+            {
+                sj = d2;
+            }
+            return sj;
+        }
+        private void SbyxtjUpdate(sbyxtj item)
+        {
+            try
+            {
+                //查询条件
+                PredicateGroup pg = new PredicateGroup()
+                {
+                    Operator = GroupOperator.And,
+                    Predicates = new List<IPredicate>()
+                };
+                pg.Predicates.Clear();
+                pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sbbh, Operator.Eq, item.sbbh));
+                pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sj, Operator.Eq, item.sj));
+                var qlist = Db.GetList<sbyxtj>(pg);
+                if (qlist.Count() == 0)
+                {
+                    save_sbzt(item);
+                }
+                else
+                {
+                    sbyxtj first = qlist.FirstOrDefault();
+                    first.sbzt = item.sbzt;
+                    first.sc = item.sc;
+                    var r = edit_sbzt(first);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
+        /// <summary>
+        /// 设备状态时长计算
+        /// </summary>
+        public void SBZT_ScTJ()
+        {
+            try
+            {
+                var current_time = _timeutil.ServerTime();
+                double totalsj = 0;
+                //半点时间
+                var bdsj = SJInfo(current_time);
+                var sblist = _sbxxservice.Get_SBXX_List().OrderBy(t => t.sbqy).ToList();
+                //运行设备
+                var yxsblist = sblist.Where(t => t.yxkssj != null);
+                //非运行设备
+                var fyxsblist = sblist.Where(t => t.sbzt != "运行");
+                //待机设备
+                var djsblist = sblist.Where(t => t.djkssj != null );
+                //停机设备
+                var tjsblist = sblist.Where(t => t.tjkssj != null);
+                //运行状态
+                foreach (var item in yxsblist)
+                {
+                    var tsyx = current_time - item.yxkssj;
+                    if (tsyx.HasValue)
+                    {
+                        totalsj = tsyx.Value.TotalSeconds;
+                    }
+                    SbyxtjUpdate(new sbyxtj()
+                    {
+                        sbbh = item.sbbh,
+                        sbqy = item.sbqy,
+                        sbzt = item.sbzt,
+                        sj = bdsj,
+                        sc = totalsj
+                    });
+                }
+                //待机状态
+                foreach (var item in djsblist)
+                {
+                    var tsdj = current_time - item.djkssj;
+                    if (tsdj.HasValue)
+                    {
+                        totalsj = tsdj.Value.TotalSeconds;
+                    }
+                    SbyxtjUpdate(new sbyxtj()
+                    {
+                        sbbh = item.sbbh,
+                        sbqy = item.sbqy,
+                        sbzt = item.sbzt,
+                        sj = bdsj,
+                        sc = totalsj
+                    });
+                }
+                //脱机状态
+                foreach (var item in tjsblist)
+                {
+                    var tstj = current_time - item.tjkssj;
+                    if (tstj.HasValue)
+                    {
+                        totalsj = tstj.Value.TotalSeconds;
+                    }
+                    SbyxtjUpdate(new sbyxtj()
+                    {
+                        sbbh = item.sbbh,
+                        sbqy = item.sbqy,
+                        sbzt = item.sbzt,
+                        sj = bdsj,
+                        sc = totalsj
+                    });
+                }
+                //非运行状态
+                foreach (var item in fyxsblist)
+                {
+                    switch (item.sbzt)
+                    {
+                        case "待料":
+                            var tsdl = current_time - item.qlkssj;
+                            if (tsdl.HasValue)
+                            {
+                                totalsj = tsdl.Value.TotalSeconds;
+                            }
+                            break;
+                        case "检修":
+                            var tsjx = current_time - item.jxkssj;
+                            if (tsjx.HasValue)
+                            {
+                                totalsj = tsjx.Value.TotalSeconds;
+                            }
+                            break;
+                        case "换模":
+                            var tshm = current_time - item.hmkssj;
+                            if (tshm.HasValue)
+                            {
+                                totalsj = tshm.Value.TotalSeconds;
+                            }
+                            break;
+                        case "修机":
+                            var tsgz = current_time - item.gzkssj;
+                            if (tsgz.HasValue)
+                            {
+                                totalsj = tsgz.Value.TotalSeconds;
+                            }
+                            break;
+                        case "计划":
+                            var qtts = current_time - item.qttjkssj;
+                            if (qtts.HasValue)
+                            {
+                                totalsj = qtts.Value.TotalSeconds;
+                            }
+                            break;
+                        case "离岗":
+                            var lgts = current_time - item.lgtjkssj;
+                            if (lgts.HasValue)
+                            {
+                                totalsj = lgts.Value.TotalSeconds;
+                            }
+                            break;
+                        case "修模":
+                            var tsxm = current_time - item.xmkssj;
+                            if (tsxm.HasValue)
+                            {
+                                totalsj = tsxm.Value.TotalSeconds;
+                            }
+                            break;
+                        case "调试":
+                            var tsts = current_time - item.tskssj;
+                            if (tsts.HasValue)
+                            {
+                                totalsj = tsts.Value.TotalSeconds;
+                            }
+                            break;
+                        case "保养":
+                            var byts = current_time - item.bytjkssj;
+                            if (byts.HasValue)
+                            {
+                                totalsj = byts.Value.TotalSeconds;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    SbyxtjUpdate(new sbyxtj()
+                    {
+                        sbbh = item.sbbh,
+                        sbqy = item.sbqy,
+                        sbzt = item.sbzt,
+                        sj = bdsj,
+                        sc = totalsj
+                    });
+                }
+                
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message + e.StackTrace);
+            }
+        }
+        /// <summary>
         /// 设备状态统计
         /// </summary>
         public void sbzttj()
@@ -153,21 +365,8 @@ namespace OEECalc.Services
             {
                 //时间间隔配置
                 var sjjgconf = SCSJConf();
-                DateTime current_time = _timeutil.ServerTime();
-                var d1 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:00:00"));
-                var d2 = System.Convert.ToDateTime(current_time.ToString("yyyy-MM-dd HH:30:00"));
-                var d3 = d1.AddHours(1);
-                DateTime sj = d1;
-                //前半点
-                if (DateTime.Compare(current_time, d2) < 0 && DateTime.Compare(current_time, d1) >= 0)
-                {
-                    sj = d1;
-                }
-                //后半点
-                if (DateTime.Compare(current_time, d2) >= 0 && DateTime.Compare(current_time, d3) < 0)
-                {
-                    sj = d2;
-                }
+                var current_time = _timeutil.ServerTime();
+                var sj = SJInfo(current_time);
                 var sblist = _sbxxservice.Get_SBXX_List().OrderBy(t => t.sbqy).ToList();
                 StringBuilder sql = new StringBuilder();
                 sql.Append("select id, sj, sbbh, sbzt, sbqy,sftj ");
@@ -184,7 +383,7 @@ namespace OEECalc.Services
                 DynamicParameters dypar = new DynamicParameters();
                 foreach (var item in sblist)
                 {
-                    string yxzt = string.Empty;
+                    string yxzt = item.sbzt;
                     var qyx = sbyxsjlist.Where(t => t.sbbh == item.sbbh);
                     var pos = -1;
                     if (qyx.Count() == 0)
@@ -200,7 +399,7 @@ namespace OEECalc.Services
                     {
                         sbyxsj_entity = sbyxsjlist[pos];
                     }
-                    //查询5分钟内是否有数据上传
+                    //判断是否待机
                     Int32 sbsjjg = 5;
                     var sjjg_query = sjjgconf.Where(t => t.sbbh == item.sbbh);
                     if (sjjg_query.Count() > 0)
@@ -213,21 +412,17 @@ namespace OEECalc.Services
                     if (ztlist.Count() > 0)
                     {
                         yxzt = ztlist.First().sbzt;
-                        if(sbyxsj_entity.jsflag == 0)
-                        {
-                            sbyxsj_entity.jsflag = sbyxsj_entity.jsflag + 1;
-                            sbyxsj_entity.yxkssj = DateTime.Now;
-                        }
+                        //if(sbyxsj_entity.jsflag == 0)
+                        //{
+                        //    sbyxsj_entity.jsflag = sbyxsj_entity.jsflag + 1;
+                        //    sbyxsj_entity.yxkssj = DateTime.Now;
+                        //}
                     }
                     else
                     {
                         if(item.sfgz=="N" && item.sfjx=="N" && item.sfhm=="N" && item.sfxm=="N" && item.sfts=="N" && item.sfqttj=="N" && item.sfql == "N" && item.sfby=="N" && item.sflgtj =="N")
                         {
                             yxzt = "待机";
-                        }
-                        else
-                        {
-                            yxzt = item.sbzt;
                         }
                         Remove_SBYXSJItem(item.sbbh);
                     }

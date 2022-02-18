@@ -274,7 +274,7 @@ namespace LBJOEE.Services
                 //log.Info($"sbbh:{this._base_sbxx.sbbh},interval:{interval},norun_cnt:{norunsl},list:{norunqty}");
                 if (norunqty >= norunsl)
                 {
-                    _check_norun_timer.Change(-1, -1);
+                    _check_norun_timer.Change(Timeout.Infinite, Timeout.Infinite);
                     var list = _sbsjservide.Get_NoRunList(this._base_sbxx.sbbh, interval);
                     DateTime runtime = list.Min(t => t.cjsj);
                     foreach (var item in list)

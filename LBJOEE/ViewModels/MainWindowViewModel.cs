@@ -185,7 +185,7 @@ namespace LBJOEE.ViewModels
                 _read_sbxx_timer = new Timer(ReadSbxxHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 _read_sbxx_timer.Change(0, 1000 * 60 * 10);
                 _databackup_timer = new Timer(DataBackupHandle, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
-                _databackup_timer.Change(0, 1000 * 60 * 5);
+                _databackup_timer.Change(100, 1000 * 60 * 5);
                 Task.Run(() =>
                 {
                     _eventlogservice.Save_EventLog(base_sbxx);
@@ -582,40 +582,40 @@ namespace LBJOEE.ViewModels
             _lgtjtimer = new Timer(CalcLGtjsj, _lgtjbtn, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             if (_jxbtn.sfjx)
             {
-                _jxtimer.Change(_jxbtn.tjsj, 1000);
+                _jxtimer.Change(0, 1000);
             }
-            if (_gzbtn.sfgz)
+            else if (_gzbtn.sfgz)
             {
                 _gzbtn.tjsjvisible = "Visible";
-                _gztimer.Change(_gzbtn.tjsj, 1000);
+                _gztimer.Change(0, 1000);
             }
-            if (_hmbtn.sfhm)
+            else if (_hmbtn.sfhm)
             {
-                _hmtimer.Change(_hmbtn.tjsj, 1000);
+                _hmtimer.Change(0, 1000);
             }
-            if (_qlbtn.sfql)
+            else if (_qlbtn.sfql)
             {
-                _qltimer.Change(_qlbtn.tjsj, 1000);
+                _qltimer.Change(0, 1000);
             }
-            if (_qtbtn.sfqt)
+            else if (_qtbtn.sfqt)
             {
-                _qttimer.Change(_qtbtn.tjsj, 1000);
+                _qttimer.Change(0, 1000);
             }
-            if (_xmbtn.sfxm)
+            else if (_xmbtn.sfxm)
             {
-                _xmtimer.Change(_xmbtn.tjsj, 1000);
+                _xmtimer.Change(0, 1000);
             }
-            if (_debugbtn.sfts)
+            else if (_debugbtn.sfts)
             {
-                _tstimer.Change(_debugbtn.tjsj, 1000);
+                _tstimer.Change(0, 1000);
             }
-            if (_bybtn.sfby)
+            else if (_bybtn.sfby)
             {
-                _bytimer.Change(_bybtn.tjsj, 1000);
+                _bytimer.Change(0, 1000);
             }
-            if (_lgtjbtn.sflgtj)
+            else if (_lgtjbtn.sflgtj)
             {
-                _lgtjtimer.Change(_lgtjbtn.tjsj, 1000);
+                _lgtjtimer.Change(0, 1000);
             }
         }
 
@@ -747,7 +747,7 @@ namespace LBJOEE.ViewModels
                 if (base_sbxx.sfgz == "Y")
                 {
                     var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
-                    _gztimer.Change(-1, -1);
+                    _gztimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfgz = "N";
                     obj.flag = 0;
@@ -801,7 +801,7 @@ namespace LBJOEE.ViewModels
                 if (base_sbxx.sfts == "Y")
                 {
                     var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
-                    _tstimer.Change(-1, -1);
+                    _tstimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfts = "N";
                     obj.tjsj = 0;
@@ -853,7 +853,7 @@ namespace LBJOEE.ViewModels
                 if (base_sbxx.sfxm == "Y")
                 {
                     var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
-                    _xmtimer.Change(-1, -1);
+                    _xmtimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfxm = "N";
                     obj.tjsj = 0;
@@ -904,7 +904,7 @@ namespace LBJOEE.ViewModels
                 if (base_sbxx.sfqttj == "Y")
                 {
                     var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
-                    _qttimer.Change(-1, -1);
+                    _qttimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfqttj = "N";
                     obj.tjsj = 0;
@@ -956,7 +956,7 @@ namespace LBJOEE.ViewModels
                 if (base_sbxx.sfhm == "Y")
                 {
                     var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
-                    _hmtimer.Change(-1, -1);
+                    _hmtimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfhm = "N";
                     obj.tjsj = 0;
@@ -1008,7 +1008,7 @@ namespace LBJOEE.ViewModels
                 if (base_sbxx.sfjx == "Y")
                 {
                     var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
-                    _jxtimer.Change(-1, -1);
+                    _jxtimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfjx = "N";
                     obj.tjsj = 0;
@@ -1060,7 +1060,7 @@ namespace LBJOEE.ViewModels
                 if (base_sbxx.sfql == "Y")
                 {
                     var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
-                    _qltimer.Change(-1, -1);
+                    _qltimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfql = "N";
                     obj.tjsj = 0;
@@ -1113,7 +1113,7 @@ namespace LBJOEE.ViewModels
                 if (base_sbxx.sfby == "Y")
                 {
                     var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
-                    _bytimer.Change(-1, -1);
+                    _bytimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfby = "N";
                     obj.tjsj = 0;
@@ -1165,7 +1165,7 @@ namespace LBJOEE.ViewModels
                 if (base_sbxx.sflgtj == "Y")
                 {
                     var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
-                    _lgtjtimer.Change(-1, -1);
+                    _lgtjtimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sflgtj = "N";
                     obj.tjsj = 0;
@@ -1323,7 +1323,7 @@ namespace LBJOEE.ViewModels
                 var tjinfo = _sbxxservice.Find_Sbxx_ByIp();
                 if (base_sbxx.sfgz=="Y")
                 {
-                    _gztimer.Change(-1, -1);
+                    _gztimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfgz = "N";
                     _gzbtn.flag = 0;
@@ -1346,7 +1346,7 @@ namespace LBJOEE.ViewModels
                     _sbxxservice.SetGZtj(base_sbxx);
                 } else if(base_sbxx.sfts == "Y")
                 {
-                    _tstimer.Change(-1, -1);
+                    _tstimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfts = "N";
                     _debugbtn.tjsj = 0;
@@ -1370,7 +1370,7 @@ namespace LBJOEE.ViewModels
                 }
                 else if(base_sbxx.sfxm == "Y")
                 {
-                    _xmtimer.Change(-1, -1);
+                    _xmtimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfxm = "N";
                     _xmbtn.tjsj = 0;
@@ -1393,7 +1393,7 @@ namespace LBJOEE.ViewModels
                     _sbxxservice.SetXMtj(base_sbxx);
                 } else if(base_sbxx.sfqttj == "Y")
                 {
-                    _qttimer.Change(-1, -1);
+                    _qttimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfqttj = "N";
                     _qtbtn.tjsj = 0;
@@ -1416,7 +1416,7 @@ namespace LBJOEE.ViewModels
                     _sbxxservice.SetQTtj(base_sbxx);
                 } else if(base_sbxx.sfhm == "Y")
                 {
-                    _hmtimer.Change(-1, -1);
+                    _hmtimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfhm = "N";
                     _hmbtn.tjsj = 0;
@@ -1439,7 +1439,7 @@ namespace LBJOEE.ViewModels
                     _sbxxservice.SetHMtj(base_sbxx);
                 } else if(base_sbxx.sfjx == "Y")
                 {
-                    _jxtimer.Change(-1, -1);
+                    _jxtimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfjx = "N";
                     _jxbtn.tjsj = 0;
@@ -1462,7 +1462,7 @@ namespace LBJOEE.ViewModels
                     _sbxxservice.SetJXtj(base_sbxx);
                 } else if(base_sbxx.sfql == "Y")
                 {
-                    _qltimer.Change(-1, -1);
+                    _qltimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfql = "N";
                     _qlbtn.tjsj = 0;
@@ -1485,7 +1485,7 @@ namespace LBJOEE.ViewModels
                     _sbxxservice.SetQLtj(base_sbxx);
                 } else if (base_sbxx.sfby == "Y")
                 {
-                    _bytimer.Change(-1, -1);
+                    _bytimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sfby = "N";
                     _bybtn.tjsj = 0;
@@ -1509,7 +1509,7 @@ namespace LBJOEE.ViewModels
                 }
                 else if (base_sbxx.sflgtj == "Y")
                 {
-                    _lgtjtimer.Change(-1, -1);
+                    _lgtjtimer.Change(Timeout.Infinite, Timeout.Infinite);
                     base_sbxx.sbzt = "运行";
                     base_sbxx.sflgtj = "N";
                     _lgtjbtn.tjsj = 0;
