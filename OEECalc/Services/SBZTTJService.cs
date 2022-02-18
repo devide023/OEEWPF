@@ -211,63 +211,63 @@ namespace OEECalc.Services
                 var bdsj = SJInfo(current_time);
                 var sblist = _sbxxservice.Get_SBXX_List().OrderBy(t => t.sbqy).ToList();
                 //运行设备
-                var yxsblist = sblist.Where(t => t.yxkssj != null);
+                var yxsblist = sblist.Where(t => t.sbzt == "运行");
                 //非运行设备
                 var fyxsblist = sblist.Where(t => t.sbzt != "运行");
-                //待机设备
-                var djsblist = sblist.Where(t => t.djkssj != null );
-                //停机设备
-                var tjsblist = sblist.Where(t => t.tjkssj != null);
                 //运行状态
                 foreach (var item in yxsblist)
                 {
-                    var tsyx = current_time - item.yxkssj;
-                    if (tsyx.HasValue)
+                    //待机设备
+                    if (item.djkssj != null)
                     {
-                        totalsj = tsyx.Value.TotalSeconds;
+                        var tsdj = current_time - item.djkssj;
+                        if (tsdj.HasValue)
+                        {
+                            totalsj = tsdj.Value.TotalSeconds;
+                        }
+                        SbyxtjUpdate(new sbyxtj()
+                        {
+                            sbbh = item.sbbh,
+                            sbqy = item.sbqy,
+                            sbzt = "待机",
+                            sj = bdsj,
+                            sc = totalsj
+                        });
                     }
-                    SbyxtjUpdate(new sbyxtj()
+                    //脱机设备
+                    if (item.tjkssj != null)
                     {
-                        sbbh = item.sbbh,
-                        sbqy = item.sbqy,
-                        sbzt = item.sbzt,
-                        sj = bdsj,
-                        sc = totalsj
-                    });
-                }
-                //待机状态
-                foreach (var item in djsblist)
-                {
-                    var tsdj = current_time - item.djkssj;
-                    if (tsdj.HasValue)
-                    {
-                        totalsj = tsdj.Value.TotalSeconds;
+                        var tstj = current_time - item.tjkssj;
+                        if (tstj.HasValue)
+                        {
+                            totalsj = tstj.Value.TotalSeconds;
+                        }
+                        SbyxtjUpdate(new sbyxtj()
+                        {
+                            sbbh = item.sbbh,
+                            sbqy = item.sbqy,
+                            sbzt = "脱机",
+                            sj = bdsj,
+                            sc = totalsj
+                        });
                     }
-                    SbyxtjUpdate(new sbyxtj()
+                    //运行
+                    if(item.yxkssj != null)
                     {
-                        sbbh = item.sbbh,
-                        sbqy = item.sbqy,
-                        sbzt = item.sbzt,
-                        sj = bdsj,
-                        sc = totalsj
-                    });
-                }
-                //脱机状态
-                foreach (var item in tjsblist)
-                {
-                    var tstj = current_time - item.tjkssj;
-                    if (tstj.HasValue)
-                    {
-                        totalsj = tstj.Value.TotalSeconds;
+                        var tsyx = current_time - item.yxkssj;
+                        if (tsyx.HasValue)
+                        {
+                            totalsj = tsyx.Value.TotalSeconds;
+                        }
+                        SbyxtjUpdate(new sbyxtj()
+                        {
+                            sbbh = item.sbbh,
+                            sbqy = item.sbqy,
+                            sbzt = "运行",
+                            sj = bdsj,
+                            sc = totalsj
+                        });
                     }
-                    SbyxtjUpdate(new sbyxtj()
-                    {
-                        sbbh = item.sbbh,
-                        sbqy = item.sbqy,
-                        sbzt = item.sbzt,
-                        sj = bdsj,
-                        sc = totalsj
-                    });
                 }
                 //非运行状态
                 foreach (var item in fyxsblist)

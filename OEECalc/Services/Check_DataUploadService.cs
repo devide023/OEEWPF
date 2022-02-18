@@ -115,7 +115,11 @@ namespace OEECalc.Services
             try
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("update BASE_SBXX set djkssj = sysdate where sbbh = :sbbh and sbzt = '运行' and djkssj is null ");
+                sql.Append(" begin \n");
+                sql.Append(" update BASE_SBXX set djkssj = sysdate where sbbh = :sbbh and sbzt = '运行' and djkssj is null; \n");
+                sql.Append(" update BASE_SBXX set yxkssj = NULL where sbbh = :sbbh and sbzt = '运行' and yxkssj is not null;\n");
+                sql.Append(" commit;\n");
+                sql.Append(" end; \n");
                 DynamicParameters p = new DynamicParameters();
                 p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
                 return Db.Connection.Execute(sql.ToString(), p) > 0 ? true : false;
@@ -136,7 +140,11 @@ namespace OEECalc.Services
             try
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("update BASE_SBXX set djkssj = NULL where sbbh = :sbbh and sbzt = '运行' and djkssj is not null");
+                sql.Append(" begin \n");
+                sql.Append(" update BASE_SBXX set djkssj = NULL where sbbh = :sbbh and sbzt = '运行' and djkssj is not null;\n");
+                sql.Append(" update BASE_SBXX set yxkssj = sysdate where sbbh = :sbbh and sbzt = '运行' and yxkssj is null;\n");
+                sql.Append(" commit;\n");
+                sql.Append(" end; \n");
                 return Db.Connection.Execute(sql.ToString(), new { sbbh = sbbh }) > 0 ? true : false;
             }
             catch (Exception e)
@@ -168,13 +176,49 @@ namespace OEECalc.Services
             }
         }
 
+        public void NewCheck()
+        {
+            try
+            {
+                var sjjgconf = DJSJConf();
+                var sbxxlist = Get_SBXX_List();
+                foreach (var item in sbxxlist)
+                {
+                    Int32 sbsjjg = 5;
+                    var sjjg_query = sjjgconf.Where(t => t.sbbh == item.sbbh);
+                    if (sjjg_query.Count() > 0)
+                    {
+                        sbsjjg = sjjg_query.First().sjjg;
+                    }
+                    var datalist = Get_ZTBH_List(item.sbbh, sbsjjg);
+                    var isok = NetCheck.IsPing(item.ip);
+                    if (isok)
+                    {
+                        //5分钟内没有数据上传
+                        if (datalist.Count() == 0)
+                        {
+                            Set_SbDj_SJ(item.sbbh);
+                        }
+                        else//有数据上传
+                        {
+                            UnSet_SbDj_SJ(item.sbbh);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
+
         public void Check()
         {            
             try
             {
                 var sjjgconf = DJSJConf();
                 var sbxxlist = Get_SBXX_List();
-                foreach (var item in sbxxlist)
+                foreach (var item in sbxxlist.Where(t=>t.sbzt =="运行"))
                 {
                     int pos = -1;
                     var q = _global_cnf.Where(t => t.sbbh == item.sbbh);
@@ -216,11 +260,8 @@ namespace OEECalc.Services
                         {
                             _global_cnf[pos].js = 0m;
                             var firstzx = datalist.OrderByDescending(t => t.sj).FirstOrDefault();//最新一条数据
-                            if (firstzx.sbzt == "运行")
-                            {
-                                UnSet_SbDj_SJ(item.sbbh);
-                                _global_cnf[pos].sbzt = firstzx.sbzt;
-                            }
+                            UnSet_SbDj_SJ(item.sbbh);
+                            _global_cnf[pos].sbzt = firstzx.sbzt;
                         }
                     }
                 }

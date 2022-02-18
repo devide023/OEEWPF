@@ -92,15 +92,15 @@ namespace UnitTestProject1
         {
             try
             {
-                //Check_DataUploadService s = Check_DataUploadService.Instance;
-                //s.Check();
+                Check_DataUploadService s = Check_DataUploadService.Instance;
+                s.Check();
 
                 //CheckSBOnLineService s = CheckSBOnLineService.Instance;
                 //s.CheckOnLine();
 
 
-                CheckSBOnLineService s1 = CheckSBOnLineService.Instance;
-                s1.CheckOnLine();
+                //CheckSBOnLineService s1 = CheckSBOnLineService.Instance;
+                //s1.CheckOnLine();
             }
             catch (Exception)
             {

@@ -25,7 +25,7 @@ namespace OEECalc.JOB
             return Task.Run(() =>
             {
                 //log.Info($"HashCode:{service.GetHashCode()}\r");
-                service.Check();
+                service.NewCheck();
             });
         }
     }
