@@ -195,7 +195,7 @@ namespace OEECalc.Services
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error(e.Message + e.StackTrace);
             }
         }
         /// <summary>
@@ -217,8 +217,23 @@ namespace OEECalc.Services
                 //运行状态
                 foreach (var item in yxsblist)
                 {
-                    //待机设备
-                    if (item.djkssj != null)
+                    //脱机设备
+                    if (item.tjkssj != null)
+                    {
+                        var tstj = current_time - item.tjkssj;
+                        if (tstj.HasValue)
+                        {
+                            totalsj = tstj.Value.TotalSeconds;
+                        }
+                        SbyxtjUpdate(new sbyxtj()
+                        {
+                            sbbh = item.sbbh,
+                            sbqy = item.sbqy,
+                            sbzt = "脱机",
+                            sj = bdsj,
+                            sc = totalsj
+                        });
+                    } else  if (item.djkssj != null) //待机设备
                     {
                         var tsdj = current_time - item.djkssj;
                         if (tsdj.HasValue)
@@ -252,26 +267,7 @@ namespace OEECalc.Services
                                 sc = totalsj
                             });
                         }
-                    }
-                    //脱机设备
-                    if (item.tjkssj != null)
-                    {
-                        var tstj = current_time - item.tjkssj;
-                        if (tstj.HasValue)
-                        {
-                            totalsj = tstj.Value.TotalSeconds;
-                        }
-                        SbyxtjUpdate(new sbyxtj()
-                        {
-                            sbbh = item.sbbh,
-                            sbqy = item.sbqy,
-                            sbzt = "脱机",
-                            sj = bdsj,
-                            sc = totalsj
-                        });
-                    }
-                    //运行
-                    if(item.yxkssj != null)
+                    } else if(item.yxkssj != null) //运行
                     {
                         var tsyx = current_time - item.yxkssj;
                         if (tsyx.HasValue)

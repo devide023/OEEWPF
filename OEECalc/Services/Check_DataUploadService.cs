@@ -191,18 +191,14 @@ namespace OEECalc.Services
                         sbsjjg = sjjg_query.First().sjjg;
                     }
                     var datalist = Get_ZTBH_List(item.sbbh, sbsjjg);
-                    var isok = NetCheck.IsPing(item.ip);
-                    if (isok)
+                    //5分钟内没有数据上传
+                    if (datalist.Count() == 0)
                     {
-                        //5分钟内没有数据上传
-                        if (datalist.Count() == 0)
-                        {
-                            Set_SbDj_SJ(item.sbbh);
-                        }
-                        else//有数据上传
-                        {
-                            UnSet_SbDj_SJ(item.sbbh);
-                        }
+                        Set_SbDj_SJ(item.sbbh);
+                    }
+                    else//有数据上传
+                    {
+                        UnSet_SbDj_SJ(item.sbbh);
                     }
                 }
             }

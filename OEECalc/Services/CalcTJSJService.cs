@@ -53,7 +53,7 @@ namespace OEECalc.Services
                 sql.Append("(sbbh, tjlx, tjsj, tjkssj, tjjssj, tjms,lx) ");
                 sql.Append(" select ");
                 sql.Append(":sbbh, :tjlx, :tjsj, :tjkssj, :tjjssj, :tjms,:lx from dual where ");
-                sql.Append(" not exists (select id from SBTJ where sbbh=:sbbh and tjlx=:tjlx and tjsj=:tjsj and tjkssj=:tjkssj and tjjssj = :tjjssj) ");
+                sql.Append(" not exists (select id from SBTJ where sbbh=:sbbh and tjlx=:tjlx and tjkssj=:tjkssj and lx='1' ) ");
                 //查询停机时间
                 StringBuilder tsql = new StringBuilder();
                 tsql.Append(" select id, sbbh, tjlx, tjsj, tjkssj, tjjssj, tjms ");
@@ -85,6 +85,39 @@ namespace OEECalc.Services
             catch (Exception e)
             {
                 log.Error(e.Message);
+            }
+        }
+        /// <summary>
+        /// 检查停机时间段是否已存在
+        /// </summary>
+        /// <param name="kssj"></param>
+        /// <param name="jssj"></param>
+        /// <returns>存在返回true,不存在返回false</returns>
+        private bool IsTJSJCZ(sbtj entity)
+        {
+            try
+            {
+                StringBuilder sql = new StringBuilder();
+                sql.Append("select id, sbbh, tjlx, tjsj, tjkssj, tjjssj, tjms, lx ");
+                sql.Append(" FROM   sbtj ");
+                sql.Append(" where  sbbh = :sbbh ");
+                sql.Append(" and lx = '1' ");
+                sql.Append(" and tjlx = :tjlx ");
+                sql.Append(" and    tjkssj = :tjkssj ");
+                var q = Db.Connection.Query<sbtj>(sql.ToString(), new { sbbh = entity.sbbh, tjkssj = entity.tjkssj, tjlx = entity.tjlx });
+                if (q.Count() > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                return false;
             }
         }
 

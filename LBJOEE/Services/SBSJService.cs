@@ -141,26 +141,32 @@ namespace LBJOEE.Services
             try
             {
                 StringBuilder sql = new StringBuilder();
-                sql.Append("select rowid as rid,cjsj, sbbh, sbip, jp, jgs, yssd, jysj, jssj, lbhd, zyyl, yxzt, bjzt, xhsj, sdzt, zdzt, jt, ljkjsj, dzcdqwz, dqyl, dqll, ksyl, essd, sssd, sdqd, tqxc, tcsj, lbwz, gswz, mysd, gssd, zzyl, ysyl, ysll, zltx, hml, jzsyhd, ysxc, xqctsj, zzysj, sscnylsjz, zycnylsjz, smqdyl, smqdll, smqdwz, smksyl, smksll, smkswz, skdyyl, skdyll, smdywz, smgyyl, smgyll, smgywz, kssmsd, mssmsd, kmhcyl, kmhcll, kmhcwz, kmkyyl, kmksll, kmkswz, kmgyyl, kmgyll, kmgywz, mskmsd, kskmsd, cx1jryl, cx1jrll, cx1htyl, cx1htll, cx2jryl, cx2jrll, cx2htyl, cx2htll, cxrys, cxcys, cxcndqyl, cxcnyltlz, cxcnylsdz, kyyswz, kyeswz, kysswz, kyzywz, kygcwz, dqylsd, dqllsd, dqyssd, dhylsd, dhllsd, dhyssd, dzcs, kscnyl, zycnyl, hchcwz, kmzzwz, mjwz, yw, mswz, mjtcjs, yasxc, jzhs, zhls, gsks, gsqj, sysj, rmjcs ");
+                sql.Append("select count(cjsj) as cnt ");
                 sql.Append(" FROM   tjsjcj ");
-                sql.Append(" where  cjsj between sysdate - (1 / (24*60)) * "+interval+" and sysdate ");
-                sql.Append(" and    sbbh = '"+sbbh+"' ");
-                var list = Db.Connection.Query<sjcjnew>(sql.ToString(), new { sbbh = sbbh, interval = interval });
-                //log.Info($"非运行采集数据：{list.Count()}");
-                if (list.Count() > 0)
+                sql.Append($" where  cjsj between sysdate - (1 / (24*60)) * {interval} and sysdate ");
+                sql.Append(" and    sbbh = :sbbh ");
+                StringBuilder tsql = new StringBuilder();
+                tsql.Append("select rowid as rid,cjsj, sbbh, sbip, jp, jgs, yssd, jysj, jssj, lbhd, zyyl, yxzt, bjzt, xhsj, sdzt, zdzt, jt, ljkjsj, dzcdqwz, dqyl, dqll, ksyl, essd, sssd, sdqd, tqxc, tcsj, lbwz, gswz, mysd, gssd, zzyl, ysyl, ysll, zltx, hml, jzsyhd, ysxc, xqctsj, zzysj, sscnylsjz, zycnylsjz, smqdyl, smqdll, smqdwz, smksyl, smksll, smkswz, skdyyl, skdyll, smdywz, smgyyl, smgyll, smgywz, kssmsd, mssmsd, kmhcyl, kmhcll, kmhcwz, kmkyyl, kmksll, kmkswz, kmgyyl, kmgyll, kmgywz, mskmsd, kskmsd, cx1jryl, cx1jrll, cx1htyl, cx1htll, cx2jryl, cx2jrll, cx2htyl, cx2htll, cxrys, cxcys, cxcndqyl, cxcnyltlz, cxcnylsdz, kyyswz, kyeswz, kysswz, kyzywz, kygcwz, dqylsd, dqllsd, dqyssd, dhylsd, dhllsd, dhyssd, dzcs, kscnyl, zycnyl, hchcwz, kmzzwz, mjwz, yw, mswz, mjtcjs, yasxc, jzhs, zhls, gsks, gsqj, sysj, rmjcs ");
+                tsql.Append(" FROM   tjsjcj ");
+                tsql.Append(" where  trunc(cjsj) = trunc(sysdate) ");
+                tsql.Append(" and    sbbh = :sbbh ");
+                var cnt = Db.Connection.ExecuteScalar<int>(sql.ToString(), new { sbbh = sbbh, interval = interval });
+                log.Info($"停机时数采条数：{cnt}");
+                if (cnt > 0)
                 {
-                    var jgs = Db.Connection.ExecuteScalar<long>("select max(jgs) FROM sjcj where sbbh = :sbbh ", new { sbbh = sbbh });
-                    var minjgs = list.Min(t => t.jgs);
-                    //log.Info($"{sbbh}采集jgs:{jgs},查询minjgs：{minjgs}");
-                    if (jgs != minjgs)
+                    var jgs = Db.Connection.ExecuteScalar<long>("select max(jgs) FROM sjcj where sbbh = :sbbh and trunc(cjsj) = trunc(sysdate) ", new { sbbh = sbbh });
+                    var minjgs = Db.Connection.ExecuteScalar<long>($"select nvl(min(jgs),0) FROM tjsjcj where sbbh = :sbbh and cjsj between sysdate - (1 / (24*60)) * {interval} and sysdate ",new { sbbh = sbbh });
+                    var jgs_cz = jgs - minjgs;
+                    log.Info($"停机加工数最小值:{minjgs}与采集加工数最大值:{jgs}的差值：{jgs_cz}");
+                    if (Math.Abs(jgs_cz) < 100)
                     {
                         var norunlist = Get_NoRunListByJGS(sbbh, jgs);
-                        //log.Info($"大于运行时最大加工数的非运行停机数据：{norunlist.Count()}");
                         return norunlist;
                     }
                     else
                     {
-                        return list;
+                        var listtjcj = Db.Connection.Query<sjcjnew>(tsql.ToString(), new { sbbh = sbbh });
+                        return listtjcj;
                     }
                 }
                 else

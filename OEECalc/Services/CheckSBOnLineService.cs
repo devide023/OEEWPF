@@ -62,7 +62,12 @@ namespace OEECalc.Services
                 int ret = 0;
                 var list = Get_SbList();
                 StringBuilder sql = new StringBuilder();
-                sql.Append("update base_sbxx set tjkssj = sysdate where sbbh=:sbbh and sbzt='运行' and tjkssj is null ");
+                sql.Append(" begin \n");
+                sql.Append(" update base_sbxx set tjkssj = sysdate where sbbh=:sbbh and sbzt='运行' and tjkssj is null;\n");
+                sql.Append(" update base_sbxx set djkssj = NULL where sbbh=:sbbh and sbzt='运行' and djkssj is not null;\n");
+                sql.Append(" update base_sbxx set yxkssj = NULL where sbbh=:sbbh and sbzt='运行' and yxkssj is not null;\n");
+                sql.Append(" commit;\n");
+                sql.Append(" end;\n");
                 StringBuilder sql1 = new StringBuilder();
                 sql1.Append("update base_sbxx set tjkssj = NULL where sbbh=:sbbh and sbzt='运行' and tjkssj is not null ");
                 foreach (var item in list)

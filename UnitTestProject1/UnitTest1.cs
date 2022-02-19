@@ -81,9 +81,8 @@ namespace UnitTestProject1
                 SBZTTJService service = SBZTTJService.Instance;
                 service.SBZT_ScTJ();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
                 throw;
             }
         }
@@ -92,8 +91,8 @@ namespace UnitTestProject1
         {
             try
             {
-                Check_DataUploadService s = Check_DataUploadService.Instance;
-                s.NewCheck();
+                Check_DataUploadService service = Check_DataUploadService.Instance;
+                service.NewCheck();
 
                 //CheckSBOnLineService s = CheckSBOnLineService.Instance;
                 //s.CheckOnLine();
