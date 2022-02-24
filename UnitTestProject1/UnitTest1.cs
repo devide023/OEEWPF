@@ -91,8 +91,8 @@ namespace UnitTestProject1
         {
             try
             {
-                SendSMSServic s = new SendSMSServic("sms");
-                s.SendMSg();
+                SBCNService service = SBCNService.Instance;
+                service.RiCn();
 
                 //CheckSBOnLineService s = CheckSBOnLineService.Instance;
                 //s.CheckOnLine();

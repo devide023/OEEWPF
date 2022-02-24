@@ -154,6 +154,7 @@
     <Compile Include="Model\sys_cjsj.cs" />
     <Compile Include="Model\sys_djtjinfo.cs" />
     <Compile Include="Model\sys_eventlog.cs" />
+    <Compile Include="Model\sys_jgstj_conf.cs" />
     <Compile Include="Model\sys_jpcnf.cs" />
     <Compile Include="Model\sys_sbtjsj.cs" />
     <Compile Include="Model\sys_sbyxsj.cs" />
@@ -183,6 +184,7 @@
     <Compile Include="Services\SBZTTJService.cs" />
     <Compile Include="Model\sys_scsjconf.cs" />
     <Compile Include="Services\SendSMSService.cs" />
+    <Compile Include="Tool\ConfigTool.cs" />
     <Compile Include="Tool\NetCheck.cs" />
     <Compile Include="Tool\TimeTool.cs" />
     <Compile Include="Tool\TimeUtil.cs" />
@@ -190,6 +192,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="fz.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="jgsjs.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="log4net.config">

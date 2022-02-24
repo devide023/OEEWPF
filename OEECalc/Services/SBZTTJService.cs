@@ -267,7 +267,7 @@ namespace OEECalc.Services
                                 sc = totalsj
                             });
                         }
-                    } else if(item.yxkssj != null) //运行
+                    } else //运行
                     {
                         var tsyx = current_time - item.yxkssj;
                         if (tsyx.HasValue)

@@ -151,8 +151,13 @@ namespace OEECalc.Services
         {
             try
             {
-                var jgstjfs = ConfigurationManager.AppSettings["jgstj"] != null ? ConfigurationManager.AppSettings["jgstj"].ToString() : "0";
-                if(jgstjfs == "1") { 
+                var jgstjfs = "1";
+                var jgsconf = Tool.ConfigTool.Read_JGSTJ_Conf().Where(t => t.sbbh == sbbh);
+                if (jgsconf.Count() > 0)
+                {
+                    jgstjfs = jgsconf.Select(t => t.jgstj).FirstOrDefault().ToString();
+                }
+                if (jgstjfs == "1") { 
                     DynamicParameters p = new DynamicParameters();
                     p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
                     p.Add(":ksrq", ksrq, System.Data.DbType.DateTime, System.Data.ParameterDirection.Input);

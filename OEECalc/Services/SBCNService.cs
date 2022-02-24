@@ -102,7 +102,12 @@ namespace OEECalc.Services
                 sqlmin.Append(" and sbbh = :sbbh and jgs <> 0");
                 if (Tool.NetCheck.IsPing("172.16.201.175"))
                 {
-                    var jgstjfs = ConfigurationManager.AppSettings["jgstj"] != null ? ConfigurationManager.AppSettings["jgstj"].ToString() : "0";
+                    var jgstjfs = "1";
+                    var jgsconf = Tool.ConfigTool.Read_JGSTJ_Conf().Where(t => t.sbbh == sbbh);
+                    if (jgsconf.Count() > 0)
+                    {
+                        jgstjfs = jgsconf.Select(t => t.jgstj).FirstOrDefault().ToString();
+                    }
                     if (jgstjfs == "1")
                     {
                         var max = Db.Connection.ExecuteScalar<long>(sqlmax.ToString(), new { sbbh = sbbh });
