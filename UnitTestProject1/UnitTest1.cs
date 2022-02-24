@@ -91,8 +91,8 @@ namespace UnitTestProject1
         {
             try
             {
-                Check_DataUploadService service = Check_DataUploadService.Instance;
-                service.NewCheck();
+                SendSMSServic s = new SendSMSServic("sms");
+                s.SendMSg();
 
                 //CheckSBOnLineService s = CheckSBOnLineService.Instance;
                 //s.CheckOnLine();

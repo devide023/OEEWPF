@@ -117,7 +117,6 @@ namespace OEECalc.Services
                 StringBuilder sql = new StringBuilder();
                 sql.Append(" begin \n");
                 sql.Append(" update BASE_SBXX set djkssj = sysdate where sbbh = :sbbh and sbzt = '运行' and djkssj is null; \n");
-                sql.Append(" update BASE_SBXX set yxkssj = NULL where sbbh = :sbbh and sbzt = '运行' and yxkssj is not null;\n");
                 sql.Append(" commit;\n");
                 sql.Append(" end; \n");
                 DynamicParameters p = new DynamicParameters();
@@ -142,7 +141,6 @@ namespace OEECalc.Services
                 StringBuilder sql = new StringBuilder();
                 sql.Append(" begin \n");
                 sql.Append(" update BASE_SBXX set djkssj = NULL where sbbh = :sbbh and sbzt = '运行' and djkssj is not null;\n");
-                sql.Append(" update BASE_SBXX set yxkssj = sysdate where sbbh = :sbbh and sbzt = '运行' and yxkssj is null;\n");
                 sql.Append(" commit;\n");
                 sql.Append(" end; \n");
                 return Db.Connection.Execute(sql.ToString(), new { sbbh = sbbh }) > 0 ? true : false;

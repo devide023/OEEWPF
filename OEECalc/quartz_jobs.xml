@@ -167,7 +167,7 @@
 				<cron-expression>0 5 8,20 * * ?</cron-expression>
 			</cron>
 		</trigger>
-	<job>
+		<job>
 			<name>EventYCGJSjJob</name>
 			<group>jobGroup</group>
 			<description>提取异常关机日志中关机时间</description>
@@ -182,6 +182,23 @@
 				<job-name>EventYCGJSjJob</job-name>
 				<job-group>jobGroup</job-group>
 				<cron-expression>0 0 * * * ?</cron-expression>
+			</cron>
+		</trigger>
+		<job>
+			<name>SendSMSJob</name>
+			<group>jobGroup</group>
+			<description>每隔2小时发送短信</description>
+			<job-type>OEECalc.JOB.SendSMS_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>SendSMSJobTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>SendSMSJob</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 0 */2 * * ?</cron-expression>
 			</cron>
 		</trigger>
 	</schedule>
