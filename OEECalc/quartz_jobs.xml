@@ -198,7 +198,7 @@
 				<group>TriggerGroup</group>
 				<job-name>SendSMSJob</job-name>
 				<job-group>jobGroup</job-group>
-				<cron-expression>0 0 */2 * * ?</cron-expression>
+				<cron-expression>0 0 7-22 * * ?</cron-expression>
 			</cron>
 		</trigger>
 	</schedule>
