@@ -16,11 +16,11 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod1()
         {
-            CalcOEEService service = CalcOEEService.Instance;
-            for (int i = 7; i <= 11; i++)
-            {
-                service.SaveOEE(Convert.ToDateTime("2022-02-" + i));
-            }
+            //CalcOEEService service = new CalcOEEService();
+            //for (int i = 7; i <= 11; i++)
+            //{
+            //    service.SaveOEE(Convert.ToDateTime("2022-02-" + i));
+            //}
         }
 
         [TestMethod]
@@ -31,14 +31,14 @@ namespace UnitTestProject1
             //tj.tjjssj = Convert.ToDateTime("2022-01-29 18:20:41");
             //var issame = TimeTool.IsSameBC(tj);
             //Console.WriteLine(issame);
-            CalcTJSJService service = CalcTJSJService.Instance;
-            service.CheckCrossBC();
+            //CalcTJSJService service = new CalcTJSJService();
+            //service.CheckCrossBC();
         }
         [TestMethod]
         public void TestMethod3()
         {
-            CalcTJSJService service = CalcTJSJService.Instance;
-            service.CalcTJSJ();
+            //CalcTJSJService service = new CalcTJSJService();
+            //service.CalcTJSJ();
         }
         [TestMethod]
         public void TestMethod4()
@@ -78,8 +78,8 @@ namespace UnitTestProject1
         {
             try
             {
-                SBZTTJService service = SBZTTJService.Instance;
-                service.SBZT_ScTJ();
+                //SBZTTJService service = new SBZTTJService();
+                //service.SBZT_ScTJ();
             }
             catch (Exception e)
             {
@@ -91,15 +91,13 @@ namespace UnitTestProject1
         {
             try
             {
-                SBCNService service = SBCNService.Instance;
-                service.RiCn();
-
-                //CheckSBOnLineService s = CheckSBOnLineService.Instance;
-                //s.CheckOnLine();
-
-
-                //CheckSBOnLineService s1 = CheckSBOnLineService.Instance;
-                //s1.CheckOnLine();
+                //CalcSbyxSjTj s = new CalcSbyxSjTj();
+                //SBXXService sb = new SBXXService();
+                //var sblist = sb.Get_SBXX_List();
+                //foreach (var item in sblist)
+                //{
+                //    s.CalcYxSj(Convert.ToDateTime("2022-04-12"), item.sbbh);
+                //}
             }
             catch (Exception)
             {
@@ -107,5 +105,25 @@ namespace UnitTestProject1
                 throw;
             }
         }
-    }
+
+        [TestMethod]
+        public void TestLBJOEE()
+        {
+            try
+            {
+                SBXXService s = SBXXService.Instance;
+                var list = s.Get_SBXX_List();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        private void dealrun(DateTime dt)
+        {
+            Console.WriteLine(dt);
+        }
+        }
 }

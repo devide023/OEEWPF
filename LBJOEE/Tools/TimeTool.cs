@@ -120,7 +120,7 @@ namespace LBJOEE.Tools
                 DateTime dt_jsrq = System.Convert.ToDateTime(null);
                 DateTime current_sj = System.Convert.ToDateTime(null);
                 current_sj = TimeTool.GetBCInfo(kstjsj).kssj;
-                while (DateTime.Compare(current_sj, jstjsj) <= 0)
+                while (DateTime.Compare(current_sj, jstjsj) <= 0 && current_sj.Year>=2021 && jstjsj.Year>=2021)
                 {
                     DateTime next_sj = current_sj.AddHours(12);
                     //开始停机时间在班次范围内，结束时间不再班次范围内

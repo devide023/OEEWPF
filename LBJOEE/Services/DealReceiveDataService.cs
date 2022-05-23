@@ -16,8 +16,8 @@ namespace LBJOEE.Services
     /// </summary>
     public class DealReceiveDataService
     {
-        private static DealReceiveDataService instance = null;
-        private static readonly object padlock = new object();
+        //private static DealReceiveDataService instance = null;
+        //private static readonly object padlock = new object();
         private LogService _logservice = null;
         private SBXXService _sbxxservice = null;
         private SBZTGXService _sbztgxservice = null;
@@ -31,13 +31,13 @@ namespace LBJOEE.Services
         private List<itemdata> _receive_data = null;
         private IEnumerable<dygx> _sbcslist = null;
         private Timer _check_norun_timer = null;//非运行状态下，数据上传检查定时器
-        private DealReceiveDataService()
+        public DealReceiveDataService()
         {
             _receive_data = new List<itemdata>();
             _sbcslist = new List<dygx>();
             _logservice = new LogService();
-            _sbxxservice = SBXXService.Instance;
-            _sbsjservide = SBSJService.Instance;
+            _sbxxservice = new SBXXService();
+            _sbsjservide = new SBSJService();
             _sbztgxservice = new SBZTGXService();
             log = LogManager.GetLogger(this.GetType());
             _base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
@@ -74,37 +74,28 @@ namespace LBJOEE.Services
             }
         }
 
-        public static DealReceiveDataService Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    lock (padlock)
-                    {
-                        if (instance == null)
-                        {
-                            instance = new DealReceiveDataService();
-                        }
-                    }
-                }
-                return instance;
-            }
-        }
+        //public static DealReceiveDataService Instance
+        //{
+        //    get
+        //    {
+        //        if (instance == null)
+        //        {
+        //            lock (padlock)
+        //            {
+        //                if (instance == null)
+        //                {
+        //                    instance = new DealReceiveDataService();
+        //                }
+        //            }
+        //        }
+        //        return instance;
+        //    }
+        //}
 
         public void DealData(string msg)
         {
             try
             {
-                if (_base_sbxx.issaveyssj != 0)
-                {
-                    originaldata yssj = new originaldata();
-                    yssj.sbbh = _base_sbxx.sbbh;
-                    yssj.ip = _base_sbxx.ip;
-                    yssj.rq = DateTime.Now;
-                    yssj.json = msg;
-                    _sbsjservide.SaveOriginalData(yssj);
-                }
                 _yxzt = _base_sbxx.sbzt;
                 var jgs = _receive_data.Where(i => i.itemName == "加工数");
                 
@@ -156,7 +147,7 @@ namespace LBJOEE.Services
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error(e.StackTrace);
             }
         }
         /// <summary>
@@ -225,7 +216,7 @@ namespace LBJOEE.Services
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error(e.StackTrace);
                 return new sjcjnew();
             }
         }
@@ -236,7 +227,7 @@ namespace LBJOEE.Services
             {
                 if (Tool.IsPing())
                 {
-                    _sbsjservide.TJSJCJ(data);
+                    _sbsjservide.TJSJCJ_ServerDate(data);
                 }
                 else
                 {
@@ -245,7 +236,7 @@ namespace LBJOEE.Services
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error(e.StackTrace);
             }
         }
         /// <summary>
@@ -271,12 +262,21 @@ namespace LBJOEE.Services
                     int.TryParse(q.FirstOrDefault().confval, out norunsl);
                 }
                 var norunqty = _sbsjservide.Get_NoRunQty(this._base_sbxx.sbbh, interval);
-                //log.Info($"sbbh:{this._base_sbxx.sbbh},interval:{interval},norun_cnt:{norunsl},list:{norunqty}");
+               //log.Info($"配置间隔时间:{interval},配置间隔数据条数:{norunsl},当前停机上传条数:{norunqty}");
                 if (norunqty >= norunsl)
                 {
                     _check_norun_timer.Change(Timeout.Infinite, Timeout.Infinite);
-                    var list = _sbsjservide.Get_NoRunList(this._base_sbxx.sbbh, interval);
-                    DateTime runtime = list.Min(t => t.cjsj);
+                    DateTime tjkssj = Get_TJKSSj();
+                    var list = _sbsjservide.Get_NoRunList(this._base_sbxx.sbbh, interval, tjkssj);
+                    DateTime runtime = _sbxxservice.GetServerTime();
+                    if (list.Count() > 0) {
+                        var tq = list.Where(t => t.cjsj >= tjkssj);
+                        if (tq.Count() > 0)
+                        {
+                            runtime = tq.Min(t => t.cjsj);
+                        }
+                    }
+                    log.Info($"停机上传数据最小时间：{runtime}");
                     foreach (var item in list)
                     {
                         var isok = _sbsjservide.AddByDate(item);
@@ -296,7 +296,61 @@ namespace LBJOEE.Services
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error(e.Message+"--"+e.StackTrace);
+            }
+        }
+
+        private DateTime Get_TJKSSj()
+        {
+            try
+            {
+                DateTime dt = _sbxxservice.GetServerTime();
+                if (_base_sbxx.sfby == "Y")
+                {
+                    dt = _base_sbxx.bytjkssj;
+                }
+                else if (_base_sbxx.sfgz == "Y")
+                {
+                    dt = _base_sbxx.gzkssj;
+                }
+                else if (_base_sbxx.sfhm == "Y")
+                {
+                    dt = _base_sbxx.hmkssj;
+                }
+                else if (_base_sbxx.sfjx == "Y")
+                {
+                    dt = _base_sbxx.jxkssj;
+                }
+                else if (_base_sbxx.sflgtj == "Y")
+                {
+                    dt = _base_sbxx.lgtjkssj;
+                }
+                else if (_base_sbxx.sfql == "Y")
+                {
+                    dt = _base_sbxx.qlkssj;
+                }
+                else if (_base_sbxx.sfqttj == "Y")
+                {
+                    dt = _base_sbxx.qttjkssj;
+                }
+                else if (_base_sbxx.sfts == "Y")
+                {
+                    dt = _base_sbxx.tskssj;
+                }
+                else if (_base_sbxx.sfxm == "Y")
+                {
+                    dt = _base_sbxx.xmkssj;
+                }
+                else
+                {
+                    dt = DateTime.Now;
+                }
+                return dt;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                return DateTime.Now;
             }
         }
     }

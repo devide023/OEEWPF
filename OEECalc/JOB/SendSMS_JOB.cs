@@ -18,7 +18,7 @@ namespace OEECalc.JOB
             return Task.Run(() =>
             {
                 SendSMSServic s = new SendSMSServic("sms");
-                s.SendMSg();
+                s.SendMsgByPerson();
             });
         }
     }

@@ -149,6 +149,7 @@ namespace LBJOEE.ViewModels
             _hisservice = container.Resolve<HisService>();
             _sbztgxservice = container.Resolve<SBZTGXService>();
             _eventlogservice = container.Resolve<EventLogService>();
+            dealservice = container.Resolve<DealReceiveDataService>();
             try
             {
                 var pcip = Tool.GetIpAddress();
@@ -162,7 +163,7 @@ namespace LBJOEE.ViewModels
                 WinMaxCMD = new DelegateCommand<object>(WinmaxHandle);
                 WinCloseCMD = new DelegateCommand<object>(WincloseHandle);
                 base_sbxx = _sbxxservice.Find_Sbxx_ByIp();
-                dealservice = DealReceiveDataService.Instance;
+                //dealservice = new DealReceiveDataService();
                 dealservice.SetSBXXInfo = base_sbxx;
                 dealservice.SBRun = new Action<DateTime>(SBYX_Handle);
                 if (base_sbxx == null)
@@ -351,6 +352,15 @@ namespace LBJOEE.ViewModels
                         data.devicedata = receivedata;
                         data.SJCJ = dealservice.Receive2SjCJ();
                         ShowHisData(data);
+                        if (base_sbxx.issaveyssj != 0)
+                        {
+                            originaldata yssj = new originaldata();
+                            yssj.sbbh = _base_sbxx.sbbh;
+                            yssj.ip = _base_sbxx.ip;
+                            yssj.rq = DateTime.Now;
+                            yssj.json = msg;
+                            _sbsjservice.SaveOriginalData(yssj);
+                        }
                         dealservice.DealData(msg);
                         if (data.SJCJ != null)
                         {
@@ -1534,7 +1544,7 @@ namespace LBJOEE.ViewModels
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error(e.StackTrace);
             }
         }
     }

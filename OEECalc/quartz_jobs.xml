@@ -61,7 +61,7 @@
 				<group>TriggerGroup</group>
 				<job-name>SbCNtjJob</job-name>
 				<job-group>jobGroup</job-group>
-				<cron-expression>0 * * * * ?</cron-expression>
+				<cron-expression>0 0 * * * ?</cron-expression>
 			</cron>
 		</trigger>
 
@@ -79,7 +79,7 @@
 				<group>TriggerGroup</group>
 				<job-name>SbZtSltjJob</job-name>
 				<job-group>jobGroup</job-group>
-				<cron-expression>0 */5 * * * ?</cron-expression>
+				<cron-expression>0 */30 * * * ?</cron-expression>
 			</cron>
 		</trigger>
 		<job>
@@ -147,7 +147,7 @@
 				<group>TriggerGroup</group>
 				<job-name>HasDataJob</job-name>
 				<job-group>jobGroup</job-group>
-				<cron-expression>*/20 * * * * ?</cron-expression>
+				<cron-expression>* */3 * * * ?</cron-expression>
 			</cron>
 		</trigger>
 		<job>
@@ -199,6 +199,23 @@
 				<job-name>SendSMSJob</job-name>
 				<job-group>jobGroup</job-group>
 				<cron-expression>0 0 7-22 * * ?</cron-expression>
+			</cron>
+		</trigger>
+		<job>
+			<name>CalcSbYxsj</name>
+			<group>jobGroup</group>
+			<description>设备运行时间统计 </description>
+			<job-type>OEECalc.JOB.Calc_Yxsj_JOB, OEECalc</job-type>
+			<durable>true</durable>
+			<recover>false</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>CalcSbYxsjTrigger</name>
+				<group>TriggerGroup</group>
+				<job-name>CalcSbYxsj</job-name>
+				<job-group>jobGroup</job-group>
+				<cron-expression>0 0 0 * * ?</cron-expression>
 			</cron>
 		</trigger>
 	</schedule>

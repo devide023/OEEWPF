@@ -12,16 +12,19 @@ using System.Configuration;
 using OEECalc.Tool;
 using log4net;
 using DapperExtensions.Predicate;
+using System.Data;
+using Oracle.ManagedDataAccess.Client;
+
 namespace OEECalc.Services
 {
     /// <summary>
     /// 设备状态统计服务
     /// </summary>
-    public class SBZTTJService: OracleBaseFixture
+    public class SBZTTJService : OracleBaseFixture
     {
-        private static SBZTTJService instance = null;
-        private static readonly object padlock = new object();
-
+        //private static SBZTTJService instance = null;
+        //private static readonly object padlock = new object();
+        private static readonly Lazy<SBZTTJService> lazy = new Lazy<SBZTTJService>(() => new SBZTTJService());
         private ILog log;
         private SBXXService _sbxxservice;
         private TimeUtil _timeutil;
@@ -29,30 +32,30 @@ namespace OEECalc.Services
         private List<sys_sbyxsj> sbyxsjlist;//设备运行时间表
         private SBZTTJService()
         {
-            _sbxxservice = new SBXXService();
+            _sbxxservice = SBXXService.Instance;
             _timeutil = new TimeUtil();
             sbtjsjlist = new List<sys_sbtjsj>();
             sbyxsjlist = new List<sys_sbyxsj>();
             log = LogManager.GetLogger(this.GetType());
         }
-
-        public static SBZTTJService Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    lock (padlock)
-                    {
-                        if (instance == null)
-                        {
-                            instance = new SBZTTJService();
-                        }
-                    }
-                }
-                return instance;
-            }
-        }
+        public static SBZTTJService Instance { get { return lazy.Value; } }
+        //public static SBZTTJService Instance
+        //{
+        //    get
+        //    {
+        //        if (instance == null)
+        //        {
+        //            lock (padlock)
+        //            {
+        //                if (instance == null)
+        //                {
+        //                    instance = new SBZTTJService();
+        //                }
+        //            }
+        //        }
+        //        return instance;
+        //    }
+        //}
         /// <summary>
         /// 上传时间配置
         /// </summary>
@@ -79,7 +82,7 @@ namespace OEECalc.Services
         {
             try
             {
-              return  Db.Update<sbyxtj>(entity);
+                return Db.Update<sbyxtj>(entity);
             }
             catch (Exception)
             {
@@ -114,7 +117,7 @@ namespace OEECalc.Services
         {
             try
             {
-               var q = this.sbtjsjlist.Where(t => t.sbbh == sbbh);
+                var q = this.sbtjsjlist.Where(t => t.sbbh == sbbh);
                 if (q.Count() > 0)
                 {
                     this.sbtjsjlist.Remove(q.First());
@@ -171,27 +174,29 @@ namespace OEECalc.Services
         {
             try
             {
-                //查询条件
-                PredicateGroup pg = new PredicateGroup()
-                {
-                    Operator = GroupOperator.And,
-                    Predicates = new List<IPredicate>()
-                };
-                pg.Predicates.Clear();
-                pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sbbh, Operator.Eq, item.sbbh));
-                pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sj, Operator.Eq, item.sj));
-                var qlist = Db.GetList<sbyxtj>(pg);
-                if (qlist.Count() == 0)
-                {
-                    save_sbzt(item);
-                }
-                else
-                {
-                    sbyxtj first = qlist.FirstOrDefault();
-                    first.sbzt = item.sbzt;
-                    first.sc = item.sc;
-                    var r = edit_sbzt(first);
-                }
+                
+                    //查询条件
+                    PredicateGroup pg = new PredicateGroup()
+                    {
+                        Operator = GroupOperator.And,
+                        Predicates = new List<IPredicate>()
+                    };
+                    pg.Predicates.Clear();
+                    pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sbbh, Operator.Eq, item.sbbh));
+                    pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sj, Operator.Eq, item.sj));
+                    var qlist = Db.GetList<sbyxtj>(pg);
+                    if (qlist.Count() == 0)
+                    {
+                        save_sbzt(item);
+                    }
+                    else
+                    {
+                        sbyxtj first = qlist.FirstOrDefault();
+                        first.sbzt = item.sbzt;
+                        first.sc = item.sc;
+                        var r = edit_sbzt(first);
+                    }
+                
             }
             catch (Exception e)
             {
@@ -233,7 +238,8 @@ namespace OEECalc.Services
                             sj = bdsj,
                             sc = totalsj
                         });
-                    } else  if (item.djkssj != null) //待机设备
+                    }
+                    else if (item.djkssj != null) //待机设备
                     {
                         var tsdj = current_time - item.djkssj;
                         if (tsdj.HasValue)
@@ -267,7 +273,8 @@ namespace OEECalc.Services
                                 sc = totalsj
                             });
                         }
-                    } else //运行
+                    }
+                    else //运行
                     {
                         var tsyx = current_time - item.yxkssj;
                         if (tsyx.HasValue)
@@ -364,7 +371,7 @@ namespace OEECalc.Services
                         sc = totalsj
                     });
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -378,232 +385,234 @@ namespace OEECalc.Services
         {
             try
             {
-                //时间间隔配置
-                var sjjgconf = SCSJConf();
-                var current_time = _timeutil.ServerTime();
-                var sj = SJInfo(current_time);
-                var sblist = _sbxxservice.Get_SBXX_List().OrderBy(t => t.sbqy).ToList();
-                StringBuilder sql = new StringBuilder();
-                sql.Append("select id, sj, sbbh, sbzt, sbqy,sftj ");
-                sql.Append(" FROM   sbztbhb ");
-                sql.Append(" where  sbbh = :sbbh ");
-                sql.Append(" and    sj between sysdate - (1 / 24 / 60) * :sjjg and sysdate ");
-                sql.Append(" order  by sj desc");
-                //查询条件
-                PredicateGroup pg = new PredicateGroup()
-                {
-                    Operator = GroupOperator.And,
-                    Predicates = new List<IPredicate>()
-                };
-                DynamicParameters dypar = new DynamicParameters();
-                foreach (var item in sblist)
-                {
-                    string yxzt = item.sbzt;
-                    var qyx = sbyxsjlist.Where(t => t.sbbh == item.sbbh);
-                    var pos = -1;
-                    if (qyx.Count() == 0)
+                
+                    //时间间隔配置
+                    var sjjgconf = SCSJConf();
+                    var current_time = _timeutil.ServerTime();
+                    var sj = SJInfo(current_time);
+                    var sblist = _sbxxservice.Get_SBXX_List().OrderBy(t => t.sbqy).ToList();
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select id, sj, sbbh, sbzt, sbqy,sftj ");
+                    sql.Append(" FROM   sbztbhb ");
+                    sql.Append(" where  sbbh = :sbbh ");
+                    sql.Append(" and    sj between sysdate - (1 / 24 / 60) * :sjjg and sysdate ");
+                    sql.Append(" order  by sj desc");
+                    //查询条件
+                    PredicateGroup pg = new PredicateGroup()
                     {
-                        sys_sbyxsj yxsj = new sys_sbyxsj();
-                        yxsj.sbbh = item.sbbh;
-                        yxsj.yxkssj = DateTime.Now;
-                        sbyxsjlist.Add(yxsj);
-                    }
-                    pos = sbyxsjlist.FindIndex(t => t.sbbh == item.sbbh);
-                    sys_sbyxsj sbyxsj_entity = new sys_sbyxsj();
-                    if (pos != -1)
+                        Operator = GroupOperator.And,
+                        Predicates = new List<IPredicate>()
+                    };
+                    DynamicParameters dypar = new DynamicParameters();
+                    foreach (var item in sblist)
                     {
-                        sbyxsj_entity = sbyxsjlist[pos];
-                    }
-                    //判断是否待机
-                    Int32 sbsjjg = 5;
-                    var sjjg_query = sjjgconf.Where(t => t.sbbh == item.sbbh);
-                    if (sjjg_query.Count() > 0)
-                    {
-                        sbsjjg = sjjg_query.First().sjjg;
-                    }
-                    dypar.Add(":sbbh", item.sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-                    dypar.Add(":sjjg", sbsjjg, System.Data.DbType.Int32, System.Data.ParameterDirection.Input);
-                    var ztlist = Db.Connection.Query<sbztbhb>(sql.ToString(), dypar);
-                    if (ztlist.Count() > 0)
-                    {
-                        yxzt = ztlist.First().sbzt;
-                        //if(sbyxsj_entity.jsflag == 0)
-                        //{
-                        //    sbyxsj_entity.jsflag = sbyxsj_entity.jsflag + 1;
-                        //    sbyxsj_entity.yxkssj = DateTime.Now;
-                        //}
-                    }
-                    else
-                    {
-                        if(item.sfgz=="N" && item.sfjx=="N" && item.sfhm=="N" && item.sfxm=="N" && item.sfts=="N" && item.sfqttj=="N" && item.sfql == "N" && item.sfby=="N" && item.sflgtj =="N")
+                        string yxzt = item.sbzt;
+                        var qyx = sbyxsjlist.Where(t => t.sbbh == item.sbbh);
+                        var pos = -1;
+                        if (qyx.Count() == 0)
                         {
-                            yxzt = "待机";
+                            sys_sbyxsj yxsj = new sys_sbyxsj();
+                            yxsj.sbbh = item.sbbh;
+                            yxsj.yxkssj = DateTime.Now;
+                            sbyxsjlist.Add(yxsj);
                         }
-                        Remove_SBYXSJItem(item.sbbh);
-                    }
-                    //判断是否脱机
-                    if (!NetCheck.IsPing(item.ip))
-                    {
-                        if (item.sfgz == "N" && item.sfjx == "N" && item.sfhm == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfqttj == "N" && item.sfql == "N" && item.sfby=="N" && item.sflgtj=="N")
+                        pos = sbyxsjlist.FindIndex(t => t.sbbh == item.sbbh);
+                        sys_sbyxsj sbyxsj_entity = new sys_sbyxsj();
+                        if (pos != -1)
                         {
-                            yxzt = "脱机"; 
-                            var tempq = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
-                            if (tempq.Count() == 0)
-                            {
-                                sbtjsjlist.Add(new sys_sbtjsj()
-                                {
-                                    sbbh = item.sbbh,
-                                    tjkssj = DateTime.Now
-                                });
-                            }
+                            sbyxsj_entity = sbyxsjlist[pos];
+                        }
+                        //判断是否待机
+                        Int32 sbsjjg = 5;
+                        var sjjg_query = sjjgconf.Where(t => t.sbbh == item.sbbh);
+                        if (sjjg_query.Count() > 0)
+                        {
+                            sbsjjg = sjjg_query.First().sjjg;
+                        }
+                        dypar.Add(":sbbh", item.sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                        dypar.Add(":sjjg", sbsjjg, System.Data.DbType.Int32, System.Data.ParameterDirection.Input);
+                        var ztlist = db.Query<sbztbhb>(sql.ToString(), dypar);
+                        if (ztlist.Count() > 0)
+                        {
+                            yxzt = ztlist.First().sbzt;
+                            //if(sbyxsj_entity.jsflag == 0)
+                            //{
+                            //    sbyxsj_entity.jsflag = sbyxsj_entity.jsflag + 1;
+                            //    sbyxsj_entity.yxkssj = DateTime.Now;
+                            //}
                         }
                         else
                         {
-                            yxzt = item.sbzt;
+                            if (item.sfgz == "N" && item.sfjx == "N" && item.sfhm == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfqttj == "N" && item.sfql == "N" && item.sfby == "N" && item.sflgtj == "N")
+                            {
+                                yxzt = "待机";
+                            }
+                            Remove_SBYXSJItem(item.sbbh);
                         }
-                        Remove_SBYXSJItem(item.sbbh);
-                    }
-                    else
-                    {
-                        Remove_SBTJItem(item.sbbh);
-                    }
-                    double totalsj = 0;
-                    switch (yxzt)
-                    {
-                        case "待料":
-                            var tsdl = current_time - item.qlkssj;
-                            if (tsdl.HasValue)
-                            {
-                                totalsj = tsdl.Value.TotalSeconds;
-                            }
-                            break;
-                        case "检修":
-                            var tsjx = current_time - item.jxkssj;
-                            if (tsjx.HasValue)
-                            {
-                                totalsj = tsjx.Value.TotalSeconds;
-                            }
-                            break;
-                        case "换模":
-                            var tshm = current_time - item.hmkssj;
-                            if (tshm.HasValue)
-                            {
-                                totalsj = tshm.Value.TotalSeconds;
-                            }
-                            break;
-                        case "修机":
-                            var tsgz = current_time - item.gzkssj;
-                            if (tsgz.HasValue)
-                            {
-                                totalsj = tsgz.Value.TotalSeconds;
-                            }
-                            break;
-                        case "待机":
-                            var djgz = current_time - item.djkssj;
-                            if (djgz.HasValue)
-                            {
-                                totalsj = djgz.Value.TotalSeconds;
-                            }
-                            break;
-                        case "运行":
-                            if (qyx.Count()>0)
-                            {
-                                pos = sbyxsjlist.FindIndex(t => t.sbbh == item.sbbh);
-                                var yxkssj = sbyxsjlist[pos].yxkssj;
-                                var tsyx = DateTime.Now - yxkssj;
-                                if (tsyx.HasValue)
-                                {
-                                    totalsj = Math.Round(tsyx.Value.TotalSeconds, 0);
-                                }
-                            }
-                            else
-                            {
-                                totalsj = 0;
-                            }
-                            break;
-                        case "计划":
-                            var qtts = current_time - item.qttjkssj;
-                            if (qtts.HasValue)
-                            {
-                                totalsj = qtts.Value.TotalSeconds;
-                            }
-                            break;
-                        case "离岗":
-                            var lgts = current_time - item.lgtjkssj;
-                            if (lgts.HasValue)
-                            {
-                                totalsj = lgts.Value.TotalSeconds;
-                            }
-                            break;
-                        case "修模":
-                            var tsxm = current_time - item.xmkssj;
-                            if (tsxm.HasValue)
-                            {
-                                totalsj = tsxm.Value.TotalSeconds;
-                            }
-                            break;
-                        case "调试":
-                            var tsts = current_time - item.tskssj;
-                            if (tsts.HasValue)
-                            {
-                                totalsj = tsts.Value.TotalSeconds;
-                            }
-                            break;
-                        case "保养":
-                            var byts = current_time - item.bytjkssj;
-                            if (byts.HasValue)
-                            {
-                                totalsj = byts.Value.TotalSeconds;
-                            }
-                            break;
-                        case "脱机":
-                            var query = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
-                            if (query.Count() > 0)
-                            {
-                                var tjkssj = query.First().tjkssj;
-                                var tstj = DateTime.Now - tjkssj;
-                                if (tstj.HasValue)
-                                {
-                                    totalsj = Math.Round(tstj.Value.TotalSeconds,0);
-                                }
-                            }
-                            else
-                            {
-                                totalsj = 0;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    pg.Predicates.Clear();
-                    pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sbbh, Operator.Eq, item.sbbh));
-                    pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sj, Operator.Eq, sj));
-                    var qlist = Db.GetList<sbyxtj>(pg);
-                    if (qlist.Count() == 0)
-                    {
-                        save_sbzt(new sbyxtj()
+                        //判断是否脱机
+                        if (!NetCheck.IsPing(item.ip))
                         {
-                            sbbh = item.sbbh,
-                            sbqy = item.sbqy,
-                            sbzt = yxzt,
-                            sj = sj,
-                            sc = totalsj
-                        });
+                            if (item.sfgz == "N" && item.sfjx == "N" && item.sfhm == "N" && item.sfxm == "N" && item.sfts == "N" && item.sfqttj == "N" && item.sfql == "N" && item.sfby == "N" && item.sflgtj == "N")
+                            {
+                                yxzt = "脱机";
+                                var tempq = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
+                                if (tempq.Count() == 0)
+                                {
+                                    sbtjsjlist.Add(new sys_sbtjsj()
+                                    {
+                                        sbbh = item.sbbh,
+                                        tjkssj = DateTime.Now
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                yxzt = item.sbzt;
+                            }
+                            Remove_SBYXSJItem(item.sbbh);
+                        }
+                        else
+                        {
+                            Remove_SBTJItem(item.sbbh);
+                        }
+                        double totalsj = 0;
+                        switch (yxzt)
+                        {
+                            case "待料":
+                                var tsdl = current_time - item.qlkssj;
+                                if (tsdl.HasValue)
+                                {
+                                    totalsj = tsdl.Value.TotalSeconds;
+                                }
+                                break;
+                            case "检修":
+                                var tsjx = current_time - item.jxkssj;
+                                if (tsjx.HasValue)
+                                {
+                                    totalsj = tsjx.Value.TotalSeconds;
+                                }
+                                break;
+                            case "换模":
+                                var tshm = current_time - item.hmkssj;
+                                if (tshm.HasValue)
+                                {
+                                    totalsj = tshm.Value.TotalSeconds;
+                                }
+                                break;
+                            case "修机":
+                                var tsgz = current_time - item.gzkssj;
+                                if (tsgz.HasValue)
+                                {
+                                    totalsj = tsgz.Value.TotalSeconds;
+                                }
+                                break;
+                            case "待机":
+                                var djgz = current_time - item.djkssj;
+                                if (djgz.HasValue)
+                                {
+                                    totalsj = djgz.Value.TotalSeconds;
+                                }
+                                break;
+                            case "运行":
+                                if (qyx.Count() > 0)
+                                {
+                                    pos = sbyxsjlist.FindIndex(t => t.sbbh == item.sbbh);
+                                    var yxkssj = sbyxsjlist[pos].yxkssj;
+                                    var tsyx = DateTime.Now - yxkssj;
+                                    if (tsyx.HasValue)
+                                    {
+                                        totalsj = Math.Round(tsyx.Value.TotalSeconds, 0);
+                                    }
+                                }
+                                else
+                                {
+                                    totalsj = 0;
+                                }
+                                break;
+                            case "计划":
+                                var qtts = current_time - item.qttjkssj;
+                                if (qtts.HasValue)
+                                {
+                                    totalsj = qtts.Value.TotalSeconds;
+                                }
+                                break;
+                            case "离岗":
+                                var lgts = current_time - item.lgtjkssj;
+                                if (lgts.HasValue)
+                                {
+                                    totalsj = lgts.Value.TotalSeconds;
+                                }
+                                break;
+                            case "修模":
+                                var tsxm = current_time - item.xmkssj;
+                                if (tsxm.HasValue)
+                                {
+                                    totalsj = tsxm.Value.TotalSeconds;
+                                }
+                                break;
+                            case "调试":
+                                var tsts = current_time - item.tskssj;
+                                if (tsts.HasValue)
+                                {
+                                    totalsj = tsts.Value.TotalSeconds;
+                                }
+                                break;
+                            case "保养":
+                                var byts = current_time - item.bytjkssj;
+                                if (byts.HasValue)
+                                {
+                                    totalsj = byts.Value.TotalSeconds;
+                                }
+                                break;
+                            case "脱机":
+                                var query = sbtjsjlist.Where(t => t.sbbh == item.sbbh);
+                                if (query.Count() > 0)
+                                {
+                                    var tjkssj = query.First().tjkssj;
+                                    var tstj = DateTime.Now - tjkssj;
+                                    if (tstj.HasValue)
+                                    {
+                                        totalsj = Math.Round(tstj.Value.TotalSeconds, 0);
+                                    }
+                                }
+                                else
+                                {
+                                    totalsj = 0;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        pg.Predicates.Clear();
+                        pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sbbh, Operator.Eq, item.sbbh));
+                        pg.Predicates.Add(Predicates.Field<sbyxtj>(f => f.sj, Operator.Eq, sj));
+                        var qlist = Db.GetList<sbyxtj>(pg);
+                        if (qlist.Count() == 0)
+                        {
+                            save_sbzt(new sbyxtj()
+                            {
+                                sbbh = item.sbbh,
+                                sbqy = item.sbqy,
+                                sbzt = yxzt,
+                                sj = sj,
+                                sc = totalsj
+                            });
+                        }
+                        else
+                        {
+                            sbyxtj first = qlist.FirstOrDefault();
+                            first.sbzt = yxzt;
+                            first.sc = totalsj;
+                            var r = edit_sbzt(first);
+                        }
                     }
-                    else
-                    {
-                        sbyxtj first = qlist.FirstOrDefault();
-                        first.sbzt = yxzt;
-                        first.sc = totalsj;
-                        var r = edit_sbzt(first);
-                    }
-                }
+                
             }
             catch (Exception e)
             {
-                log.Error(e.Message+e.StackTrace);
+                log.Error(e.Message + e.StackTrace);
             }
         }
-        
+
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Dapper;
+using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +15,10 @@ namespace OEECalc.Tool
         {
             try
             {
-                string sql = "select sysdate from dual";
-                return Db.Connection.ExecuteScalar<DateTime>(sql);
+                
+                    string sql = "select sysdate from dual";
+                    return db.ExecuteScalar<DateTime>(sql);
+                
             }
             catch (Exception)
             {

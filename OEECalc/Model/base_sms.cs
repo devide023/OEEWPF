@@ -26,6 +26,10 @@ namespace OEECalc.Model
         /// 是否可以发送短信，1可以0不可以
         /// </summary>
         public int state { get; set; }
+    /// <summary>
+    /// 分类，1领导，0普通
+    /// </summary>
+        public int fl { get; set; }
     }
 
     public class base_sms_temp

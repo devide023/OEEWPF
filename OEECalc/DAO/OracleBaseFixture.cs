@@ -22,6 +22,15 @@ namespace OEECalc
             this.connstr = ConfigurationManager.ConnectionStrings["oee"] ?.ToString();
             InitDB();
         }
+
+        public OracleConnection db { get { return connection; } }
+        public string Constr
+        {
+            get
+            {
+                return connstr;
+            }
+        }
         public OracleBaseFixture(string connstr)
         {
             this.connstr = ConfigurationManager.ConnectionStrings[connstr] ?.ToString();

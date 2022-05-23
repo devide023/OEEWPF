@@ -93,7 +93,7 @@ namespace OEECalc.Tool
                 if (flag)
                 {
                     current_sj = Tool.TimeTool.GetBCInfo(kstjsj).kssj;
-                    while (DateTime.Compare(current_sj, DateTime.Now) <= 0 && DateTime.Compare(current_sj.AddHours(12), DateTime.Now) <= 0)
+                    while (DateTime.Compare(current_sj, DateTime.Now) <= 0 && DateTime.Compare(current_sj.AddHours(12), DateTime.Now) <= 0 && current_sj.Year>=2021)
                     {
                         DateTime next_sj = current_sj.AddHours(12);
                         //停机开始时间在班次时间段内
@@ -144,7 +144,7 @@ namespace OEECalc.Tool
                 DateTime dt_jsrq = Convert.ToDateTime(null);
                 DateTime current_sj = Convert.ToDateTime(null);
                 current_sj = Tool.TimeTool.GetBCInfo(kstjsj).kssj;
-                while (DateTime.Compare(current_sj, jstjsj) <= 0)
+                while (DateTime.Compare(current_sj, jstjsj) <= 0 && current_sj.Year>=2021)
                 {
                     DateTime next_sj = current_sj.AddHours(12);
                     //开始停机时间在班次范围内，结束时间不再班次范围内

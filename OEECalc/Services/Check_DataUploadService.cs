@@ -11,6 +11,8 @@ using OEECalc.Model;
 using Newtonsoft.Json;
 using System.Configuration;
 using System.IO;
+using System.Data;
+using Oracle.ManagedDataAccess.Client;
 
 namespace OEECalc.Services
 {
@@ -19,8 +21,9 @@ namespace OEECalc.Services
     /// </summary>
     public class Check_DataUploadService:OracleBaseFixture
     {
-        private static Check_DataUploadService instance = null;
-        private static readonly object padlock = new object();
+        //private static Check_DataUploadService instance = null;
+        //private static readonly object padlock = new object();
+        private static readonly Lazy<Check_DataUploadService> lazy = new Lazy<Check_DataUploadService>(() => new Check_DataUploadService());
         private List<sys_sjsc> _global_cnf = null;
         private ILog log;
         private Check_DataUploadService()
@@ -28,31 +31,34 @@ namespace OEECalc.Services
             log = LogManager.GetLogger(this.GetType());
             _global_cnf = new List<sys_sjsc>();
         }
-        public static Check_DataUploadService Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    lock (padlock)
-                    {
-                        if (instance == null)
-                        {
-                            instance = new Check_DataUploadService();
-                        }
-                    }
-                }
-                return instance;
-            }
-        }
+        public static Check_DataUploadService Instance { get { return lazy.Value; } }
+        //public static Check_DataUploadService Instance
+        //{
+        //    get
+        //    {
+        //        if (instance == null)
+        //        {
+        //            lock (padlock)
+        //            {
+        //                if (instance == null)
+        //                {
+        //                    instance = new Check_DataUploadService();
+        //                }
+        //            }
+        //        }
+        //        return instance;
+        //    }
+        //}
 
         private IEnumerable<base_sbxx> Get_SBXX_List()
         {
             try
             {
-                StringBuilder sql = new StringBuilder();
-                sql.Append("select sbbh, ip, sbqy,sbzt,sfjx,sfhm,sfgz,sfql,sfqttj,sfxm,sfts,sfby,sflgtj FROM base_sbxx where scbz = 'N' order by sbbh asc");
-                return Db.Connection.Query<base_sbxx>(sql.ToString());
+                
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select sbbh, ip, sbqy,sbzt,sfjx,sfhm,sfgz,sfql,sfqttj,sfxm,sfts,sfby,sflgtj FROM base_sbxx where scbz = 'N' order by sbbh asc");
+                    return db.Query<base_sbxx>(sql.ToString());
+                
             }
             catch (Exception e)
             {
@@ -69,13 +75,15 @@ namespace OEECalc.Services
         {
             try
             {
-                StringBuilder sql = new StringBuilder();
-                sql.Append("select id, sj, sbbh, sbzt, sbqy ");
-                sql.Append(" from sbztbhb ");
-                sql.Append(" where sbbh = :sbbh ");
-                sql.Append(" and    sj between sysdate - (1 / 24 / 60) * " + djsj + " and sysdate order by sj desc");
-                var list = Db.Connection.Query<sbztbhb>(sql.ToString(), new { sbbh = sbbh });
-                return list;
+                
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select id, sj, sbbh, sbzt, sbqy ");
+                    sql.Append(" from sbztbhb ");
+                    sql.Append(" where sbbh = :sbbh ");
+                    sql.Append(" and    sj between sysdate - (1 / 24 / 60) * " + djsj + " and sysdate order by sj desc");
+                    var list = db.Query<sbztbhb>(sql.ToString(), new { sbbh = sbbh });
+                    return list;
+                
             }
             catch (Exception e)
             {
@@ -92,12 +100,14 @@ namespace OEECalc.Services
         {
             try
             {
-                StringBuilder sql = new StringBuilder();
-                sql.Append("update BASE_SBXX set djkssj = :djsj where sbbh = :sbbh");
-                DynamicParameters p = new DynamicParameters();
-                p.Add(":djsj", djsj, System.Data.DbType.Date, System.Data.ParameterDirection.Input);
-                p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-                return Db.Connection.Execute(sql.ToString(), p) > 0 ? true : false;
+                
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("update BASE_SBXX set djkssj = :djsj where sbbh = :sbbh");
+                    DynamicParameters p = new DynamicParameters();
+                    p.Add(":djsj", djsj, System.Data.DbType.Date, System.Data.ParameterDirection.Input);
+                    p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                    return db.Execute(sql.ToString(), p) > 0 ? true : false;
+                
             }
             catch (Exception e)
             {
@@ -114,14 +124,17 @@ namespace OEECalc.Services
         {
             try
             {
-                StringBuilder sql = new StringBuilder();
-                sql.Append(" begin \n");
-                sql.Append(" update BASE_SBXX set djkssj = sysdate where sbbh = :sbbh and sbzt = '运行' and djkssj is null; \n");
-                sql.Append(" commit;\n");
-                sql.Append(" end; \n");
-                DynamicParameters p = new DynamicParameters();
-                p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-                return Db.Connection.Execute(sql.ToString(), p) > 0 ? true : false;
+                
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append(" begin \n");
+                    sql.Append(" update BASE_SBXX set djkssj = sysdate where sbbh = :sbbh and sbzt = '运行' and djkssj is null; \n");
+                    sql.Append(" commit;\n");
+                    sql.Append(" end; \n");
+                    DynamicParameters p = new DynamicParameters();
+                    p.Add(":sbbh", sbbh, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+                    return db.Execute(sql.ToString(), p) > 0 ? true : false;
+                
+                
             }
             catch (Exception e)
             {
@@ -138,12 +151,14 @@ namespace OEECalc.Services
         {
             try
             {
-                StringBuilder sql = new StringBuilder();
-                sql.Append(" begin \n");
-                sql.Append(" update BASE_SBXX set djkssj = NULL where sbbh = :sbbh and sbzt = '运行' and djkssj is not null;\n");
-                sql.Append(" commit;\n");
-                sql.Append(" end; \n");
-                return Db.Connection.Execute(sql.ToString(), new { sbbh = sbbh }) > 0 ? true : false;
+                
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append(" begin \n");
+                    sql.Append(" update BASE_SBXX set djkssj = NULL where sbbh = :sbbh and sbzt = '运行' and djkssj is not null;\n");
+                    sql.Append(" commit;\n");
+                    sql.Append(" end; \n");
+                    return db.Execute(sql.ToString(), new { sbbh = sbbh }) > 0 ? true : false;
+                
             }
             catch (Exception e)
             {

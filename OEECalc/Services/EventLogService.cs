@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using System.Data;
+using Oracle.ManagedDataAccess.Client;
+
 namespace OEECalc.Services
 {
     /// <summary>
@@ -13,31 +16,32 @@ namespace OEECalc.Services
     /// </summary>
     public class EventLogService: OracleBaseFixture
     {
-        private static EventLogService instance = null;
-        private static readonly object padlock = new object();
+        //private static EventLogService instance = null;
+        //private static readonly object padlock = new object();
+        private static readonly Lazy<EventLogService> lazy = new Lazy<EventLogService>(() => new EventLogService());
         private ILog log;
         private EventLogService()
         {
             log = LogManager.GetLogger(this.GetType());
         }
-
-        public static EventLogService Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    lock (padlock)
-                    {
-                        if (instance == null)
-                        {
-                            instance = new EventLogService();
-                        }
-                    }
-                }
-                return instance;
-            }
-        }
+        public static EventLogService Instance { get { return lazy.Value; } }
+        //public static EventLogService Instance
+        //{
+        //    get
+        //    {
+        //        if (instance == null)
+        //        {
+        //            lock (padlock)
+        //            {
+        //                if (instance == null)
+        //                {
+        //                    instance = new EventLogService();
+        //                }
+        //            }
+        //        }
+        //        return instance;
+        //    }
+        //}
         /// <summary>
         /// 从Message字段提取异常关机时间，更新到ycgjsj字段
         /// </summary>
@@ -45,19 +49,21 @@ namespace OEECalc.Services
         {
             try
             {
-                StringBuilder sql = new StringBuilder();
-                sql.Append("select id, message ");
-                sql.Append(" FROM   sys_eventlog ");
-                sql.Append(" where  isdeal = 0 ");
-                sql.Append(" and    eventid = 2147489656");
-                StringBuilder tsql = new StringBuilder();
-                tsql.Append("update sys_eventlog set ycgjsj=:ycgjsj,isdeal=1 where id= :id");
-                var list = Db.Connection.Query<sys_eventlog>(sql.ToString());
-                foreach (var item in list)
-                {
-                    item.ycgjsj = YcgjSj(item.message);
-                }
-                Db.Connection.Execute(tsql.ToString(), list);
+                
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select id, message ");
+                    sql.Append(" FROM   sys_eventlog ");
+                    sql.Append(" where  isdeal = 0 ");
+                    sql.Append(" and    eventid = 2147489656");
+                    StringBuilder tsql = new StringBuilder();
+                    tsql.Append("update sys_eventlog set ycgjsj=:ycgjsj,isdeal=1 where id= :id");
+                    var list = db.Query<sys_eventlog>(sql.ToString());
+                    foreach (var item in list)
+                    {
+                        item.ycgjsj = YcgjSj(item.message);
+                    }
+                    db.Execute(tsql.ToString(), list);
+                
             }
             catch (Exception e)
             {

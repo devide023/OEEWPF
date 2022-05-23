@@ -252,7 +252,7 @@ namespace LBJOEE
         /// <summary>
         /// 离岗停机开始时间
         /// </summary>
-        public DateTime lgtjkssj { get; set; }
+        public DateTime lgtjkssj { get; set; }        
     }
 
     public class base_sbxx_mapper : ClassMapper<base_sbxx>

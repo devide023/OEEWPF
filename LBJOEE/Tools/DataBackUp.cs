@@ -95,7 +95,7 @@ namespace LBJOEE.Tools
         {
             try
             {
-                SBSJService service = SBSJService.Instance;
+                SBSJService service = new SBSJService();
                 SBZTGXService _sbztbhservice = new SBZTGXService();
                 sjcjnew entity = new sjcjnew();
                 if (!Directory.Exists(path))
@@ -109,20 +109,28 @@ namespace LBJOEE.Tools
                     string filepath = item.FullName;
                     StreamReader sr = new StreamReader(filepath);
                     string json = sr.ReadToEnd();
-                    entity = JsonConvert.DeserializeObject<sjcjnew>(json);
-                    if (Tool.IsPing())
+                    try
                     {
-                        dynamic ret = service.AddByDate(entity);
-                        _sbztbhservice.AddByDate(new sbztbhb()
+                        entity = JsonConvert.DeserializeObject<sjcjnew>(json);
+                        if (Tool.IsPing())
                         {
-                            sj = entity.cjsj,
-                            sbbh=entity.sbbh
-                        });
-                        if (!string.IsNullOrEmpty(ret.ToString()))
-                        {
-                            sr.Close();
-                            item.Delete();
+                            dynamic ret = service.AddByDate(entity);
+                            _sbztbhservice.AddByDate(new sbztbhb()
+                            {
+                                sj = entity.cjsj,
+                                sbbh = entity.sbbh
+                            });
+                            if (!string.IsNullOrEmpty(ret.ToString()))
+                            {
+                                sr.Close();
+                                item.Delete();
+                            }
                         }
+                    }
+                    catch (Exception)
+                    {
+                        item.Delete();
+                        continue;
                     }
                 }
             }
@@ -136,7 +144,7 @@ namespace LBJOEE.Tools
         {
             try
             {
-                SBSJService service = SBSJService.Instance;
+                SBSJService service = new SBSJService();
                 sjcjnew entity = new sjcjnew();
                 if (!Directory.Exists(tjpath))
                 {
@@ -149,15 +157,23 @@ namespace LBJOEE.Tools
                     string filepath = item.FullName;
                     StreamReader sr = new StreamReader(filepath);
                     string json = sr.ReadToEnd();
-                    entity = JsonConvert.DeserializeObject<sjcjnew>(json);
-                    if (Tool.IsPing())
+                    try
                     {
-                        var ret = service.TJSJCJ(entity);
-                        if (ret>0)
+                        entity = JsonConvert.DeserializeObject<sjcjnew>(json);
+                        if (Tool.IsPing())
                         {
-                            sr.Close();
-                            item.Delete();
+                            var ret = service.TJSJCJ(entity);
+                            if (ret > 0)
+                            {
+                                sr.Close();
+                                item.Delete();
+                            }
                         }
+                    }
+                    catch (Exception)
+                    {
+                        item.Delete();
+                        continue;
                     }
                 }
             }

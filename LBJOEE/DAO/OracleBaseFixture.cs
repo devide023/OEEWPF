@@ -22,6 +22,14 @@ namespace LBJOEE
             this.connstr = ConfigurationManager.ConnectionStrings["oee"] ?.ToString();
             InitDB();
         }
+        public string Constr
+        {
+            get
+            {
+                return connstr;
+            }
+        }
+        public OracleConnection db { get { return this.connection; } }
         public OracleBaseFixture(string connstr)
         {
             this.connstr = ConfigurationManager.ConnectionStrings[connstr] ?.ToString();

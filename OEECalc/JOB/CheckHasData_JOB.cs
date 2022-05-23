@@ -14,7 +14,6 @@ namespace OEECalc.JOB
     /// </summary>
     public class CheckHasData_JOB : IJob
     {
-        private Check_DataUploadService service = Check_DataUploadService.Instance;
         private ILog log;
         public CheckHasData_JOB()
         {
@@ -24,6 +23,7 @@ namespace OEECalc.JOB
         {
             return Task.Run(() =>
             {
+                Check_DataUploadService service = Check_DataUploadService.Instance;
                 //log.Info($"HashCode:{service.GetHashCode()}\r");
                 service.NewCheck();
             });
